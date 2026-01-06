@@ -1,26 +1,310 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Enterprise-standard color palette - Professional Blue/Indigo */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    /* Enterprise Primary - Professional Blue */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary - Neutral Gray */
+    --secondary: 210 20% 98%;
+    --secondary-foreground: 222 47% 11%;
+    
+    /* Muted backgrounds */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* Accent colors - darker for better contrast */
+    --accent: 210 20% 94%;
+    --accent-foreground: 222 47% 11%;
+    
+    /* Success color - Green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Warning color - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* Destructive/error color - Red */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Info color - Blue */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Borders and inputs */
+    --border: 214 32% 80%;
+    --input: 214 32% 80%;
+    --ring: 221 83% 53%;
+    
+    /* Border radius */
+    --radius: 0.5rem;
+    
+    /* Enhanced shadows for depth */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    
+    /* Gradient colors */
+    --gradient-from: 221 83% 53%;
+    --gradient-to: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 213 31% 91%;
+    --card: 222 47% 11%;
+    --card-foreground: 213 31% 91%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 213 31% 91%;
+    
+    /* Bright primary for dark mode */
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 213 31% 91%;
+    
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 217 33% 17%;
+    --accent-foreground: 217 91% 60%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
+    
+    --gradient-from: 217 91% 60%;
+    --gradient-to: 221 83% 53%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Ensure dialog has solid background */
+  [role="dialog"] {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+  }
+  
+  /* Beautiful scrollbars */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+@layer components {
+  /* ========================================
+     BUTTON HOVER FIXES
+     ======================================== */
+  
+  /* Ensure text is visible when hovering with accent background */
+  button:hover,
+  a:hover {
+    color: inherit;
+  }
+  
+  button:hover[class*="bg-accent"],
+  button:focus[class*="bg-accent"],
+  a:hover[class*="bg-accent"] {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  /* Ensure all buttons with borders are visible */
+  button {
+    position: relative;
+  }
+  
+  /* Outline buttons - ensure border is always visible */
+  button[class*="border-border"],
+  button[class*="border-2"] {
+    border-width: 2px !important;
+    border-style: solid !important;
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  button[class*="border-border"]:hover,
+  button[class*="border-2"]:hover {
+    border-color: hsl(var(--primary)) !important;
+  }
+  
+  /* Ensure buttons have proper background on active/focus */
+  button:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  
+  /* ========================================
+     SIDEBAR HOVER FIXES
+     ======================================== */
+  
+  aside nav a:not([class*="bg-primary"]):hover {
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--accent)) !important;
+  }
+  
+  aside nav a:not([class*="bg-primary"]):hover svg {
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  /* ========================================
+     TABLE STYLING
+     ======================================== */
+  
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  table thead th {
+    background: hsl(var(--muted));
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: hsl(var(--muted-foreground));
+    border-bottom: 1px solid hsl(var(--border));
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  table tbody tr {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  
+  table tbody tr:hover {
+    background-color: hsl(var(--accent));
+  }
+  
+  table tbody td {
+    padding: 1rem;
+  }
+  
+  /* ========================================
+     INPUT STYLING
+     ======================================== */
+  
+  input,
+  textarea,
+  select {
+    transition: all 0.2s ease;
+    border: 1px solid hsl(var(--input));
+    background-color: hsl(var(--background));
+  }
+  
+  input:hover,
+  textarea:hover,
+  select:hover {
+    border-color: hsl(var(--ring) / 0.5);
+  }
+  
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1);
+    outline: none;
+  }
+  
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  
+  /* ========================================
+     DIALOG ANIMATIONS
+     ======================================== */
+  
+  [role="dialog"] {
+    animation: dialogSlideIn 0.2s ease-out;
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-xl);
+  }
+  
+  @keyframes dialogSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* ========================================
+     PAGE TRANSITIONS
+     ======================================== */
+  
+  .page-enter {
+    animation: pageEnter 0.2s ease-out;
+  }
+  
+  @keyframes pageEnter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
