@@ -1,0 +1,2 @@
+export const WORDS_OF_KNOWLEDGE_PAGE_SIZE = 10;
+
