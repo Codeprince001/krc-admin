@@ -1,0 +1,114 @@
+"use client";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Loader2, Eye } from "lucide-react";
+import { formatDate } from "@/lib/utils/format";
+import type { Payment, PaymentStatus } from "@/types/api/payments.types";
+
+interface PaymentsTableProps {
+  payments: Payment[];
+  isLoading: boolean;
+  onView: (payment: Payment) => void;
+}
+
+export function PaymentsTable({
+  payments,
+  isLoading,
+  onView,
+}: PaymentsTableProps) {
+  const getStatusVariant = (status: PaymentStatus) => {
+    switch (status) {
+      case "SUCCESSFUL":
+      case "PAID":
+        return "default";
+      case "FAILED":
+        return "destructive";
+      default:
+        return "secondary";
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Reference</TableHead>
+          <TableHead>Customer</TableHead>
+          <TableHead>Purpose</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Method</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {payments.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={8} className="text-center py-8">
+              No payments found
+            </TableCell>
+          </TableRow>
+        ) : (
+          payments.map((payment) => (
+            <TableRow key={payment.id}>
+              <TableCell className="font-medium">{payment.paymentRef}</TableCell>
+              <TableCell>
+                <div>
+                  <div className="font-medium">
+                    {payment.user.firstName || payment.user.lastName
+                      ? `${payment.user.firstName || ""} ${payment.user.lastName || ""}`.trim()
+                      : "N/A"}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {payment.user.email}
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell className="max-w-xs truncate">{payment.purpose}</TableCell>
+              <TableCell>
+                <div className="font-medium">
+                  ₦{Number(payment.amount).toLocaleString()}
+                </div>
+              </TableCell>
+              <TableCell>{payment.paymentMethod}</TableCell>
+              <TableCell>
+                <Badge variant={getStatusVariant(payment.status)}>
+                  {payment.status}
+                </Badge>
+              </TableCell>
+              <TableCell>{formatDate(payment.createdAt, "PP")}</TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onView(payment)}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
+  );
+}
+
