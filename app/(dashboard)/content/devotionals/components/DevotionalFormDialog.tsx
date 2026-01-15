@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,7 @@ export function DevotionalFormDialog({
   isSubmitting = false,
 }: DevotionalFormDialogProps) {
   const isEditing = !!devotional;
+  const [content, setContent] = useState("");
 
   const {
     register,
@@ -50,9 +52,16 @@ export function DevotionalFormDialog({
 
   const imageValue = watch("image");
 
+  // Handle content changes from RichTextEditor
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    setValue("content", newContent, { shouldValidate: true });
+  };
+
   useEffect(() => {
     if (devotional) {
       setValue("title", devotional.title);
+      setContent(devotional.content);
       setValue("content", devotional.content);
       setValue("bibleVerse", devotional.bibleVerse);
       setValue("verseReference", devotional.verseReference);
@@ -62,12 +71,15 @@ export function DevotionalFormDialog({
       setValue("prayer", devotional.prayer || "");
     } else {
       reset();
+      setContent("");
+      setValue("content", "");
     }
   }, [devotional, setValue, reset]);
 
   const handleFormSubmit = (data: DevotionalFormData) => {
     onSubmit({
       ...data,
+      content: content,
       image: data.image || undefined,
     });
   };
@@ -126,12 +138,10 @@ export function DevotionalFormDialog({
             <Label htmlFor="content">
               Content <span className="text-destructive">*</span>
             </Label>
-            <Textarea
-              id="content"
-              {...register("content")}
-              placeholder="Devotional content"
-              rows={6}
-              className={errors.content ? "border-destructive" : ""}
+            <RichTextEditor
+              content={content}
+              onChange={handleContentChange}
+              placeholder="Write the devotional content with rich formatting..."
             />
             {errors.content && (
               <p className="text-sm text-destructive">{errors.content.message}</p>
