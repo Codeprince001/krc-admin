@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import {
   Select,
   SelectContent,
@@ -44,6 +44,7 @@ export function AnnouncementFormDialog({
   isSubmitting = false,
 }: AnnouncementFormDialogProps) {
   const isEditing = !!announcement;
+  const [content, setContent] = useState("");
 
   const {
     register,
@@ -62,9 +63,16 @@ export function AnnouncementFormDialog({
   const imageValue = watch("image");
   const categoryValue = watch("category");
 
+  // Handle content changes from RichTextEditor
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    setValue("content", newContent, { shouldValidate: true });
+  };
+
   useEffect(() => {
     if (announcement) {
       setValue("title", announcement.title);
+      setContent(announcement.content);
       setValue("content", announcement.content);
       setValue("category", announcement.category);
       setValue("isPinned", announcement.isPinned);
@@ -74,13 +82,15 @@ export function AnnouncementFormDialog({
       reset({
         isPinned: false,
       });
+      setContent("");
+      setValue("content", "");
     }
   }, [announcement, setValue, reset]);
 
   const handleFormSubmit = (data: AnnouncementFormData) => {
     onSubmit({
       title: data.title,
-      content: data.content,
+      content: content,
       category: data.category,
       isPinned: data.isPinned,
       image: data.image || undefined,
@@ -151,12 +161,10 @@ export function AnnouncementFormDialog({
             <Label htmlFor="content">
               Content <span className="text-destructive">*</span>
             </Label>
-            <Textarea
-              id="content"
-              {...register("content")}
-              placeholder="Enter announcement content"
-              rows={6}
-              className={errors.content ? "border-destructive" : ""}
+            <RichTextEditor
+              content={content}
+              onChange={handleContentChange}
+              placeholder="Write the announcement content with rich formatting..."
             />
             {errors.content && (
               <p className="text-sm text-destructive">{errors.content.message}</p>
