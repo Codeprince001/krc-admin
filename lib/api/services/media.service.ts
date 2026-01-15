@@ -55,6 +55,44 @@ export const mediaService = {
     return (json?.data || json) as UploadMediaResponse;
   },
 
+  async uploadVideo(
+    file: File,
+    context?: string
+  ): Promise<UploadMediaResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "VIDEO");
+    if (context) {
+      formData.append("context", context);
+    }
+
+    // Use fetch directly for file uploads since apiClient uses JSON
+    const accessToken = localStorage.getItem("accessToken");
+    const headers: Record<string, string> = {};
+    
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    const response = await fetch(`${endpoints.media}/upload`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorJson = await response.json().catch(() => ({
+        message: response.statusText || "Failed to upload video",
+      }));
+      const errorMessage = errorJson?.message || errorJson?.data?.message || response.statusText || "Failed to upload video";
+      throw new Error(errorMessage);
+    }
+
+    const json = await response.json();
+    // Backend wraps responses in { success, data } format
+    return (json?.data || json) as UploadMediaResponse;
+  },
+
   async getMedia(
     type?: string,
     page = 1,
