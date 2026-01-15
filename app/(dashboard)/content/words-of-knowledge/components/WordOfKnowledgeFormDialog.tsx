@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ export function WordOfKnowledgeFormDialog({
   isSubmitting = false,
 }: WordOfKnowledgeFormDialogProps) {
   const isEditing = !!wordOfKnowledge;
+  const [content, setContent] = useState("");
 
   const {
     register,
@@ -50,9 +51,16 @@ export function WordOfKnowledgeFormDialog({
 
   const imageValue = watch("image");
 
+  // Handle content changes from RichTextEditor
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    setValue("content", newContent, { shouldValidate: true });
+  };
+
   useEffect(() => {
     if (wordOfKnowledge) {
       setValue("title", wordOfKnowledge.title);
+      setContent(wordOfKnowledge.content);
       setValue("content", wordOfKnowledge.content);
       setValue("scripture", wordOfKnowledge.scripture || "");
       setValue("image", wordOfKnowledge.imageUrl || "");
@@ -60,13 +68,15 @@ export function WordOfKnowledgeFormDialog({
       setValue("weekOf", wordOfKnowledge.weekOf.split("T")[0]);
     } else {
       reset();
+      setContent("");
+      setValue("content", "");
     }
   }, [wordOfKnowledge, setValue, reset]);
 
   const handleFormSubmit = (data: WordOfKnowledgeFormData) => {
     onSubmit({
       title: data.title,
-      content: data.content,
+      content: content,
       scripture: data.scripture || undefined,
       image: data.image || undefined,
       category: data.category || undefined,
@@ -126,12 +136,10 @@ export function WordOfKnowledgeFormDialog({
             <Label htmlFor="content">
               Content <span className="text-destructive">*</span>
             </Label>
-            <Textarea
-              id="content"
-              {...register("content")}
-              placeholder="Word of knowledge content"
-              rows={6}
-              className={errors.content ? "border-destructive" : ""}
+            <RichTextEditor
+              content={content}
+              onChange={handleContentChange}
+              placeholder="Write the word of knowledge content with rich formatting..."
             />
             {errors.content && (
               <p className="text-sm text-destructive">{errors.content.message}</p>
