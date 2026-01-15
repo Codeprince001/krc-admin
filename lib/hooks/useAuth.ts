@@ -134,9 +134,10 @@ export function useAuth() {
         toast.error("An error occurred during login");
       }
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       console.error("Login error:", error);
-      toast.error(error.message || "Login failed");
+      const message = typeof error?.message === 'string' ? error.message : "Login failed";
+      toast.error(message);
     },
   });
 
