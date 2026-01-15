@@ -37,8 +37,9 @@ export default function UserDetailPage({
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("User status updated");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to update user status");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to update user status";
+      toast.error(message);
     },
   });
 
@@ -50,8 +51,9 @@ export default function UserDetailPage({
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("User role updated");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to update user role");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to update user role";
+      toast.error(message);
     },
   });
 
