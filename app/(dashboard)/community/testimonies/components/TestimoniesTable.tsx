@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, Trash2, User } from "lucide-react";
+import { Check, X, Trash2, User, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
 import type { Testimony, TestimonyStatus } from "@/types";
 import { TESTIMONY_STATUSES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { useRouter } from "next/navigation";
 
 interface TestimoniesTableProps {
   testimonies: Testimony[];
@@ -38,6 +39,8 @@ export function TestimoniesTable({
   isApproving = false,
   isRejecting = false,
 }: TestimoniesTableProps) {
+  const router = useRouter();
+
   if (isLoading) {
     return <LoadingState message="Loading testimonies..." />;
   }
@@ -85,7 +88,10 @@ export function TestimoniesTable({
           {testimonies.map((testimony) => (
             <TableRow key={testimony.id} className="hover:bg-muted/50">
               <TableCell>
-                <div className="flex items-center gap-3">
+                <div 
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() => router.push(`/community/testimonies/${testimony.id}`)}
+                >
                   {testimony.image && (
                     <img
                       src={testimony.image}
@@ -94,7 +100,9 @@ export function TestimoniesTable({
                     />
                   )}
                   <div>
-                    <div className="font-semibold">{testimony.title}</div>
+                    <div className="font-semibold hover:text-primary">
+                      {testimony.title}
+                    </div>
                     <div className="text-xs text-muted-foreground line-clamp-1">
                       {testimony.content.substring(0, 50)}...
                     </div>
@@ -127,6 +135,14 @@ export function TestimoniesTable({
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push(`/community/testimonies/${testimony.id}`)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
                   {testimony.status === "PENDING" && (
                     <>
                       <Button
