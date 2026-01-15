@@ -64,6 +64,11 @@ export const testimoniesService = {
     return (response as any).testimony || response;
   },
 
+  async createTestimonyByAdmin(data: CreateTestimonyRequest): Promise<Testimony> {
+    const response = await apiClient.post<any>(`${endpoints.testimonies}/admin/create`, data);
+    return (response as any).testimony || response;
+  },
+
   async updateTestimony(
     id: string,
     data: UpdateTestimonyRequest
