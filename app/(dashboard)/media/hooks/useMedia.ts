@@ -23,8 +23,9 @@ export function useMedia(params: QueryMediaParams = {}) {
       queryClient.invalidateQueries({ queryKey: ["media"] });
       queryClient.invalidateQueries({ queryKey: ["media-stats"] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to delete media");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to delete media";
+      toast.error(message);
     },
   });
 
