@@ -24,8 +24,9 @@ export function useOrders(params: QueryOrdersParams = {}) {
       toast.success("Order status updated successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to update order status");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to update order status";
+      toast.error(message);
     },
   });
 
@@ -36,8 +37,9 @@ export function useOrders(params: QueryOrdersParams = {}) {
       toast.success("Payment processed successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to process payment");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to process payment";
+      toast.error(message);
     },
   });
 
@@ -47,8 +49,9 @@ export function useOrders(params: QueryOrdersParams = {}) {
       toast.success("Order cancelled successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to cancel order");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to cancel order";
+      toast.error(message);
     },
   });
 
@@ -58,8 +61,9 @@ export function useOrders(params: QueryOrdersParams = {}) {
       toast.success("Order deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to delete order");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to delete order";
+      toast.error(message);
     },
   });
 
