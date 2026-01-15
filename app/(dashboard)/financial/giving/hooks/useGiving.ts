@@ -24,8 +24,9 @@ export function useGiving(params: QueryGivingParams = {}) {
       queryClient.invalidateQueries({ queryKey: ["giving"] });
       queryClient.invalidateQueries({ queryKey: ["giving-stats"] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to delete giving record");
+    onError: (error: any) => {
+      const message = typeof error?.message === 'string' ? error.message : "Failed to delete giving record";
+      toast.error(message);
     },
   });
 
