@@ -8,8 +8,8 @@ git add app/globals.css; git commit -m "feat(app): update global styles"
 git rm app/page.tsx; git commit -m "refactor(app): remove root page (using dashboard)"
 
 # App Routes
-git add app/(auth)/; git commit -m "feat(auth): add authentication routes"
-git add app/(dashboard)/; git commit -m "feat(dashboard): add dashboard routes and pages"
+git add "app/(auth)/"; git commit -m "feat(auth): add authentication routes"
+git add "app/(dashboard)/"; git commit -m "feat(dashboard): add dashboard routes and pages"
 
 # Components
 git add components/; git commit -m "feat(components): add shared components"
