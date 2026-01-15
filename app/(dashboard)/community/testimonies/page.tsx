@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Pagination } from "@/components/shared/Pagination";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { useTestimonies } from "./hooks/useTestimonies";
 import { TestimoniesTable } from "./components/TestimoniesTable";
 import { TestimoniesFilters } from "./components/TestimoniesFilters";
 import { TESTIMONIES_PAGE_SIZE } from "./constants";
 
 export default function TestimoniesPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -49,10 +53,16 @@ export default function TestimoniesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Testimonies"
-        description="Review and manage testimonies from your community"
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title="Testimonies"
+          description="Review and manage testimonies from your community"
+        />
+        <Button onClick={() => router.push("/community/testimonies/new")}>
+          <Plus className="mr-2 h-4 w-4" />
+          Create Testimony
+        </Button>
+      </div>
 
       <Card>
         <CardHeader>
