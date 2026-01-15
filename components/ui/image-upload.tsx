@@ -63,7 +63,8 @@ export function ImageUpload({
       toast.success("Image uploaded successfully");
     } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error(error.message || "Failed to upload image");
+      const message = typeof error?.message === 'string' ? error.message : "Failed to upload image";
+      toast.error(message);
     } finally {
       setUploading(false);
       // Reset file input
