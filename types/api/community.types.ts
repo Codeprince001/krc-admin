@@ -95,6 +95,7 @@ export interface Testimony {
     email: string;
   };
   image?: string;
+  videoUrl?: string;
   isAnonymous: boolean;
   createdAt: string;
   updatedAt: string;
@@ -104,6 +105,7 @@ export interface CreateTestimonyRequest {
   title: string;
   content: string;
   image?: string;
+  videoUrl?: string;
   isAnonymous?: boolean;
 }
 
@@ -112,6 +114,7 @@ export interface UpdateTestimonyRequest {
   content?: string;
   status?: TestimonyStatus;
   image?: string;
+  videoUrl?: string;
 }
 
 export interface TestimoniesResponse {
