@@ -27,6 +27,13 @@ import {
   Trophy,
   Lightbulb,
   Brain,
+  Bell,
+  Send,
+  FileText,
+  Clock,
+  TrendingUp,
+  Target,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -86,6 +93,17 @@ const navGroups: NavGroup[] = [
     items: [
       { title: "Bible Games", href: "/games", icon: Gamepad2 },
       { title: "Leaderboard", href: "/games/leaderboard", icon: Trophy },
+    ],
+  },
+  {
+    title: "Notifications",
+    items: [
+      { title: "Send Notification", href: "/notifications/send", icon: Send },
+      { title: "Templates", href: "/notifications/templates", icon: FileText },
+      { title: "Scheduled", href: "/notifications/scheduled", icon: Clock },
+      { title: "Analytics", href: "/notifications/analytics", icon: TrendingUp },
+      { title: "Campaigns", href: "/notifications/campaigns", icon: Target },
+      { title: "Queue Monitor", href: "/notifications/queue", icon: Activity },
     ],
   },
   {
