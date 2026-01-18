@@ -180,6 +180,14 @@ class ApiClient {
           return unwrappedData as T;
         }
         
+        // Handle sermons response structure: { sermons: [...], pagination: {...} }
+        if (unwrappedData && typeof unwrappedData === 'object' && 'sermons' in unwrappedData && 'pagination' in unwrappedData) {
+          return {
+            data: unwrappedData.sermons,
+            meta: unwrappedData.pagination,
+          } as T;
+        }
+
         // Handle prayer requests response structure: { prayerRequests: [...], pagination: {...} }
         if (unwrappedData && typeof unwrappedData === 'object' && 'prayerRequests' in unwrappedData && 'pagination' in unwrappedData) {
           // Transform prayer requests to match frontend expectations
