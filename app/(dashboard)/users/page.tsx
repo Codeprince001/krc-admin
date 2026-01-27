@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usersService } from "@/lib/api/services/users.service";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +25,17 @@ export default function UsersPage() {
   const [search, setSearch] = useState("");
   const limit = 10;
 
+  // Debounce search input with 500ms delay
+  const debouncedSearch = useDebounce(search, 500);
+
+  // Reset to first page when debounced search changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["users", page, limit, search],
-    queryFn: () => usersService.getUsers(page, limit, search || undefined),
+    queryKey: ["users", page, limit, debouncedSearch],
+    queryFn: () => usersService.getUsers(page, limit, debouncedSearch || undefined),
   });
 
   // Debug logging to see what we're getting
@@ -67,10 +76,7 @@ export default function UsersPage() {
                   placeholder="Search users..."
                   className="pl-8 w-64"
                   value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
             </div>
