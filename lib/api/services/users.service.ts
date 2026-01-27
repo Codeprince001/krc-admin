@@ -12,12 +12,12 @@ export const usersService = {
   async getUsers(
     page = 1,
     limit = 10,
-    role?: string
+    search?: string
   ): Promise<UsersResponse> {
     const params = new URLSearchParams();
     params.append("page", page.toString());
     params.append("limit", limit.toString());
-    if (role) params.append("role", role);
+    if (search) params.append("search", search);
     const url = `${endpoints.users.list}?${params.toString()}`;
     return apiClient.get<UsersResponse>(url);
   },
