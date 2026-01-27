@@ -3,7 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useActivityLog } from "@/lib/hooks/useAdmin";
 import { formatRelativeTime } from "@/lib/utils/format";
-import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Activity } from "lucide-react";
 
 export function RecentActivity() {
   const { data, isLoading } = useActivityLog(1, 10);
@@ -12,7 +13,10 @@ export function RecentActivity() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5" />
+            Recent Activity
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
@@ -23,12 +27,30 @@ export function RecentActivity() {
     );
   }
 
-  const activities = data?.data || [];
+  const activities = data?.activities || [];
+
+  const getActivityColor = (type: string) => {
+    switch (type) {
+      case "USER_REGISTERED":
+        return "bg-blue-500";
+      case "ORDER_CREATED":
+        return "bg-green-500";
+      case "PRAYER_REQUEST":
+        return "bg-purple-500";
+      case "TESTIMONY_SUBMITTED":
+        return "bg-orange-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Activity className="h-5 w-5" />
+          Recent Activity
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -37,22 +59,19 @@ export function RecentActivity() {
               No recent activity
             </p>
           ) : (
-            activities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4">
+            activities.map((activity: any, index: number) => (
+              <div key={index} className="flex items-start gap-3">
+                <div className={`w-2 h-2 mt-2 rounded-full ${getActivityColor(activity.type)}`} />
                 <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">
-                    {activity.user
-                      ? `${activity.user.firstName || ""} ${activity.user.lastName || ""}`.trim() ||
-                        activity.user.email
-                      : "System"}{" "}
-                    {activity.action}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {activity.resource} {activity.resourceId && `#${activity.resourceId}`}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatRelativeTime(activity.createdAt)}
-                  </p>
+                  <p className="text-sm font-medium">{activity.description}</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      {activity.type.replace(/_/g, " ")}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground">
+                      {formatRelativeTime(activity.timestamp)}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))
