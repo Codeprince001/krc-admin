@@ -1,12 +1,68 @@
 export interface DashboardStats {
-  totalUsers: number;
-  activeUsers: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
-  totalContent: number;
-  pendingPrayerRequests: number;
-  upcomingEvents: number;
-  recentActivity: ActivityLog[];
+  users: {
+    total: number;
+    active: number;
+    byRole: Array<{ role: string; _count: number }>;
+    recent: Array<{
+      id: string;
+      firstName: string | null;
+      lastName: string | null;
+      email: string;
+      role: string;
+      createdAt: string;
+    }>;
+  };
+  orders: {
+    total: number;
+    pending: number;
+    revenue: number;
+    recent: Array<{
+      id: string;
+      orderNumber: string;
+      total: number;
+      status: string;
+      createdAt: string;
+      user: {
+        firstName: string | null;
+        lastName: string | null;
+        email: string;
+      };
+    }>;
+  };
+  books: {
+    total: number;
+    lowStock: number;
+  };
+  content: {
+    sermons: number;
+    devotionals: number;
+    announcements: number;
+    upcomingEvents: number;
+  };
+  community: {
+    prayerRequests: {
+      total: number;
+      pending: number;
+    };
+    testimonies: {
+      total: number;
+      pending: number;
+    };
+    groups: number;
+  };
+  counseling: {
+    scheduled: number;
+    completed: number;
+  };
+  giving: {
+    total: number;
+    count: number;
+    monthly: number;
+  };
+  payments: {
+    successful: number;
+    revenue: number;
+  };
 }
 
 export interface UserAnalytics {
