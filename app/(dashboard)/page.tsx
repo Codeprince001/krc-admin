@@ -159,7 +159,7 @@ export default function DashboardPage() {
         <RevenueChart
           data={{
             orders: stats.orders,
-            giving: stats.giving,
+            giving: { revenue: stats.giving.total, monthly: stats.giving.monthly },
             payments: stats.payments,
           }}
         />

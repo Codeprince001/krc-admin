@@ -27,7 +27,7 @@ export function RecentActivity() {
     );
   }
 
-  const activities = data?.activities || [];
+  const activities = data?.data || [];
 
   const getActivityColor = (type: string) => {
     switch (type) {
