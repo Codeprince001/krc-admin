@@ -22,9 +22,9 @@ export function Header() {
     : "U";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white shadow-sm px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-white/80 backdrop-blur-lg shadow-lg px-6">
       <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold text-foreground">
+        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
           {process.env.NEXT_PUBLIC_APP_NAME || "Admin Dashboard"}
         </h1>
       </div>
@@ -32,38 +32,38 @@ export function Header() {
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="relative h-10 w-10 rounded-full p-0">
-              <Avatar className="h-10 w-10 bg-primary text-primary-foreground">
-                <AvatarFallback >{initials}</AvatarFallback>
+            <Button variant="secondary" className="relative h-11 w-11 rounded-full p-0 hover:shadow-lg transition-shadow duration-300">
+              <Avatar className="h-11 w-11 gradient-primary text-white shadow-lg ring-4 ring-blue-100">
+                <AvatarFallback className="gradient-primary text-white font-bold">{initials}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 bg-white" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
+          <DropdownMenuContent className="w-64 bg-white/95 backdrop-blur-lg shadow-2xl border-2 border-blue-100 rounded-2xl p-2" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal p-3">
+              <div className="flex flex-col space-y-2">
+                <p className="text-base font-bold text-gray-900">
                   {user?.firstName && user?.lastName
                     ? `${user.firstName} ${user.lastName}`
                     : user?.email}
                 </p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {user?.email}
                 </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
+            <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 h-0.5" />
+            <DropdownMenuItem className="rounded-lg p-3 cursor-pointer hover:bg-blue-50 transition-colors">
+              <User className="mr-3 h-5 w-5 text-blue-600" />
+              <span className="font-medium">Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+            <DropdownMenuItem className="rounded-lg p-3 cursor-pointer hover:bg-purple-50 transition-colors">
+              <Settings className="mr-3 h-5 w-5 text-purple-600" />
+              <span className="font-medium">Settings</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => logout()}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
+            <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 h-0.5" />
+            <DropdownMenuItem onClick={() => logout()} className="rounded-lg p-3 cursor-pointer hover:bg-red-50 transition-colors text-red-600">
+              <LogOut className="mr-3 h-5 w-5" />
+              <span className="font-medium">Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
