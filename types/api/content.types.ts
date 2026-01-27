@@ -93,6 +93,9 @@ export interface Sermon {
   audioUrl?: string;
   thumbnail?: string;
   duration?: number;
+  youtubeId?: string;
+  facebookVideoId?: string;
+  isLive: boolean;
   viewCount: number;
   isFeatured: boolean;
   createdAt: string;
@@ -109,6 +112,9 @@ export interface CreateSermonRequest {
   audioUrl?: string;
   thumbnail?: string;
   duration?: number;
+  youtubeId?: string;
+  facebookVideoId?: string;
+  isLive?: boolean;
   isFeatured?: boolean;
 }
 
