@@ -148,29 +148,31 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen border-r bg-card transition-all duration-300 shadow-sm",
+        "fixed left-0 top-0 z-40 h-screen border-r border-border/50 bg-white/80 backdrop-blur-lg transition-all duration-300 shadow-2xl",
         sidebarOpen ? "w-64" : "w-16"
       )}
     >
       <div className="flex h-full flex-col">
         {/* Header */}
-        <div className="relative flex h-20 items-center justify-between border-b border-border bg-card px-4">
+        <div className="relative flex h-20 items-center justify-between border-b border-border/50 px-4 bg-gradient-to-r from-blue-50/50 via-purple-50/50 to-pink-50/50">
           {sidebarOpen && (
             <div className="relative z-10">
-              <h2 className="text-xl font-bold text-foreground">Church Admin</h2>
-              <p className="text-xs text-muted-foreground">Management Portal</p>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Church Admin
+              </h2>
+              <p className="text-xs text-muted-foreground font-medium">Management Portal</p>
             </div>
           )}
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="relative z-10 ml-auto"
+            className="relative z-10 ml-auto hover:bg-blue-100 rounded-xl transition-all duration-300"
           >
             {sidebarOpen ? (
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 text-blue-600" />
             ) : (
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 text-blue-600" />
             )}
           </Button>
         </div>
@@ -193,16 +195,16 @@ export function Sidebar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "group relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                        "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-300",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                          ? "gradient-primary text-white shadow-lg shadow-blue-500/30 scale-105"
+                          : "text-muted-foreground hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-foreground hover:shadow-md hover:scale-105"
                       )}
                       title={!sidebarOpen ? item.title : undefined}
                     >
                       <Icon className={cn(
-                        "h-5 w-5 shrink-0 transition-colors",
-                        isActive ? "text-primary-foreground" : "group-hover:text-foreground"
+                        "h-5 w-5 shrink-0 transition-all duration-300",
+                        isActive ? "text-white" : "group-hover:text-blue-600 group-hover:scale-110"
                       )} />
                       
                       {sidebarOpen && (
@@ -210,10 +212,10 @@ export function Sidebar() {
                           <span className="flex-1">{item.title}</span>
                           {item.badge && (
                             <span className={cn(
-                              "rounded-full px-2 py-0.5 text-xs font-semibold",
+                              "rounded-full px-2.5 py-1 text-xs font-bold shadow-sm",
                               isActive 
-                                ? "bg-primary-foreground/20 text-primary-foreground"
-                                : "bg-muted text-muted-foreground"
+                                ? "bg-white/20 text-white"
+                                : "bg-blue-100 text-blue-700"
                             )}>
                               {item.badge}
                             </span>

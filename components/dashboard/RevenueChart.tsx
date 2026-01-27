@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { formatCurrency } from "@/lib/utils/format";
+import { DollarSign } from "lucide-react";
 
 interface RevenueChartProps {
   data: {
@@ -40,14 +41,25 @@ export function RevenueChart({ data }: RevenueChartProps) {
   ];
 
   return (
-    <Card>
+    <Card className="border-emerald-200/50 bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/30">
       <CardHeader>
-        <CardTitle>Revenue Overview</CardTitle>
+        <CardTitle className="flex items-center gap-3 text-xl">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
+            <DollarSign className="h-5 w-5 text-white" />
+          </div>
+          Revenue Overview
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <defs>
+              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(152 76% 46%)" stopOpacity={1} />
+                <stop offset="100%" stopColor="hsl(142 71% 45%)" stopOpacity={0.8} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted/30" />
             <XAxis 
               dataKey="name" 
               className="text-xs"
@@ -63,10 +75,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
               contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
               }}
             />
-            <Bar dataKey="value" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="value" fill="url(#colorRevenue)" radius={[12, 12, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
