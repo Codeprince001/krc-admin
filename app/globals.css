@@ -61,6 +61,13 @@
     /* Gradient colors */
     --gradient-from: 221 83% 53%;
     --gradient-to: 217 91% 60%;
+    
+    /* Chart colors */
+    --chart-1: 221 83% 53%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 199 89% 48%;
+    --chart-5: 271 81% 56%;
   }
 
   .dark {
@@ -102,6 +109,13 @@
     
     --gradient-from: 217 91% 60%;
     --gradient-to: 221 83% 53%;
+    
+    /* Chart colors */
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 0 72% 51%;
+    --chart-5: 199 89% 48%;
   }
 }
 
