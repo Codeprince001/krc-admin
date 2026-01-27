@@ -182,10 +182,14 @@ class ApiClient {
         
         // Handle sermons response structure: { sermons: [...], pagination: {...} }
         if (unwrappedData && typeof unwrappedData === 'object' && 'sermons' in unwrappedData && 'pagination' in unwrappedData) {
-          return {
+          const transformed = {
             data: unwrappedData.sermons,
             meta: unwrappedData.pagination,
-          } as T;
+          };
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[API Transform] Sermons:', { sermonsCount: unwrappedData.sermons.length, pagination: unwrappedData.pagination });
+          }
+          return transformed as T;
         }
 
         // Handle prayer requests response structure: { prayerRequests: [...], pagination: {...} }
