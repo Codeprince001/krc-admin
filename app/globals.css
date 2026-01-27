@@ -2,53 +2,53 @@
 
 @layer base {
   :root {
-    /* Enterprise-standard color palette - Professional Blue/Indigo */
-    --background: 0 0% 100%;
+    /* Modern gradient background */
+    --background: 220 25% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     
-    /* Enterprise Primary - Professional Blue */
-    --primary: 221 83% 53%;
+    /* Vibrant Primary - Electric Blue/Indigo */
+    --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
     
-    /* Secondary - Neutral Gray */
-    --secondary: 210 20% 98%;
-    --secondary-foreground: 222 47% 11%;
+    /* Secondary - Soft Purple */
+    --secondary: 251 91% 95%;
+    --secondary-foreground: 239 84% 67%;
     
     /* Muted backgrounds */
-    --muted: 210 20% 96%;
+    --muted: 220 25% 96%;
     --muted-foreground: 215 16% 47%;
     
-    /* Accent colors - darker for better contrast */
-    --accent: 210 20% 94%;
-    --accent-foreground: 222 47% 11%;
+    /* Accent colors */
+    --accent: 239 84% 67%;
+    --accent-foreground: 0 0% 100%;
     
-    /* Success color - Green */
-    --success: 142 76% 36%;
+    /* Success color - Emerald Green */
+    --success: 152 76% 46%;
     --success-foreground: 0 0% 100%;
     
     /* Warning color - Amber */
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
     
-    /* Destructive/error color - Red */
+    /* Destructive/error color - Rose */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    /* Info color - Blue */
-    --info: 199 89% 48%;
+    /* Info color - Cyan */
+    --info: 189 94% 43%;
     --info-foreground: 0 0% 100%;
     
     /* Borders and inputs */
-    --border: 214 32% 80%;
-    --input: 214 32% 80%;
-    --ring: 221 83% 53%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
     
     /* Border radius */
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     
     /* Enhanced shadows for depth */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -58,16 +58,17 @@
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
     
-    /* Gradient colors */
-    --gradient-from: 221 83% 53%;
+    /* Gradient colors for modern effects */
+    --gradient-from: 239 84% 67%;
+    --gradient-via: 280 80% 70%;
     --gradient-to: 217 91% 60%;
     
-    /* Chart colors */
-    --chart-1: 221 83% 53%;
-    --chart-2: 142 76% 36%;
+    /* Chart colors - vibrant palette */
+    --chart-1: 239 84% 67%;
+    --chart-2: 152 76% 46%;
     --chart-3: 38 92% 50%;
-    --chart-4: 199 89% 48%;
-    --chart-5: 271 81% 56%;
+    --chart-4: 189 94% 43%;
+    --chart-5: 280 80% 70%;
   }
 
   .dark {
@@ -125,7 +126,8 @@
   }
   
   body {
-    background-color: hsl(var(--background));
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(220 25% 96%) 100%);
+    background-attachment: fixed;
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
@@ -157,6 +159,102 @@
   
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+@layer utilities {
+  /* Modern gradient backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--gradient-from)) 0%, hsl(var(--gradient-to)) 100%);
+  }
+  
+  .gradient-success {
+    background: linear-gradient(135deg, hsl(152 76% 46%) 0%, hsl(142 71% 45%) 100%);
+  }
+  
+  .gradient-warning {
+    background: linear-gradient(135deg, hsl(45 93% 47%) 0%, hsl(38 92% 50%) 100%);
+  }
+  
+  .gradient-info {
+    background: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(189 94% 43%) 100%);
+  }
+  
+  .gradient-purple {
+    background: linear-gradient(135deg, hsl(280 80% 70%) 0%, hsl(251 91% 95%) 100%);
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  
+  /* Animated gradient */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Hover lift effect */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Fade in animations */
+  .animate-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Stagger animation for lists */
+  .stagger-animation > * {
+    animation: fadeInStagger 0.5s ease-out backwards;
+  }
+  
+  .stagger-animation > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger-animation > *:nth-child(2) { animation-delay: 0.1s; }
+  .stagger-animation > *:nth-child(3) { animation-delay: 0.15s; }
+  .stagger-animation > *:nth-child(4) { animation-delay: 0.2s; }
+  .stagger-animation > *:nth-child(5) { animation-delay: 0.25s; }
+  .stagger-animation > *:nth-child(6) { animation-delay: 0.3s; }
+  
+  @keyframes fadeInStagger {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
