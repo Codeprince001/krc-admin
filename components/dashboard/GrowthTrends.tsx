@@ -47,21 +47,23 @@ export function GrowthTrends({ userGrowth, revenueGrowth }: GrowthTrendsProps) {
     : generateSampleData("revenue");
 
   return (
-    <Card>
+    <Card className="border-purple-200/50 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-3 text-xl">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg">
+            <TrendingUp className="h-5 w-5 text-white" />
+          </div>
           Growth Trends
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="users">
+          <TabsList className="grid w-full grid-cols-2 p-1 bg-white/80 backdrop-blur-sm border-2 border-purple-200/50 rounded-xl">
+            <TabsTrigger value="users" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white">
               <UsersIcon className="h-4 w-4 mr-2" />
               User Growth
             </TabsTrigger>
-            <TabsTrigger value="revenue">
+            <TabsTrigger value="revenue" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white">
               <DollarSign className="h-4 w-4 mr-2" />
               Revenue Trend
             </TabsTrigger>
