@@ -215,6 +215,34 @@ export function SermonFormDialog({
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Live Streaming</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="youtubeId">YouTube Video ID</Label>
+                <Input
+                  id="youtubeId"
+                  {...register("youtubeId")}
+                  placeholder="dQw4w9WgXcQ"
+                />
+                <p className="text-xs text-muted-foreground">
+                  For youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong>
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="facebookVideoId">Facebook Video ID</Label>
+                <Input
+                  id="facebookVideoId"
+                  {...register("facebookVideoId")}
+                  placeholder="123456789"
+                />
+                <p className="text-xs text-muted-foreground">
+                  From Facebook live stream URL
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="duration">Duration (seconds)</Label>
@@ -239,16 +267,28 @@ export function SermonFormDialog({
 
           <div className="space-y-2">
             <Label>Options</Label>
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <input
-                type="checkbox"
-                {...register("isFeatured")}
-                className="h-4 w-4 rounded border-input cursor-pointer accent-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              />
-              <span className="text-sm font-medium group-hover:text-foreground transition-colors">
-                Featured Sermon
-              </span>
-            </label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  {...register("isLive")}
+                  className="h-4 w-4 rounded border-input cursor-pointer accent-red-600 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                />
+                <span className="text-sm font-medium group-hover:text-foreground transition-colors">
+                  🔴 Currently Live
+                </span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  {...register("isFeatured")}
+                  className="h-4 w-4 rounded border-input cursor-pointer accent-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                />
+                <span className="text-sm font-medium group-hover:text-foreground transition-colors">
+                  Featured Sermon
+                </span>
+              </label>
+            </div>
           </div>
 
           <DialogFooter>

@@ -23,6 +23,9 @@ export const sermonSchema = z.object({
   audioUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   thumbnail: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   duration: z.number().int().min(0).optional(),
+  youtubeId: z.string().optional(),
+  facebookVideoId: z.string().optional(),
+  isLive: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
 });
 

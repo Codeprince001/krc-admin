@@ -84,12 +84,31 @@ export function SermonsTable({
                     />
                   )}
                   <div>
-                    <div className="font-semibold">{sermon.title}</div>
-                    {sermon.isFeatured && (
-                      <Badge variant="outline" className="text-xs mt-1">
-                        Featured
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <div className="font-semibold">{sermon.title}</div>
+                      {sermon.isLive && (
+                        <Badge variant="destructive" className="text-xs animate-pulse">
+                          🔴 LIVE
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      {sermon.isFeatured && (
+                        <Badge variant="outline" className="text-xs">
+                          Featured
+                        </Badge>
+                      )}
+                      {sermon.youtubeId && (
+                        <Badge variant="secondary" className="text-xs">
+                          YouTube
+                        </Badge>
+                      )}
+                      {sermon.facebookVideoId && (
+                        <Badge variant="secondary" className="text-xs">
+                          Facebook
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </TableCell>
