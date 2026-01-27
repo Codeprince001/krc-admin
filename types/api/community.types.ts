@@ -254,3 +254,72 @@ export interface UpdateReportStatusRequest {
   notes?: string;
 }
 
+// Counseling Sessions
+export type CounselingStatus = "SCHEDULED" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
+export type CounselingCategory = 
+  | "MARRIAGE" 
+  | "HEALING" 
+  | "DELIVERANCE" 
+  | "FINANCIAL" 
+  | "CAREER" 
+  | "FAMILY" 
+  | "SPIRITUAL_GROWTH" 
+  | "YOUTH" 
+  | "OTHER";
+
+export interface CounselingSession {
+  id: string;
+  userId: string;
+  user?: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    phoneNumber: string | null;
+  };
+  slotId: string;
+  slot: {
+    id: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+  };
+  category: CounselingCategory;
+  description: string;
+  phoneNumber: string;
+  status: CounselingStatus;
+  counselorNotes?: string | null;
+  counselorId?: string | null;
+  reminder24hSent: boolean;
+  reminder2hSent: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateCounselingSessionRequest {
+  status?: CounselingStatus;
+  counselorNotes?: string;
+  followUpNotes?: string;
+}
+
+export interface CounselingSessionsResponse {
+  sessions: CounselingSession[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface CounselingStats {
+  totalSessions: number;
+  scheduledSessions: number;
+  completedSessions: number;
+  cancelledSessions: number;
+  sessionsByCategory: Array<{
+    category: CounselingCategory;
+    _count: number;
+  }>;
+}
+

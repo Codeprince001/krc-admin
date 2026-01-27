@@ -76,6 +76,7 @@ const navGroups: NavGroup[] = [
     items: [
       { title: "Prayer Requests", href: "/community/prayer-requests", icon: Heart },
       { title: "Testimonies", href: "/community/testimonies", icon: MessageSquare },
+      { title: "Counseling Sessions", href: "/community/counseling", icon: Calendar },
       { title: "Groups", href: "/community/groups", icon: Users },
       { title: "Post Moderation", href: "/community/groups/moderation", icon: ShieldCheck },
     ],
