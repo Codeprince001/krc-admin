@@ -66,15 +66,15 @@ export function StatsCard({
       className
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">
+        <CardTitle className="text-xs sm:text-sm font-semibold text-muted-foreground tracking-wide uppercase">
           {title}
         </CardTitle>
-        <div className={cn("p-2.5 rounded-xl shadow-sm", styles.icon)}>
-          <Icon className="h-5 w-5" />
+        <div className={cn("p-2 sm:p-2.5 rounded-xl shadow-sm", styles.icon)}>
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
       </CardHeader>
       <CardContent>
-        <div className={cn("text-3xl font-bold tracking-tight", styles.value)}>
+        <div className={cn("text-2xl sm:text-3xl font-bold tracking-tight", styles.value)}>
           {value}
         </div>
         {description && (

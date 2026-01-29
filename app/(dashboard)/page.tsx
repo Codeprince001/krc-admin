@@ -54,15 +54,15 @@ export default function DashboardPage() {
     stats.content.announcements;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       {/* Header with gradient */}
       <div className="relative">
         <div className="absolute inset-0 gradient-primary opacity-10 rounded-3xl blur-3xl -z-10"></div>
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Dashboard
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
+          <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base lg:text-lg">
             Overview of your church management system
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function DashboardPage() {
       <PendingAlerts stats={stats} />
 
       {/* Key Metrics */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Users"
           value={formatNumber(stats.users.total)}
@@ -104,7 +104,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Secondary Metrics */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Pending Orders"
           value={formatNumber(stats.orders.pending)}
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Counseling & Testimonies */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Scheduled Counseling"
           value={formatNumber(stats.counseling.scheduled)}
@@ -174,7 +174,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts and Visualizations */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
         <div className="hover-lift rounded-2xl overflow-hidden">
           <RevenueChart
             data={{
@@ -189,7 +189,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
         <div className="hover-lift rounded-2xl overflow-hidden">
           <ContentOverview data={stats.content} />
         </div>
@@ -199,7 +199,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
         <div className="hover-lift rounded-2xl overflow-hidden">
           <RecentOrders orders={stats.orders.recent} />
         </div>
@@ -209,7 +209,7 @@ export default function DashboardPage() {
       </div>
 
       {/* System Health & Quick Actions */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
         <div className="hover-lift rounded-2xl overflow-hidden">
           <SystemHealth />
         </div>
