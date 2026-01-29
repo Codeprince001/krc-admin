@@ -164,16 +164,17 @@ export default function CreateTestimonyPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Create New Testimony"
         description="Create and publish a testimony directly from the admin panel"
       />
 
-      <div className="flex gap-2">
+      <div>
         <Button
           variant="outline"
           onClick={() => router.push("/community/testimonies")}
+          className="w-full sm:w-auto"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Testimonies

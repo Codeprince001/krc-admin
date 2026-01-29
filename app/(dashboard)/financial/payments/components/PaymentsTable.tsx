@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Payment, PaymentStatus } from "@/types/api/payments.types";
 
 interface PaymentsTableProps {
@@ -46,19 +47,20 @@ export function PaymentsTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Reference</TableHead>
-          <TableHead>Customer</TableHead>
-          <TableHead>Purpose</TableHead>
-          <TableHead>Amount</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
+    <ResponsiveTableWrapper>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="min-w-[150px]">Reference</TableHead>
+            <TableHead className="min-w-[180px]">Customer</TableHead>
+            <TableHead className="min-w-[120px]">Purpose</TableHead>
+            <TableHead className="min-w-[100px]">Amount</TableHead>
+            <TableHead className="min-w-[120px]">Method</TableHead>
+            <TableHead className="min-w-[100px]">Status</TableHead>
+            <TableHead className="min-w-[120px]">Date</TableHead>
+            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
       <TableBody>
         {payments.length === 0 ? (
           <TableRow>
@@ -107,8 +109,9 @@ export function PaymentsTable({
             </TableRow>
           ))
         )}
-      </TableBody>
-    </Table>
+        </TableBody>
+      </Table>
+    </ResponsiveTableWrapper>
   );
 }
 

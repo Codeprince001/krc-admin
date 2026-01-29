@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin authentication pages from being indexed
+Disallow: /login
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://your-church-admin.com/sitemap.xml

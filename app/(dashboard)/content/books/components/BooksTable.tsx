@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Eye } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Book } from "@/types";
 
 interface BooksTableProps {
@@ -67,17 +68,17 @@ export function BooksTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Title</TableHead>
-            <TableHead>Author</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-center">Stock</TableHead>
-            <TableHead className="text-center">Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Title</TableHead>
+            <TableHead className="min-w-[150px]">Author</TableHead>
+            <TableHead className="min-w-[120px]">Category</TableHead>
+            <TableHead className="text-right min-w-[100px]">Price</TableHead>
+            <TableHead className="text-center min-w-[80px]">Stock</TableHead>
+            <TableHead className="text-center min-w-[100px]">Status</TableHead>
+            <TableHead className="text-right min-w-[120px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -168,7 +169,7 @@ export function BooksTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

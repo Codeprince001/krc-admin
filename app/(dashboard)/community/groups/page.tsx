@@ -170,13 +170,13 @@ export default function GroupsPage() {
   const meta = data?.meta;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Groups</h1>
-          <p className="text-muted-foreground">Manage church groups</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Groups</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage church groups</p>
         </div>
-        <Button onClick={handleAdd}>
+        <Button onClick={handleAdd} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Add Group
         </Button>
@@ -184,21 +184,19 @@ export default function GroupsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>All Groups</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search groups..."
-                  className="pl-8 w-64"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                />
-              </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search groups..."
+                className="pl-8 w-full"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
             </div>
           </div>
         </CardHeader>
@@ -209,17 +207,19 @@ export default function GroupsPage() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Members</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-white">
+                <div className="inline-block min-w-full align-middle">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[200px]">Name</TableHead>
+                        <TableHead className="min-w-[120px]">Category</TableHead>
+                        <TableHead className="min-w-[100px]">Members</TableHead>
+                        <TableHead className="min-w-[100px]">Status</TableHead>
+                        <TableHead className="min-w-[120px]">Created</TableHead>
+                        <TableHead className="text-right min-w-[120px]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
                 <TableBody>
                   {groups.length === 0 ? (
                     <TableRow>
@@ -274,18 +274,21 @@ export default function GroupsPage() {
                     ))
                   )}
                 </TableBody>
-              </Table>
+                  </Table>
+                </div>
+              </div>
               {meta && meta.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t">
                   <p className="text-sm text-muted-foreground">
                     Page {meta.page} of {meta.totalPages}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
+                      className="flex-1 sm:flex-none"
                     >
                       Previous
                     </Button>
@@ -296,6 +299,7 @@ export default function GroupsPage() {
                         setPage((p) => Math.min(meta.totalPages, p + 1))
                       }
                       disabled={page === meta.totalPages}
+                      className="flex-1 sm:flex-none"
                     >
                       Next
                     </Button>

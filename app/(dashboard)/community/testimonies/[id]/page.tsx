@@ -247,7 +247,7 @@ export default function TestimonyDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title={isEditing ? "Edit Testimony" : "Testimony Details"}
         description={
@@ -257,8 +257,8 @@ export default function TestimonyDetailPage() {
         }
       />
 
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => router.back()}>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>

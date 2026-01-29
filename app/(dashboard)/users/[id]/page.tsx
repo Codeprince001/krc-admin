@@ -99,23 +99,21 @@ export default function UserDetailPage({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <Button variant="ghost" asChild className="mb-4">
-            <Link href="/users">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Users
-            </Link>
-          </Button>
-          <h1 className="text-3xl font-bold tracking-tight">User Details</h1>
-          <p className="text-muted-foreground">
-            View and manage user information
-          </p>
-        </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div>
+        <Button variant="ghost" asChild className="mb-4">
+          <Link href="/users">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Users
+          </Link>
+        </Button>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">User Details</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          View and manage user information
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>User Information</CardTitle>

@@ -86,12 +86,12 @@ export default function GamesPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Bible Games Management"
         description="Manage quiz questions, verse scrambles, character games, and achievements"
         actions={
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/games/analytics">
               <BarChart3 className="mr-2 h-4 w-4" />
               View Analytics
@@ -101,7 +101,7 @@ export default function GamesPage() {
       />
 
       {/* Overview Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Sessions"
           value={stats?.totalSessions || 0}
@@ -128,7 +128,7 @@ export default function GamesPage() {
       </div>
 
       {/* Game Management Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {gameCards.map((card) => {
           const Icon = card.icon;
           return (

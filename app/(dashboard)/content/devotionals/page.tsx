@@ -63,12 +63,12 @@ export default function DevotionalsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Devotionals"
         description="Manage daily devotionals to inspire your community"
         actions={
-          <Button onClick={handleAdd}>
+          <Button onClick={handleAdd} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Devotional
           </Button>
@@ -77,7 +77,7 @@ export default function DevotionalsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>All Devotionals</CardTitle>
             <DevotionalsFilters
               search={search}

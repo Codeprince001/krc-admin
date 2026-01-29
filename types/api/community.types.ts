@@ -322,4 +322,3 @@ export interface CounselingStats {
     _count: number;
   }>;
 }
-

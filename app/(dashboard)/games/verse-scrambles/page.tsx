@@ -82,14 +82,14 @@ export default function VerseScramblesPage() {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader 
         title="Verse Scrambles" 
         description="Manage scrambled Bible verses for memorization"
         actions={
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4" />Export</Button>
-            <Button onClick={() => { setSelectedVerse(null); setDialogOpen(true); }}><Plus className="mr-2 h-4 w-4" />Add Verse</Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto"><Download className="mr-2 h-4 w-4" />Export</Button>
+            <Button onClick={() => { setSelectedVerse(null); setDialogOpen(true); }} className="w-full sm:w-auto"><Plus className="mr-2 h-4 w-4" />Add Verse</Button>
           </div>
         }
       />

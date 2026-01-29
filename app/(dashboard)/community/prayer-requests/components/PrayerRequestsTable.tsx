@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Trash2, Heart, User } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { PrayerRequest, PrayerRequestStatus } from "@/types";
 import { PRAYER_REQUEST_STATUSES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -69,16 +70,16 @@ export function PrayerRequestsTable({
   };
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Request</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Prayers</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Request</TableHead>
+            <TableHead className="min-w-[150px]">User</TableHead>
+            <TableHead className="min-w-[150px]">Status</TableHead>
+            <TableHead className="min-w-[100px]">Prayers</TableHead>
+            <TableHead className="min-w-[120px]">Created</TableHead>
+            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -150,7 +151,7 @@ export function PrayerRequestsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

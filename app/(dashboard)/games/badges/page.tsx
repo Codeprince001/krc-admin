@@ -55,14 +55,14 @@ export default function BadgesPage() {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader 
         title="Badges & Achievements" 
         description="Manage badges that users can earn"
-        actions={<Button onClick={() => { setSelectedBadge(null); setDialogOpen(true); }}><Plus className="mr-2 h-4 w-4" />Create Badge</Button>}
+        actions={<Button onClick={() => { setSelectedBadge(null); setDialogOpen(true); }} className="w-full sm:w-auto"><Plus className="mr-2 h-4 w-4" />Create Badge</Button>}
       />
 
-      <div className="flex space-x-2">
+      <div className="flex flex-wrap gap-2">
         <Button variant={!filter ? 'default' : 'outline'} size="sm" onClick={() => setFilter('')}>All</Button>
         <Button variant={filter === BadgeCategory.STREAK ? 'default' : 'outline'} size="sm" onClick={() => setFilter(BadgeCategory.STREAK)}>Streak</Button>
         <Button variant={filter === BadgeCategory.SCORE ? 'default' : 'outline'} size="sm" onClick={() => setFilter(BadgeCategory.SCORE)}>Score</Button>

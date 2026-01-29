@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Eye, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Giving, PaymentStatus } from "@/types/api/giving.types";
 
 interface GivingTableProps {
@@ -50,18 +51,19 @@ export function GivingTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Donor</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Amount</TableHead>
-          <TableHead>Payment Method</TableHead>
-          <TableHead>Payment Status</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
+    <ResponsiveTableWrapper>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="min-w-[150px]">Donor</TableHead>
+            <TableHead className="min-w-[120px]">Category</TableHead>
+            <TableHead className="min-w-[100px]">Amount</TableHead>
+            <TableHead className="min-w-[140px]">Payment Method</TableHead>
+            <TableHead className="min-w-[140px]">Payment Status</TableHead>
+            <TableHead className="min-w-[120px]">Date</TableHead>
+            <TableHead className="text-right min-w-[120px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
       <TableBody>
         {giving.length === 0 ? (
           <TableRow>
@@ -120,8 +122,9 @@ export function GivingTable({
             </TableRow>
           ))
         )}
-      </TableBody>
-    </Table>
+        </TableBody>
+      </Table>
+    </ResponsiveTableWrapper>
   );
 }
 

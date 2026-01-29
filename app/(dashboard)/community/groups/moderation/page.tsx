@@ -300,20 +300,18 @@ export default function GroupModerationPage() {
   const isLoading = activeTab === "queue" ? loadingQueue : loadingReported;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Post Moderation
-          </h1>
-          <p className="text-muted-foreground">
-            Review and approve or reject group posts
-          </p>
-        </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          Post Moderation
+        </h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Review and approve or reject group posts
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b">
+      <div className="flex gap-2 border-b overflow-x-auto">
         <button
           onClick={() => {
             setActiveTab("queue");
