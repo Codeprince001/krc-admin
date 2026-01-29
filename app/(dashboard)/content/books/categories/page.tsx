@@ -61,12 +61,12 @@ export default function BookCategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Book Categories"
         description="Organize your bookstore with categories to help users find books easily"
         actions={
-          <Button onClick={handleAdd}>
+          <Button onClick={handleAdd} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Category
           </Button>

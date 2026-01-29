@@ -40,7 +40,7 @@ export default function PrayerRequestsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Prayer Requests"
         description="Manage prayer requests from your community members"
@@ -48,7 +48,7 @@ export default function PrayerRequestsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>All Prayer Requests</CardTitle>
             <PrayerRequestsFilters
               search={search}

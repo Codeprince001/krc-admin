@@ -46,17 +46,17 @@ export default function GivingPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Giving</h1>
-        <p className="text-muted-foreground">Manage giving records</p>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Giving</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Manage giving records</p>
       </div>
 
       <GivingStats stats={stats} isLoading={isLoading} />
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>All Giving Records</CardTitle>
             <GivingFilters
               search={search}
@@ -81,16 +81,17 @@ export default function GivingPage() {
             isDeleting={isDeleting}
           />
           {meta && meta.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t">
               <p className="text-sm text-muted-foreground">
                 Page {meta.page} of {meta.totalPages} ({meta.total} total)
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
+                  className="flex-1 sm:flex-none"
                 >
                   Previous
                 </Button>
@@ -99,6 +100,7 @@ export default function GivingPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
                   disabled={page === meta.totalPages}
+                  className="flex-1 sm:flex-none"
                 >
                   Next
                 </Button>

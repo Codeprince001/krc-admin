@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X, Trash2, User, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Testimony, TestimonyStatus } from "@/types";
 import { TESTIMONY_STATUSES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -73,15 +74,15 @@ export function TestimoniesTable({
   };
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Testimony</TableHead>
-            <TableHead>Author</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Testimony</TableHead>
+            <TableHead className="min-w-[150px]">Author</TableHead>
+            <TableHead className="min-w-[120px]">Status</TableHead>
+            <TableHead className="min-w-[120px]">Created</TableHead>
+            <TableHead className="text-right min-w-[150px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -180,7 +181,7 @@ export function TestimoniesTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

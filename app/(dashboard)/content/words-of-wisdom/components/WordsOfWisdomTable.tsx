@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Lightbulb, Share2 } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { WordOfWisdom } from "@/types";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -46,16 +47,16 @@ export function WordsOfWisdomTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Title</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Week Of</TableHead>
-            <TableHead>Scripture</TableHead>
-            <TableHead>Shares</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Title</TableHead>
+            <TableHead className="min-w-[120px]">Category</TableHead>
+            <TableHead className="min-w-[120px]">Week Of</TableHead>
+            <TableHead className="min-w-[150px]">Scripture</TableHead>
+            <TableHead className="min-w-[80px]">Shares</TableHead>
+            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -128,7 +129,7 @@ export function WordsOfWisdomTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

@@ -80,14 +80,14 @@ export default function CharacterGuessPage() {
   if (isLoading) return <LoadingState />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader 
         title="Character Guess Games" 
         description="Manage biblical character guessing challenges"
         actions={
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4" />Export</Button>
-            <Button onClick={() => { setSelectedCharacter(null); setDialogOpen(true); }}><Plus className="mr-2 h-4 w-4" />Add Character</Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto"><Download className="mr-2 h-4 w-4" />Export</Button>
+            <Button onClick={() => { setSelectedCharacter(null); setDialogOpen(true); }} className="w-full sm:w-auto"><Plus className="mr-2 h-4 w-4" />Add Character</Button>
           </div>
         }
       />

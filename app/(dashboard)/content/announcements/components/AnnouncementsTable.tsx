@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Pin, Megaphone } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Announcement } from "@/types";
 import { ANNOUNCEMENT_CATEGORIES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -51,16 +52,16 @@ export function AnnouncementsTable({
   };
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Title</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Pinned</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Title</TableHead>
+            <TableHead className="min-w-[120px]">Category</TableHead>
+            <TableHead className="min-w-[100px]">Status</TableHead>
+            <TableHead className="min-w-[100px]">Pinned</TableHead>
+            <TableHead className="min-w-[120px]">Created</TableHead>
+            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -124,7 +125,7 @@ export function AnnouncementsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Trash2, Calendar, User, Phone, FileText } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { CounselingSession, CounselingStatus } from "@/types";
 import { COUNSELING_STATUSES, COUNSELING_CATEGORIES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -91,17 +92,17 @@ export function CounselingTable({
 
   return (
     <>
-      <div className="rounded-md border">
+      <ResponsiveTableWrapper>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Scheduled Date & Time</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="min-w-[180px]">User</TableHead>
+              <TableHead className="min-w-[140px]">Category</TableHead>
+              <TableHead className="min-w-[180px]">Scheduled Date & Time</TableHead>
+              <TableHead className="min-w-[120px]">Phone</TableHead>
+              <TableHead className="min-w-[150px]">Status</TableHead>
+              <TableHead className="min-w-[120px]">Created</TableHead>
+              <TableHead className="text-right min-w-[150px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -199,7 +200,7 @@ export function CounselingTable({
             ))}
           </TableBody>
         </Table>
-      </div>
+      </ResponsiveTableWrapper>
 
       <Dialog open={showNotesDialog} onOpenChange={setShowNotesDialog}>
         <DialogContent className="max-w-2xl">

@@ -199,15 +199,15 @@ export default function ScheduledNotificationsPage() {
   const pastNotifications = scheduledNotifications?.filter((n) => n.status !== "PENDING") || [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Scheduled Notifications</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Scheduled Notifications</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">
             Schedule notifications for future delivery with timezone support
           </p>
         </div>
-        <Button onClick={() => setIsCreateOpen(true)}>
+        <Button onClick={() => setIsCreateOpen(true)} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Schedule Notification
         </Button>

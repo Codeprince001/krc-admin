@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Video, Headphones, Play } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Sermon } from "@/types";
 import { SERMON_TYPES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -58,17 +59,17 @@ export function SermonsTable({
   };
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Sermon</TableHead>
-            <TableHead>Speaker</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Media</TableHead>
-            <TableHead>Views</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Sermon</TableHead>
+            <TableHead className="min-w-[150px]">Speaker</TableHead>
+            <TableHead className="min-w-[120px]">Category</TableHead>
+            <TableHead className="min-w-[100px]">Media</TableHead>
+            <TableHead className="min-w-[80px]">Views</TableHead>
+            <TableHead className="min-w-[120px]">Created</TableHead>
+            <TableHead className="text-right min-w-[120px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -162,7 +163,7 @@ export function SermonsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

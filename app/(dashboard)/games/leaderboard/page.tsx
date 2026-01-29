@@ -91,12 +91,12 @@ export default function LeaderboardPage() {
   const restOfList = leaderboard?.entries?.slice(3) || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Games Leaderboard"
         description="Top players and their performance rankings"
         actions={
-          <Button variant="outline">
+          <Button variant="outline" className="w-full sm:w-auto">
             <Calendar className="mr-2 h-4 w-4" />
             Export Report
           </Button>

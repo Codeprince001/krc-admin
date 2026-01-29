@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, BookOpen, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Devotional } from "@/types";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -46,16 +47,16 @@ export function DevotionalsTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Title</TableHead>
-            <TableHead>Author</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Verse</TableHead>
-            <TableHead>Views</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[300px]">Title</TableHead>
+            <TableHead className="min-w-[150px]">Author</TableHead>
+            <TableHead className="min-w-[120px]">Date</TableHead>
+            <TableHead className="min-w-[120px]">Verse</TableHead>
+            <TableHead className="min-w-[80px]">Views</TableHead>
+            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,7 +119,7 @@ export function DevotionalsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

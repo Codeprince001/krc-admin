@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, FolderTree } from "lucide-react";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { BookCategory } from "@/types";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -45,15 +46,15 @@ export function CategoriesTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[200px]">Category</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead className="text-center">Order</TableHead>
-            <TableHead className="text-center">Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="min-w-[200px]">Category</TableHead>
+            <TableHead className="min-w-[250px]">Description</TableHead>
+            <TableHead className="text-center min-w-[80px]">Order</TableHead>
+            <TableHead className="text-center min-w-[100px]">Status</TableHead>
+            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -111,7 +112,7 @@ export function CategoriesTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Calendar, MapPin, Users } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { Event } from "@/types";
 import { EVENT_CATEGORIES, EVENT_STATUSES } from "../constants";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -70,14 +71,14 @@ export function EventsTable({
   };
 
   return (
-    <div className="rounded-md border">
+    <ResponsiveTableWrapper>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Event</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Date & Location</TableHead>
-            <TableHead>Registrations</TableHead>
+            <TableHead className="min-w-[300px]">Event</TableHead>
+            <TableHead className="min-w-[120px]">Category</TableHead>
+            <TableHead className="min-w-[200px]">Date & Location</TableHead>
+            <TableHead className="min-w-[140px]">Registrations</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -162,7 +163,7 @@ export function EventsTable({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ResponsiveTableWrapper>
   );
 }
 

@@ -52,13 +52,13 @@ export default function TestimoniesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader
           title="Testimonies"
           description="Review and manage testimonies from your community"
         />
-        <Button onClick={() => router.push("/community/testimonies/new")}>
+        <Button onClick={() => router.push("/community/testimonies/new")} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Create Testimony
         </Button>
@@ -66,7 +66,7 @@ export default function TestimoniesPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>All Testimonies</CardTitle>
             <TestimoniesFilters
               search={search}

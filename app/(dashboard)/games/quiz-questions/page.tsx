@@ -135,17 +135,17 @@ export default function QuizQuestionsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Quiz Questions"
         description="Manage daily challenge quiz questions"
         actions={
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
-            <Button onClick={handleCreate}>
+            <Button onClick={handleCreate} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Add Question
             </Button>
@@ -155,7 +155,7 @@ export default function QuizQuestionsPage() {
 
       {/* Filters */}
       <Card className="p-4">
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
