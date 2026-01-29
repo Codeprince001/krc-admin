@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -11,10 +12,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings } from "lucide-react";
+import { LogOut, User, Settings, Menu } from "lucide-react";
+import { useUIStore } from "@/lib/store/uiStore";
+import { useIsMobileOrTablet } from "@/lib/hooks/useMediaQuery";
 
 export function Header() {
   const { user, logout } = useAuth();
+  const { toggleMobileSidebar } = useUIStore();
+  const isMobileOrTablet = useIsMobileOrTablet();
 
   const initials = user
     ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() ||
@@ -22,9 +27,28 @@ export function Header() {
     : "U";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-white/80 backdrop-blur-lg shadow-lg px-6">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-white/80 backdrop-blur-lg shadow-lg px-4 sm:px-6">
+      <div className="flex items-center gap-3">
+        {/* Mobile Hamburger Menu */}
+        {isMobileOrTablet && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobileSidebar}
+            className="lg:hidden hover:bg-blue-100 rounded-xl transition-all duration-300"
+          >
+            <Menu className="h-6 w-6 text-blue-600" />
+          </Button>
+        )}
+        
+        <Image
+          src="/church-home-icon.png"
+          alt="Church Logo"
+          width={40}
+          height={40}
+          className="drop-shadow-lg hidden sm:block"
+        />
+        <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
           {process.env.NEXT_PUBLIC_APP_NAME || "Admin Dashboard"}
         </h1>
       </div>
