@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 import { useUIStore } from "@/lib/store/uiStore";
 import {
@@ -17,7 +18,7 @@ import {
   DollarSign,
   CreditCard,
   ShoppingCart,
-  Image,
+  Image as ImageIcon,
   BarChart3,
   Settings,
   ChevronLeft,
@@ -110,7 +111,7 @@ const navGroups: NavGroup[] = [
   {
     title: "Other",
     items: [
-      { title: "Media Library", href: "/media", icon: Image },
+      { title: "Media Library", href: "/media", icon: ImageIcon },
       { title: "Analytics", href: "/analytics", icon: BarChart3 },
       { title: "Settings", href: "/settings", icon: Settings },
     ],
@@ -149,38 +150,64 @@ export function Sidebar() {
     <aside
       className={cn(
         "fixed left-0 top-0 z-40 h-screen border-r border-border/50 bg-white/80 backdrop-blur-lg transition-all duration-300 shadow-2xl",
-        sidebarOpen ? "w-64" : "w-16"
+        "hidden lg:block", // Hide on mobile, show on desktop
+        sidebarOpen ? "w-64" : "w-20"
       )}
     >
       <div className="flex h-full flex-col">
         {/* Header */}
-        <div className="relative flex h-20 items-center justify-between border-b border-border/50 px-4 bg-gradient-to-r from-blue-50/50 via-purple-50/50 to-pink-50/50">
-          {sidebarOpen && (
-            <div className="relative z-10">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Church Admin
-              </h2>
-              <p className="text-xs text-muted-foreground font-medium">Management Portal</p>
+        <div className="relative flex h-20 items-center border-b border-border/50 px-3 bg-gradient-to-r from-blue-50/50 via-purple-50/50 to-pink-50/50">
+          {sidebarOpen ? (
+            <>
+              <div className="relative z-10 flex items-center gap-3 flex-1">
+                <Image
+                  src="/church-home-icon.png"
+                  alt="Church Logo"
+                  width={48}
+                  height={48}
+                  className="drop-shadow-lg"
+                />
+                <div>
+                  <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    Church Admin
+                  </h2>
+                  <p className="text-xs text-muted-foreground font-medium">Management Portal</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleSidebar}
+                className="relative z-10 hover:bg-blue-100 rounded-xl transition-all duration-300 shrink-0"
+              >
+                <ChevronLeft className="h-5 w-5 text-blue-600" />
+              </Button>
+            </>
+          ) : (
+            <div className="relative z-10 flex flex-col items-center justify-center w-full gap-2">
+              <Image
+                src="/church-home-icon.png"
+                alt="Church Logo"
+                width={32}
+                height={32}
+                className="drop-shadow-lg"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleSidebar}
+                className="hover:bg-blue-100 rounded-xl transition-all duration-300 h-8 w-8"
+              >
+                <ChevronRight className="h-4 w-4 text-blue-600" />
+              </Button>
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="relative z-10 ml-auto hover:bg-blue-100 rounded-xl transition-all duration-300"
-          >
-            {sidebarOpen ? (
-              <ChevronLeft className="h-5 w-5 text-blue-600" />
-            ) : (
-              <ChevronRight className="h-5 w-5 text-blue-600" />
-            )}
-          </Button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3 scrollbar-thin">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-2 scrollbar-thin">
           {navGroups.map((group, groupIndex) => (
-            <div key={group.title} className="mb-6">
+            <div key={group.title} className={cn("mb-4", !sidebarOpen && "mb-2")}>
               {sidebarOpen && (
                 <h3 className="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
                   {group.title}
@@ -195,10 +222,11 @@ export function Sidebar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-300",
+                        "group relative flex items-center rounded-xl text-sm font-semibold transition-all duration-300",
+                        sidebarOpen ? "gap-3 px-3 py-2.5" : "justify-center p-3",
                         isActive
-                          ? "gradient-primary text-white shadow-lg shadow-blue-500/30 scale-105"
-                          : "text-muted-foreground hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-foreground hover:shadow-md hover:scale-105"
+                          ? "gradient-primary text-white shadow-lg shadow-blue-500/30"
+                          : "text-muted-foreground hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-foreground hover:shadow-md"
                       )}
                       title={!sidebarOpen ? item.title : undefined}
                     >
