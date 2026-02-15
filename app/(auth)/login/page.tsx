@@ -1,17 +1,36 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/utils/validations";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { apiClient } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Shield, Users, BarChart3 } from "lucide-react";
 import Image from "next/image";
 
+function hasAuthTokens(): boolean {
+  if (typeof window === "undefined") return false;
+  return !!(
+    localStorage.getItem("accessToken") && localStorage.getItem("refreshToken")
+  );
+}
+
 export default function LoginPage() {
+  const router = useRouter();
   const { login, isLoggingIn } = useAuth();
+
+  // If user already has tokens (e.g. cookie was cleared), sync cookie and redirect so middleware allows dashboard
+  useEffect(() => {
+    if (hasAuthTokens()) {
+      apiClient.ensureAdminCookie();
+      router.replace("/");
+    }
+  }, [router]);
   const {
     register,
     handleSubmit,
