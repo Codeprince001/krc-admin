@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Pagination } from "@/components/shared/Pagination";
 import { useCounselingSessions } from "./hooks/useCounselingSessions";
+import { counselingService } from "@/lib/api/services/counseling.service";
 import { CounselingTable } from "./components/CounselingTable";
 import { CounselingFilters } from "./components/CounselingFilters";
+import { downloadExcel } from "@/lib/utils/exportExcel";
+import { formatDate } from "@/lib/utils/format";
+import { toast } from "sonner";
+import { FileDown, Loader2 } from "lucide-react";
 import { COUNSELING_PAGE_SIZE } from "./constants";
 import type { CounselingStatus } from "@/types";
 
@@ -43,12 +49,60 @@ export default function CounselingPage() {
     }
   };
 
+  const [isExporting, setIsExporting] = useState(false);
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await counselingService.getCounselingSessions(
+        1,
+        10000,
+        statusFilter !== "all" ? statusFilter : undefined,
+        categoryFilter !== "all" ? categoryFilter : undefined
+      );
+      const list = res?.sessions || [];
+      const rows = list.map((s) => ({
+        Category: s.category,
+        Status: s.status,
+        Customer: s.user ? `${s.user.firstName ?? ""} ${s.user.lastName ?? ""}`.trim() || s.user.email : "",
+        Email: s.user?.email ?? "",
+        Phone: s.phoneNumber,
+        Description: s.description,
+        "Session Date": s.slot?.date ? formatDate(s.slot.date, "yyyy-MM-dd") : "",
+        "Start Time": s.slot?.startTime ?? "",
+        "End Time": s.slot?.endTime ?? "",
+        "Counselor Notes": s.counselorNotes ?? "",
+        "Created At": formatDate(s.createdAt, "yyyy-MM-dd HH:mm"),
+      }));
+      downloadExcel(rows, `counseling-export-${new Date().toISOString().slice(0, 10)}`, "Counseling");
+      toast.success(`Exported ${rows.length} counseling sessions`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      <PageHeader
-        title="Counseling Sessions"
-        description="Manage counseling requests and sessions from your community members"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PageHeader
+          title="Counseling Sessions"
+          description="Manage counseling requests and sessions from your community members"
+        />
+        <Button
+          variant="outline"
+          onClick={handleExport}
+          disabled={isExporting}
+          className="w-full sm:w-auto shrink-0"
+        >
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <FileDown className="mr-2 h-4 w-4" />
+          )}
+          Export Excel
+        </Button>
+      </div>
 
       <Card>
         <CardHeader>
