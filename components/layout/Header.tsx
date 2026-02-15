@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -76,13 +77,17 @@ export function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 h-0.5" />
-            <DropdownMenuItem className="rounded-lg p-3 cursor-pointer hover:bg-blue-50 transition-colors">
-              <User className="mr-3 h-5 w-5 text-blue-600" />
-              <span className="font-medium">Profile</span>
+            <DropdownMenuItem asChild className="rounded-lg p-3 cursor-pointer hover:bg-blue-50 transition-colors">
+              <Link href="/settings" className="flex items-center">
+                <User className="mr-3 h-5 w-5 text-blue-600" />
+                <span className="font-medium">Profile</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="rounded-lg p-3 cursor-pointer hover:bg-purple-50 transition-colors">
-              <Settings className="mr-3 h-5 w-5 text-purple-600" />
-              <span className="font-medium">Settings</span>
+            <DropdownMenuItem asChild className="rounded-lg p-3 cursor-pointer hover:bg-purple-50 transition-colors">
+              <Link href="/settings" className="flex items-center">
+                <Settings className="mr-3 h-5 w-5 text-purple-600" />
+                <span className="font-medium">Settings</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 h-0.5" />
             <DropdownMenuItem onClick={() => logout()} className="rounded-lg p-3 cursor-pointer hover:bg-red-50 transition-colors text-red-600">

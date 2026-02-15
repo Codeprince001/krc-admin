@@ -6,7 +6,18 @@ export const bookSchema = z.object({
   description: z.string().optional(),
   categoryId: z.string().min(1, "Category is required"),
   price: z.number().min(0, "Price must be positive"),
-  discountPrice: z.number().min(0, "Discount price must be positive").optional(),
+  discountPrice: z
+    .union([
+      z.number().min(0, "Discount price must be positive"),
+      z.nan(),
+      z.undefined(),
+    ])
+    .optional()
+    .transform((v) =>
+      v === undefined || (typeof v === "number" && Number.isNaN(v))
+        ? undefined
+        : v
+    ),
   isbn: z.string().optional(),
   coverImage: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   stockQuantity: z.number().int().min(0, "Stock quantity must be a positive integer"),

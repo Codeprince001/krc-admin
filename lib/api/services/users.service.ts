@@ -4,11 +4,18 @@ import type {
   UsersResponse,
   User,
   UserStats,
+  CreateUserRequest,
   UpdateUserRoleRequest,
   UpdateUserRequest,
 } from "@/types";
 
 export const usersService = {
+  async createUser(data: CreateUserRequest): Promise<User> {
+    const response = await apiClient.post<{ user: User } | User>(endpoints.users.list, data);
+    const result = response as { user: User };
+    return result?.user ?? (response as User);
+  },
+
   async getUsers(
     page = 1,
     limit = 10,

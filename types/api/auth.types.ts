@@ -9,8 +9,10 @@ export interface User {
   email: string;
   firstName: string | null;
   lastName: string | null;
-  phone: string | null;
-  role: "USER" | "ADMIN" | "SUPER_ADMIN";
+  displayName?: string | null;
+  phoneNumber?: string | null;
+  phone?: string | null;
+  role: "USER" | "ADMIN" | "SUPER_ADMIN" | "MEMBER" | "WORKER" | "PASTOR";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

@@ -63,6 +63,10 @@ export interface DashboardStats {
     successful: number;
     revenue: number;
   };
+  /** Last 6 months: new users per month (for growth trend chart) */
+  userGrowth: Array<{ date: string; count: number }>;
+  /** Last 6 months: revenue per month from orders + giving (for revenue trend chart) */
+  revenueGrowth: Array<{ date: string; amount: number }>;
 }
 
 export interface UserAnalytics {

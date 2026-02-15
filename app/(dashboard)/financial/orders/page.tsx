@@ -7,6 +7,11 @@ import { useOrders } from "./hooks/useOrders";
 import { OrderFilters } from "./components/OrderFilters";
 import { OrdersTable } from "./components/OrdersTable";
 import { OrderDetailsDialog } from "./components/OrderDetailsDialog";
+import { ordersService } from "@/lib/api/services/orders.service";
+import { downloadExcel } from "@/lib/utils/exportExcel";
+import { formatDate } from "@/lib/utils/format";
+import { toast } from "sonner";
+import { FileDown, Loader2 } from "lucide-react";
 import type { Order, OrderStatus, DeliveryType } from "@/types/api/orders.types";
 
 export default function OrdersPage() {
@@ -45,11 +50,61 @@ export default function OrdersPage() {
     }
   };
 
+  const [isExporting, setIsExporting] = useState(false);
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await ordersService.getOrders({
+        page: 1,
+        limit: 10000,
+        search: search || undefined,
+        status: (statusFilter && statusFilter !== "all" ? statusFilter : undefined) as OrderStatus | undefined,
+        deliveryType: (deliveryTypeFilter && deliveryTypeFilter !== "all" ? deliveryTypeFilter : undefined) as DeliveryType | undefined,
+      });
+      const list = res?.data || [];
+      const rows = list.map((o) => ({
+        "Order Number": o.orderNumber,
+        Customer: o.user ? `${o.user.firstName ?? ""} ${o.user.lastName ?? ""}`.trim() || o.user.email : "",
+        Email: o.user?.email ?? "",
+        Items: o.items?.length ?? 0,
+        Subtotal: o.subtotal,
+        "Delivery Fee": o.deliveryFee,
+        Total: o.total,
+        Status: o.status,
+        "Payment Status": o.paymentStatus,
+        "Delivery Type": o.deliveryType,
+        "Created At": formatDate(o.createdAt, "yyyy-MM-dd HH:mm"),
+        "Paid At": o.paidAt ? formatDate(o.paidAt, "yyyy-MM-dd HH:mm") : "",
+      }));
+      downloadExcel(rows, `orders-export-${new Date().toISOString().slice(0, 10)}`, "Orders");
+      toast.success(`Exported ${rows.length} orders`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Orders</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">Manage book orders</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Orders</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage book orders</p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={handleExport}
+          disabled={isExporting}
+          className="w-full sm:w-auto"
+        >
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <FileDown className="mr-2 h-4 w-4" />
+          )}
+          Export Excel
+        </Button>
       </div>
 
       <Card>

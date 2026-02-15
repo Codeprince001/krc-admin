@@ -107,11 +107,15 @@ export function BooksTable({
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex flex-col items-end">
-                  <span className="font-semibold">{formatCurrency(Number(book.price))}</span>
-                  {book.discountPrice && (
-                    <span className="text-xs text-muted-foreground line-through">
-                      {formatCurrency(Number(book.discountPrice))}
-                    </span>
+                  {book.discountPrice != null && Number(book.discountPrice) >= 0 ? (
+                    <>
+                      <span className="font-semibold">{formatCurrency(Number(book.discountPrice))}</span>
+                      <span className="text-xs text-muted-foreground line-through">
+                        {formatCurrency(Number(book.price))}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-semibold">{formatCurrency(Number(book.price))}</span>
                   )}
                 </div>
               </TableCell>

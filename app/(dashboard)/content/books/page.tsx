@@ -65,7 +65,15 @@ export default function BooksPage() {
   // Calculate stats from books data
   const stats = {
     totalBooks: meta?.total || 0,
-    totalRevenue: books.reduce((sum, book) => sum + Number(book.price) * book.soldCount, 0),
+    totalRevenue: books.reduce(
+      (sum, book) =>
+        sum +
+        (book.discountPrice != null && Number(book.discountPrice) >= 0
+          ? Number(book.discountPrice)
+          : Number(book.price)) *
+          book.soldCount,
+      0
+    ),
     totalStock: books.reduce((sum, book) => sum + book.stockQuantity, 0),
   };
 

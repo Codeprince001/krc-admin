@@ -20,8 +20,17 @@ export interface UserStats {
   }[];
 }
 
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  role?: "MEMBER" | "WORKER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN";
+}
+
 export interface UpdateUserRoleRequest {
-  role: "USER" | "ADMIN" | "SUPER_ADMIN";
+  role: "USER" | "ADMIN" | "SUPER_ADMIN" | "MEMBER" | "WORKER" | "PASTOR";
 }
 
 export interface UpdateUserRequest {

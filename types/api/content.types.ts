@@ -66,7 +66,9 @@ export interface CreateBookRequest {
   pageCount?: number;
 }
 
-export interface UpdateBookRequest extends Partial<CreateBookRequest> {}
+export interface UpdateBookRequest extends Omit<Partial<CreateBookRequest>, "discountPrice"> {
+  discountPrice?: number | null;
+}
 
 export interface BooksResponse {
   data: Book[];

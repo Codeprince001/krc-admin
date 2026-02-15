@@ -78,7 +78,21 @@ export function BooksFormDialog({
   }, [book, setValue, reset]);
 
   const handleFormSubmit = (data: BookFormData) => {
-    onSubmit(data as CreateBookRequest);
+    const hasValidDiscount =
+      typeof data.discountPrice === "number" && !Number.isNaN(data.discountPrice) && data.discountPrice >= 0;
+    const payload: CreateBookRequest = {
+      ...data,
+      description: data.description || undefined,
+      isbn: data.isbn || undefined,
+      coverImage: data.coverImage || undefined,
+    };
+    if (isEditing) {
+      payload.discountPrice = hasValidDiscount ? data.discountPrice! : undefined;
+    } else {
+      if (!hasValidDiscount) delete payload.discountPrice;
+      else payload.discountPrice = data.discountPrice;
+    }
+    onSubmit(payload as CreateBookRequest);
   };
 
   const handleClose = () => {

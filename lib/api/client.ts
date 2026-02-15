@@ -1,6 +1,9 @@
 import { endpoints } from "./endpoints";
 import type { LoginResponse, RefreshTokenResponse } from "@/types";
 
+const ADMIN_ACCESS_TOKEN_COOKIE = "admin_access_token";
+const COOKIE_MAX_AGE_DAYS = 10;
+
 class ApiClient {
   private baseURL: string;
   private accessToken: string | null = null;
@@ -21,6 +24,9 @@ class ApiClient {
     if (typeof window !== "undefined") {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      // Set cookie for server-side middleware (route protection)
+      const maxAge = 60 * 60 * 24 * COOKIE_MAX_AGE_DAYS;
+      document.cookie = `${ADMIN_ACCESS_TOKEN_COOKIE}=${encodeURIComponent(accessToken)}; path=/; max-age=${maxAge}; SameSite=Strict`;
     }
   }
 
@@ -30,6 +36,20 @@ class ApiClient {
     if (typeof window !== "undefined") {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      document.cookie = `${ADMIN_ACCESS_TOKEN_COOKIE}=; path=/; max-age=0`;
+    }
+  }
+
+  /**
+   * Sync admin_access_token cookie from localStorage (e.g. after deploy or cookie cleared).
+   * Call from login page when user has tokens so middleware can allow dashboard access.
+   */
+  ensureAdminCookie() {
+    if (typeof window === "undefined") return;
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (accessToken && refreshToken) {
+      this.setTokens(accessToken, refreshToken);
     }
   }
 
@@ -72,6 +92,7 @@ class ApiClient {
     
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
       ...(options.headers as Record<string, string> || {}),
     };
 

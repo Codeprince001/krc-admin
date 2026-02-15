@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* SEO & Performance Optimizations */
+
+  // Turbopack: use project directory as root (avoids multiple lockfile warning)
+  turbopack: {
+    root: process.cwd(),
+  },
+
+  // Use system TLS certs so Turbopack can fetch Google Fonts (e.g. Inter)
+  experimental: {
+    turbopackUseSystemTlsCerts: true,
+  },
   
   // Enable static optimization
   reactStrictMode: true,

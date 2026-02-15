@@ -170,7 +170,10 @@ export default function DashboardPage() {
       {/* Growth Trends */}
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 opacity-30 rounded-3xl blur-2xl -z-10"></div>
-        <GrowthTrends />
+        <GrowthTrends
+          userGrowth={stats.userGrowth}
+          revenueGrowth={stats.revenueGrowth}
+        />
       </div>
 
       {/* Charts and Visualizations */}

@@ -32,15 +32,18 @@ export function GrowthTrends({ userGrowth, revenueGrowth }: GrowthTrendsProps) {
     }));
   };
 
-  const userData = userGrowth && userGrowth.length > 0
-    ? userGrowth.map((item, index) => ({
+  const hasRealUserData = userGrowth && userGrowth.length > 0;
+  const hasRealRevenueData = revenueGrowth && revenueGrowth.length > 0;
+
+  const userData = hasRealUserData
+    ? userGrowth!.map((item) => ({
         month: new Date(item.date).toLocaleDateString("en-US", { month: "short" }),
         value: item.count,
       }))
     : generateSampleData("users");
 
-  const revenueData = revenueGrowth && revenueGrowth.length > 0
-    ? revenueGrowth.map((item, index) => ({
+  const revenueData = hasRealRevenueData
+    ? revenueGrowth!.map((item) => ({
         month: new Date(item.date).toLocaleDateString("en-US", { month: "short" }),
         value: item.amount,
       }))
@@ -53,7 +56,14 @@ export function GrowthTrends({ userGrowth, revenueGrowth }: GrowthTrendsProps) {
           <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg">
             <TrendingUp className="h-5 w-5 text-white" />
           </div>
-          Growth Trends
+          <div>
+            <span>Growth Trends</span>
+            {(hasRealUserData || hasRealRevenueData) && (
+              <p className="text-sm font-normal text-muted-foreground mt-0.5">
+                Last 6 months · real data
+              </p>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>

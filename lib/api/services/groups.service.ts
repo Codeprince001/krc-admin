@@ -94,7 +94,7 @@ export const groupsService = {
     if (data.type) backendData.type = data.type;
     if (data.coverImage !== undefined) backendData.coverImage = data.coverImage;
     
-    const response = await apiClient.put<any>(`${endpoints.groups}/${id}`, backendData);
+    const response = await apiClient.patch<any>(`${endpoints.groups}/${id}`, backendData);
     // Transform back to frontend format
     return {
       ...response,
