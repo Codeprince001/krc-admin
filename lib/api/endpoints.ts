@@ -25,6 +25,8 @@ export const endpoints = {
   users: {
     list: `${API_BASE_URL}/users`,
     stats: `${API_BASE_URL}/users/stats`,
+    profile: `${API_BASE_URL}/users/profile`,
+    changePassword: `${API_BASE_URL}/users/change-password`,
     detail: (id: string) => `${API_BASE_URL}/users/${id}`,
     updateRole: (id: string) => `${API_BASE_URL}/users/${id}/role`,
     toggleStatus: (id: string) => `${API_BASE_URL}/users/${id}/toggle-status`,
