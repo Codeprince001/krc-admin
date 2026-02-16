@@ -6,17 +6,19 @@ import { Toaster } from "@/components/providers/Toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// SEO Configuration
+// SEO Configuration – Kingdom Recovery Church
 const siteConfig = {
-  name: "Church Admin Portal",
-  title: "Church Admin - Management Portal",
-  description: "Enterprise church management system with mobile support. Manage sermons, events, members, devotionals, and more.",
+  name: "Kingdom Recovery Church",
+  title: "Kingdom Recovery Church – Admin Portal",
+  description: "Kingdom Recovery Church ministry admin. Manage sermons, events, members, devotionals, and community.",
   url: process.env.NEXT_PUBLIC_APP_URL || "https://your-church-admin.com",
+  /** Logo used for favicon, Open Graph, Twitter Cards, and JSON-LD. Use absolute path; metadataBase resolves it for sharing. */
+  logo: "/church-home-icon.png",
   ogImage: "/church-home-icon.png",
   keywords: [
+    "Kingdom Recovery Church",
     "church management",
     "church admin",
-    "church software",
     "ministry management",
     "church portal",
     "sermon management",
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
   creator: siteConfig.name,
   manifest: "/manifest.json",
   
-  // Open Graph metadata for social sharing
+  // Open Graph metadata for social sharing (Facebook, LinkedIn, WhatsApp, etc.)
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -52,19 +54,25 @@ export const metadata: Metadata = {
     images: [
       {
         url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: siteConfig.name,
+        width: 512,
+        height: 512,
+        alt: `${siteConfig.name} – Church logo`,
+        type: "image/png",
       },
     ],
   },
   
-  // Twitter Card metadata
+  // Twitter Card metadata (Twitter/X, etc.)
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    images: {
+      url: siteConfig.ogImage,
+      alt: `${siteConfig.name} – Church logo`,
+      width: 512,
+      height: 512,
+    },
     creator: "@yourchurch", // Update with your Twitter handle
   },
   
@@ -72,10 +80,10 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Church Admin",
+    title: siteConfig.name,
     startupImage: [
       {
-        url: "/church-home-icon.png",
+        url: siteConfig.ogImage,
         media: "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
       },
     ],
@@ -94,11 +102,11 @@ export const metadata: Metadata = {
     },
   },
   
-  // Icons
+  // Icons (browser tab, bookmarks, PWA) – logo for SEO and recognition when shared
   icons: {
-    icon: "/church-home-icon.png",
-    shortcut: "/church-home-icon.png",
-    apple: "/church-home-icon.png",
+    icon: siteConfig.logo,
+    shortcut: siteConfig.logo,
+    apple: siteConfig.logo,
   },
   
   // Additional metadata
@@ -122,16 +130,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Structured data for Organization (JSON-LD)
+  // Structured data for Organization (JSON-LD) – helps search engines and social platforms show logo + name
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: siteConfig.name,
     description: siteConfig.description,
     url: siteConfig.url,
-    logo: `${siteConfig.url}${siteConfig.ogImage}`,
+    logo: siteConfig.logo.startsWith("http") ? siteConfig.logo : `${siteConfig.url}${siteConfig.logo}`,
+    image: `${siteConfig.url}${siteConfig.ogImage}`,
     sameAs: [
-      // Add your social media links here
+      // Add your social media links here for richer SEO
       // "https://www.facebook.com/yourchurch",
       // "https://www.instagram.com/yourchurch",
       // "https://www.youtube.com/yourchurch",
