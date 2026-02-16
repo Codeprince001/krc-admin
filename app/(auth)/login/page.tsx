@@ -45,63 +45,82 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left Column - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
-        {/* Decorative circles */}
-        <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        
+      {/* Left Column - Kingdom Recovery Church Branding */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#1a2332]">
+        {/* Base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a2332] via-[#243447] to-[#2d3f5a]" />
+        {/* Warm accent glow */}
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/20 via-transparent to-amber-500/10" />
+        {/* Geometric pattern - subtle crosses & diamonds */}
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5v10M30 45v10M5 30h10M45 30h10M15 15l7 7M38 38l7 7M38 15l-7 7M15 38l-7 7' stroke='%23fff' stroke-width='1' fill='none'/%3E%3C/svg%3E")`,
+          }}
+        />
+        {/* Soft radial orbs */}
+        <div className="absolute top-1/4 -left-20 w-80 h-80 rounded-full bg-amber-500/15 blur-[80px]" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 rounded-full bg-sky-600/20 blur-[100px]" />
+        {/* Fine dot texture */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            backgroundSize: "24px 24px",
+          }}
+        />
+
         <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
-          {/* Logo */}
-          <div className="mb-8">
-            <Image
-              src="/church-home-icon.png"
-              alt="Church Logo"
-              width={120}
-              height={120}
-              className="drop-shadow-2xl"
-            />
+          {/* Logo + Church name */}
+          <div className="mb-10 flex flex-col items-center">
+            <div className="mb-6 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 shadow-2xl backdrop-blur-sm">
+              <Image
+                src="/church-home-icon.png"
+                alt="Kingdom Recovery Church"
+                width={120}
+                height={120}
+                className="drop-shadow-2xl"
+              />
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-center text-white">
+              Kingdom Recovery
+            </h1>
+            <p className="text-lg font-medium text-amber-300/95 tracking-wide mt-1">
+              Church
+            </p>
           </div>
-          
-          {/* Title */}
-          <h1 className="text-4xl font-bold mb-4 text-center">
-            Church Admin Portal
-          </h1>
-          
-          {/* Description */}
-          <p className="text-xl text-center text-white/90 mb-12 max-w-md leading-relaxed">
-            Empowering ministry through technology. Manage your church community, content, and engagement all in one place.
+
+          <p className="text-center text-white/80 mb-10 max-w-sm text-lg leading-relaxed">
+            Ministry Admin Portal
           </p>
-          
-          {/* Features */}
-          <div className="grid gap-6 w-full max-w-md">
-            <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <Users className="w-6 h-6" />
+
+          {/* Feature cards */}
+          <div className="grid gap-4 w-full max-w-sm">
+            <div className="flex items-start gap-4 rounded-xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300">
+                <Users className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Member Management</h3>
-                <p className="text-sm text-white/80">Connect and nurture your community with powerful tools</p>
+                <h3 className="font-semibold text-white">Community</h3>
+                <p className="text-sm text-white/70">Care for and grow your congregation</p>
               </div>
             </div>
-            
-            <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <BarChart3 className="w-6 h-6" />
+            <div className="flex items-start gap-4 rounded-xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 text-sky-300">
+                <BarChart3 className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Analytics & Insights</h3>
-                <p className="text-sm text-white/80">Track engagement and growth with detailed analytics</p>
+                <h3 className="font-semibold text-white">Insights</h3>
+                <p className="text-sm text-white/70">Track engagement and ministry impact</p>
               </div>
             </div>
-            
-            <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <Shield className="w-6 h-6" />
+            <div className="flex items-start gap-4 rounded-xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300">
+                <Shield className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Secure & Reliable</h3>
-                <p className="text-sm text-white/80">Enterprise-grade security for your church data</p>
+                <h3 className="font-semibold text-white">Secure</h3>
+                <p className="text-sm text-white/70">Your data and privacy protected</p>
               </div>
             </div>
           </div>
@@ -111,14 +130,20 @@ export default function LoginPage() {
       {/* Right Column - Login Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex justify-center mb-8">
-            <Image
-              src="/church-home-icon.png"
-              alt="Church Logo"
-              width={80}
-              height={80}
-            />
+          {/* Mobile Logo + Church name */}
+          <div className="lg:hidden flex flex-col items-center justify-center mb-8">
+            <div className="rounded-xl bg-white/80 p-3 shadow-lg ring-1 ring-gray-200/80">
+              <Image
+                src="/church-home-icon.png"
+                alt="Kingdom Recovery Church"
+                width={80}
+                height={80}
+              />
+            </div>
+            <h1 className="mt-4 text-xl font-bold text-gray-900 tracking-tight text-center">
+              Kingdom Recovery
+            </h1>
+            <p className="text-base font-medium text-amber-600">Church</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
@@ -138,7 +163,7 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   placeholder="admin@church.com"
-                  className="h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="h-12 px-4 border-gray-300 focus:border-amber-500/50 focus:ring-amber-500/30"
                   {...register("email")}
                   disabled={isLoggingIn}
                 />
@@ -157,7 +182,7 @@ export default function LoginPage() {
                   id="password"
                   type="password"
                   placeholder="••••••••"
-                  className="h-12 px-4 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="h-12 px-4 border-gray-300 focus:border-amber-500/50 focus:ring-amber-500/30"
                   {...register("password")}
                   disabled={isLoggingIn}
                 />
@@ -170,7 +195,7 @@ export default function LoginPage() {
 
               <Button 
                 type="submit" 
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200" 
+                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-[#1a2332] to-[#2d3f5a] hover:from-[#243447] hover:to-[#3d5270] text-white shadow-lg hover:shadow-xl transition-all duration-200 border border-amber-500/20" 
                 disabled={isLoggingIn}
               >
                 {isLoggingIn ? (
@@ -190,7 +215,7 @@ export default function LoginPage() {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            © 2026 Church Admin Portal. All rights reserved.
+            © 2026 Kingdom Recovery Church
           </p>
         </div>
       </div>
