@@ -25,6 +25,23 @@ export const counselingService = {
     return apiClient.get<CounselingSessionsResponse>(url);
   },
 
+  async exportCounselingSessions(
+    page = 1,
+    limit = 10000,
+    status?: string,
+    category?: string,
+    date?: string
+  ): Promise<CounselingSessionsResponse> {
+    const params = new URLSearchParams();
+    params.append("page", page.toString());
+    params.append("limit", limit.toString());
+    if (status) params.append("status", status);
+    if (category) params.append("category", category);
+    if (date) params.append("date", date);
+    const url = `${endpoints.counseling}/export?${params.toString()}`;
+    return apiClient.get<CounselingSessionsResponse>(url);
+  },
+
   async getCounselingSessionById(id: string): Promise<CounselingSession> {
     return apiClient.get<CounselingSession>(`${endpoints.counseling}/${id}`);
   },
