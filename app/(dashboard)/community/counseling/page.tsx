@@ -53,7 +53,7 @@ export default function CounselingPage() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const res = await counselingService.getCounselingSessions(
+      const res = await counselingService.exportCounselingSessions(
         1,
         10000,
         statusFilter !== "all" ? statusFilter : undefined,
