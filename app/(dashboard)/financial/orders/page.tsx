@@ -54,7 +54,7 @@ export default function OrdersPage() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const res = await ordersService.getOrders({
+      const res = await ordersService.exportOrders({
         page: 1,
         limit: 10000,
         search: search || undefined,

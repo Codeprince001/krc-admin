@@ -54,7 +54,7 @@ export default function UsersPage() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const res = await usersService.getUsers(1, 10000, debouncedSearch || undefined);
+      const res = await usersService.exportUsers(1, 10000, debouncedSearch || undefined);
       const list = res?.data || [];
       const rows = list.map((u) => ({
         Name: u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : "N/A",
