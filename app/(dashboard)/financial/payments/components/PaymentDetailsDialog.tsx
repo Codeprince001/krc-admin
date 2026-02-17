@@ -12,6 +12,19 @@ import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/utils/format";
 import type { Payment } from "@/types/api/payments.types";
 
+// Helper function to handle amounts that might be stored in kobo
+// Paystack uses kobo (smallest unit), so amounts need to be divided by 100
+// Example: 300,000 kobo = ₦3,000
+function formatPaymentAmount(amount: number): number {
+  // If amount is suspiciously large (likely stored in kobo from old data)
+  // Threshold: amounts > 10,000 are likely in kobo (₦100+ payments stored incorrectly)
+  // Divide by 100 to convert from kobo to naira
+  if (amount > 10000) {
+    return amount / 100;
+  }
+  return amount;
+}
+
 interface PaymentDetailsDialogProps {
   payment: Payment | null;
   open: boolean;
@@ -103,7 +116,7 @@ export function PaymentDetailsDialog({
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold">Amount</span>
               <span className="text-2xl font-bold">
-                ₦{Number(payment.amount).toLocaleString()}
+                ₦{formatPaymentAmount(Number(payment.amount)).toLocaleString()}
               </span>
             </div>
           </div>
