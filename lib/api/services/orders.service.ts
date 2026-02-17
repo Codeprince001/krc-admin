@@ -42,6 +42,39 @@ export const ordersService = {
     return response;
   },
 
+  async exportOrders(params: QueryOrdersParams = {}): Promise<OrdersResponse> {
+    const { page = 1, limit = 10000, status, deliveryType, search } = params;
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page.toString());
+    queryParams.append("limit", limit.toString());
+    if (status) queryParams.append("status", status);
+    if (deliveryType) queryParams.append("deliveryType", deliveryType);
+    if (search) queryParams.append("search", search);
+
+    const url = `${endpoints.orders}/export?${queryParams.toString()}`;
+    const response = await apiClient.get<any>(url);
+
+    // Transform backend response format { orders, pagination } to { data, meta }
+    if (response && typeof response === 'object') {
+      if ('orders' in response && 'pagination' in response) {
+        return {
+          data: response.orders,
+          meta: {
+            page: response.pagination.page,
+            limit: response.pagination.limit,
+            total: response.pagination.total,
+            totalPages: response.pagination.totalPages,
+          },
+        };
+      }
+      if ('data' in response && 'meta' in response) {
+        return response;
+      }
+    }
+
+    return response;
+  },
+
   async getOrderById(id: string): Promise<Order> {
     return apiClient.get<Order>(`${endpoints.orders}/${id}`);
   },
