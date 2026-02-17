@@ -29,6 +29,19 @@ export const usersService = {
     return apiClient.get<UsersResponse>(url);
   },
 
+  async exportUsers(
+    page = 1,
+    limit = 10000,
+    search?: string
+  ): Promise<UsersResponse> {
+    const params = new URLSearchParams();
+    params.append("page", page.toString());
+    params.append("limit", limit.toString());
+    if (search) params.append("search", search);
+    const url = `${endpoints.users.list}/export?${params.toString()}`;
+    return apiClient.get<UsersResponse>(url);
+  },
+
   async getUserStats(): Promise<UserStats> {
     return apiClient.get<UserStats>(endpoints.users.stats);
   },
