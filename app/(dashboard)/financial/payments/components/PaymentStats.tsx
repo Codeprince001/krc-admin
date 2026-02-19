@@ -1,16 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, Wallet } from "lucide-react";
+import { StatsCard } from "@/components/dashboard/StatsCard";
 import type { PaymentStats as PaymentStatsType } from "@/types/api/payments.types";
 
 // Helper function to handle amounts that might be stored in kobo
 // Paystack uses kobo (smallest unit), so amounts need to be divided by 100
 // Example: 300,000 kobo = ₦3,000
 function formatPaymentAmount(amount: number): number {
-  // If amount is suspiciously large (likely stored in kobo from old data)
-  // Threshold: amounts > 10,000 are likely in kobo (₦100+ payments stored incorrectly)
-  // Divide by 100 to convert from kobo to naira
   if (amount > 10000) {
     return amount / 100;
   }
@@ -35,33 +32,31 @@ export function PaymentStats({ stats, isLoading }: PaymentStatsProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Payments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalPayments}</div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Successful</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.successfulPayments}</div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            ₦{formatPaymentAmount(Number(stats.totalRevenue)).toLocaleString()}
-          </div>
-        </CardContent>
-      </Card>
+      <StatsCard
+        title="Total Payments"
+        value={stats.totalPayments}
+        description="All time transactions"
+        icon={CreditCard}
+        variant="info"
+      />
+      <StatsCard
+        title="Successful Payments"
+        value={stats.successfulPayments}
+        description={
+          stats.totalPayments > 0
+            ? `${Math.round((stats.successfulPayments / stats.totalPayments) * 100)}% success rate`
+            : "No payments yet"
+        }
+        icon={CheckCircle2}
+        variant="success"
+      />
+      <StatsCard
+        title="Total Revenue"
+        value={`₦${formatPaymentAmount(Number(stats.totalRevenue)).toLocaleString()}`}
+        description="Confirmed collections"
+        icon={Wallet}
+        variant="purple"
+      />
     </div>
   );
 }
-
