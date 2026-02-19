@@ -51,12 +51,48 @@ export function useEvents(params: UseEventsParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => eventsService.deleteEvent(id),
+    onMutate: async (id: string) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["events"] });
+
+      // Snapshot the previous value
+      const previousEvents = queryClient.getQueryData(["events", params.page, params.limit, params.search, params.category, params.status]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(
+        ["events", params.page, params.limit, params.search, params.category, params.status],
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: old.data.filter((event: Event) => event.id !== id),
+            meta: {
+              ...old.meta,
+              total: old.meta.total - 1,
+            },
+          };
+        }
+      );
+
+      // Return context with the previous value
+      return { previousEvents };
+    },
     onSuccess: () => {
       toast.success("Event deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["events"] });
     },
-    onError: (error: Error) => {
+    onError: (error: Error, id, context: any) => {
       toast.error(error.message || "Failed to delete event");
+      // Rollback to the previous value if mutation fails
+      if (context?.previousEvents) {
+        queryClient.setQueryData(
+          ["events", params.page, params.limit, params.search, params.category, params.status],
+          context.previousEvents
+        );
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure we have the latest data
+      queryClient.invalidateQueries({ queryKey: ["events"] });
     },
   });
 
