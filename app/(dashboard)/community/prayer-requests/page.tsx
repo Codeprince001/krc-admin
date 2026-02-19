@@ -7,13 +7,16 @@ import { Pagination } from "@/components/shared/Pagination";
 import { usePrayerRequests } from "./hooks/usePrayerRequests";
 import { PrayerRequestsTable } from "./components/PrayerRequestsTable";
 import { PrayerRequestsFilters } from "./components/PrayerRequestsFilters";
+import { PrayerRequestDetailDialog } from "./components/PrayerRequestDetailDialog";
 import { PRAYER_REQUESTS_PAGE_SIZE } from "./constants";
-import type { PrayerRequestStatus } from "@/types";
+import type { PrayerRequestStatus, PrayerRequest } from "@/types";
 
 export default function PrayerRequestsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedRequest, setSelectedRequest] = useState<PrayerRequest | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
   const {
     prayerRequests,
@@ -37,6 +40,11 @@ export default function PrayerRequestsPage() {
     if (confirm("Are you sure you want to delete this prayer request?")) {
       deletePrayerRequest(id);
     }
+  };
+
+  const handleViewDetails = (request: PrayerRequest) => {
+    setSelectedRequest(request);
+    setIsDetailDialogOpen(true);
   };
 
   return (
@@ -70,6 +78,7 @@ export default function PrayerRequestsPage() {
             isLoading={isLoading}
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
             isDeleting={isDeleting}
           />
           {meta && meta.totalPages > 1 && (
@@ -83,6 +92,12 @@ export default function PrayerRequestsPage() {
           )}
         </CardContent>
       </Card>
+
+      <PrayerRequestDetailDialog
+        prayerRequest={selectedRequest}
+        open={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
+      />
     </div>
   );
 }

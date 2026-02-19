@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { apiClient } from "@/lib/api/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/utils/validations";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { apiClient } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isLoggingIn } = useAuth();
 
-  // If user already has tokens (e.g. cookie was cleared), sync cookie and redirect so middleware allows dashboard
+  // If user already has tokens, sync cookie and redirect to dashboard
   useEffect(() => {
     if (hasAuthTokens()) {
       apiClient.ensureAdminCookie();

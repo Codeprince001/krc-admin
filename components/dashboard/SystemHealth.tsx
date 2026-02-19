@@ -61,9 +61,9 @@ export function SystemHealth() {
                 : "bg-red-600 text-white"
             }`}
           >
-            {data.status.toUpperCase()}
+            {(data.status ?? "unknown").toUpperCase()}
           </Badge>
-          <span className="text-sm font-semibold text-muted-foreground">Version {data.version}</span>
+          <span className="text-sm font-semibold text-muted-foreground">Version {data.version ?? "—"}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -74,7 +74,7 @@ export function SystemHealth() {
               </div>
               <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Uptime</p>
             </div>
-            <p className="text-2xl font-bold text-emerald-900">{formatUptime(data.uptime)}</p>
+            <p className="text-2xl font-bold text-emerald-900">{formatUptime(data.uptime ?? 0)}</p>
           </div>
           
           <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200/50 transition-all duration-300 hover:shadow-lg">
