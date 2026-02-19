@@ -59,6 +59,15 @@ export const adminService = {
     if (page) params.append("page", page.toString());
     if (limit) params.append("limit", limit.toString());
     const url = `${endpoints.admin.activityLog}?${params.toString()}`;
-    return apiClient.get<{ data: ActivityLog[]; meta: any }>(url);
+    const res = await apiClient.get<{
+      activities?: ActivityLog[];
+      data?: ActivityLog[];
+      pagination?: any;
+      meta?: any;
+    }>(url);
+    return {
+      data: res.activities ?? res.data ?? [],
+      meta: res.pagination ?? res.meta,
+    };
   },
 };

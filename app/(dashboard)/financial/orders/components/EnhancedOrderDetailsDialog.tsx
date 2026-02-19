@@ -35,6 +35,7 @@ import {
 import { ordersService } from "@/lib/api/services/orders.service";
 import { formatDate } from "@/lib/utils/format";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils/cn";
 import type { Order, OrderStatus, UpdateOrderStatusRequest } from "@/types/api/orders.types";
 
 interface OrderDetailsDialogProps {
@@ -134,8 +135,8 @@ export function EnhancedOrderDetailsDialog({ orderId, onClose }: OrderDetailsDia
             <div className="p-6 space-y-6">
               
               {/* Customer & Payment Info */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <Section icon={<User className="h-4 w-4" />} title="Customer">
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+                <Section icon={<User className="h-4 w-4" />} title="Customer" className="min-w-0">
                   <InfoGrid>
                     <InfoItem label="Name" value={`${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() || 'N/A'} />
                     <InfoItem label="Email" value={order.user?.email || 'N/A'} />
@@ -143,7 +144,7 @@ export function EnhancedOrderDetailsDialog({ orderId, onClose }: OrderDetailsDia
                   </InfoGrid>
                 </Section>
 
-                <Section icon={<CreditCard className="h-4 w-4" />} title="Payment">
+                <Section icon={<CreditCard className="h-4 w-4" />} title="Payment" className="min-w-0">
                   <InfoGrid>
                     <InfoItem 
                       label="Status" 
@@ -250,6 +251,7 @@ export function EnhancedOrderDetailsDialog({ orderId, onClose }: OrderDetailsDia
                         id="notify"
                         checked={notifyCustomer}
                         onCheckedChange={setNotifyCustomer}
+                        className="[&>span]:!bg-slate-500 [&>span[data-state=checked]]:!bg-slate-600"
                       />
                       <Label htmlFor="notify" className="cursor-pointer flex items-center gap-2">
                         <Send className="h-4 w-4" />
@@ -369,9 +371,9 @@ export function EnhancedOrderDetailsDialog({ orderId, onClose }: OrderDetailsDia
   );
 }
 
-function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+function Section({ icon, title, children, className }: { icon: React.ReactNode; title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="space-y-3">
+    <div className={cn("space-y-3 min-w-0", className)}>
       <h3 className="flex items-center gap-2 text-sm font-semibold">{icon}{title}</h3>
       {children}
     </div>
@@ -388,9 +390,9 @@ function InfoGrid({ children, cols = 2 }: { children: React.ReactNode; cols?: nu
 
 function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-w-0 overflow-hidden">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <div className="font-medium">{value}</div>
+      <div className="font-medium break-words">{value}</div>
     </div>
   );
 }
