@@ -35,6 +35,7 @@ import {
   TrendingUp,
   Target,
   Activity,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -114,6 +115,7 @@ const navGroups: NavGroup[] = [
       { title: "Media Library", href: "/media", icon: ImageIcon },
       { title: "Analytics", href: "/analytics", icon: BarChart3 },
       { title: "Settings", href: "/settings", icon: Settings },
+      { title: "Email Templates", href: "/settings/email-templates", icon: Mail },
     ],
   },
 ];
