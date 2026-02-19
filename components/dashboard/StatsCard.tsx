@@ -12,7 +12,7 @@ interface StatsCardProps {
     isPositive: boolean;
   };
   className?: string;
-  variant?: "default" | "primary" | "success" | "warning" | "info" | "purple";
+  variant?: "default" | "primary" | "success" | "warning" | "info" | "purple" | "danger";
 }
 
 const variantStyles = {
@@ -45,6 +45,11 @@ const variantStyles = {
     card: "hover-lift border-purple-200/50 bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50/30",
     icon: "gradient-purple text-white",
     value: "text-purple-900",
+  },
+  danger: {
+    card: "hover-lift border-red-200/50 bg-gradient-to-br from-red-50 via-rose-50 to-pink-50/30",
+    icon: "gradient-danger text-white",
+    value: "text-red-900",
   },
 };
 
