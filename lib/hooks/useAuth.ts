@@ -54,11 +54,12 @@ export function useAuth() {
   const tokensExist = typeof window !== "undefined" && hasAuthTokens();
   const shouldFetchProfile = !!user || tokensExist;
 
-  const { data: profile, isLoading, isError } = useQuery({
+  const { data: profile, isLoading, isError, error } = useQuery({
     queryKey: ["auth", "profile"],
     queryFn: () => authService.getProfile(),
     enabled: shouldFetchProfile,
-    retry: false,
+    retry: 1, // Retry once to handle transient errors
+    retryDelay: 500, // Wait 500ms before retry
     staleTime: 5 * 60 * 1000, // Consider profile fresh for 5 minutes
   });
 
@@ -69,30 +70,50 @@ export function useAuth() {
     }
   }, [profile, user, setUser]);
 
-  // Clear auth if profile fetch fails (401, invalid token, etc.)
-  // Only clear if we have tokens but no user in store (meaning tokens are invalid)
-  // If user exists in store, the error might be transient
+  // Clear auth if profile fetch fails with 401 (invalid/expired token)
+  // Don't clear on network errors or other transient issues
   useEffect(() => {
-    if (isError) {
+    if (isError && error) {
       const tokensExist = typeof window !== "undefined" && hasAuthTokens();
-      // Only clear if tokens exist but we don't have a user
-      // This means tokens are invalid or expired
+      
+      // Only clear tokens if:
+      // 1. We have tokens in storage
+      // 2. We don't have a user (not logged in)
+      // 3. The error message indicates authentication failure (not network error)
       if (tokensExist && !user && !profile) {
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
+        const errorMessage = (error as any)?.message || "";
+        const isAuthError = 
+          errorMessage.includes("Authentication failed") ||
+          errorMessage.includes("401") ||
+          errorMessage.includes("Unauthorized");
+        
+        // Only clear tokens if it's actually an auth error
+        // Don't clear on network errors or other issues that might be transient
+        if (isAuthError) {
+          console.log("[Auth] Clearing tokens due to authentication failure");
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+          }
+          clearAuth();
+          setHasTokens(false);
+          queryClient.removeQueries({ queryKey: ["auth", "profile"] });
         }
-        clearAuth();
-        setHasTokens(false);
-        queryClient.removeQueries({ queryKey: ["auth", "profile"] });
       }
     }
-  }, [isError, user, profile, clearAuth, queryClient]);
+  }, [isError, error, user, profile, clearAuth, queryClient]);
 
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginRequest) => authService.login(credentials),
     onSuccess: async (data) => {
       try {
+        // Verify we have user data from the API response
+        if (!data.user) {
+          console.error("No user data in login response");
+          toast.error("Login failed: invalid response from server");
+          return;
+        }
+        
         // Verify tokens were actually set in localStorage
         // This ensures the API client setTokens was called
         if (typeof window !== "undefined") {
@@ -105,23 +126,21 @@ export function useAuth() {
             toast.error("Login failed: tokens not saved");
             return;
           }
-        }
-        
-        // Verify we have user data from the API response
-        if (!data.user) {
-          console.error("No user data in login response");
-          toast.error("Login failed: invalid response from server");
-          return;
+          
+          console.log("[Auth] Login successful - tokens saved");
         }
         
         // Set user in store (this is synchronous for Zustand)
-      setUser(data.user);
+        setUser(data.user);
+        
         // Update tokens state (for UI reactivity)
         setHasTokens(true);
-        // Cache profile data to avoid unnecessary refetch
-      queryClient.setQueryData(["auth", "profile"], data.user);
         
-      toast.success("Login successful");
+        // Cache profile data to avoid unnecessary refetch and prevent race condition
+        // This ensures the profile query won't try to fetch and potentially fail
+        queryClient.setQueryData(["auth", "profile"], data.user);
+        
+        toast.success("Login successful");
         
         // Small delay to ensure Zustand persist and all state updates are processed
         // This is necessary because Zustand persist writes to localStorage asynchronously
