@@ -53,8 +53,10 @@ export interface PrayerRequest {
     email: string;
   };
   prayerCount: number;
+  /** Response/testimony when the prayer has been answered */
+  response?: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface CreatePrayerRequestRequest {
@@ -265,9 +267,7 @@ export type CounselingCategory =
   | "FAMILY" 
   | "SPIRITUAL_GROWTH" 
   | "YOUTH" 
-  | "OTHER";
-
-export interface CounselingSession {
+  | "OTHER";export interface CounselingSession {
   id: string;
   userId: string;
   user?: {
