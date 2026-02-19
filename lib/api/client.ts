@@ -1,7 +1,7 @@
 import { endpoints } from "./endpoints";
 import type { LoginResponse, RefreshTokenResponse } from "@/types";
 
-const ADMIN_ACCESS_TOKEN_COOKIE = "admin_access_token";
+const ADMIN_COOKIE_NAME = "admin_access_token";
 const COOKIE_MAX_AGE_DAYS = 10;
 
 class ApiClient {
@@ -18,15 +18,26 @@ class ApiClient {
     }
   }
 
+  /** Sync access token to admin_access_token cookie (required by proxy middleware). Call when redirecting with existing tokens. */
+  ensureAdminCookie() {
+    if (typeof window === "undefined") return;
+    const token = localStorage.getItem("accessToken");
+    if (token) this.ensureAdminCookieFromToken(token);
+  }
+
+  private ensureAdminCookieFromToken(accessToken: string) {
+    if (typeof window === "undefined" || !accessToken) return;
+    const maxAge = COOKIE_MAX_AGE_DAYS * 24 * 60 * 60;
+    document.cookie = `${ADMIN_COOKIE_NAME}=${encodeURIComponent(accessToken)}; path=/; max-age=${maxAge}; SameSite=Strict`;
+  }
+
   setTokens(accessToken: string, refreshToken: string) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     if (typeof window !== "undefined") {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      // Set cookie for server-side middleware (route protection)
-      const maxAge = 60 * 60 * 24 * COOKIE_MAX_AGE_DAYS;
-      document.cookie = `${ADMIN_ACCESS_TOKEN_COOKIE}=${encodeURIComponent(accessToken)}; path=/; max-age=${maxAge}; SameSite=Strict`;
+      this.ensureAdminCookieFromToken(accessToken);
     }
   }
 
@@ -36,20 +47,8 @@ class ApiClient {
     if (typeof window !== "undefined") {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      document.cookie = `${ADMIN_ACCESS_TOKEN_COOKIE}=; path=/; max-age=0`;
-    }
-  }
-
-  /**
-   * Sync admin_access_token cookie from localStorage (e.g. after deploy or cookie cleared).
-   * Call from login page when user has tokens so middleware can allow dashboard access.
-   */
-  ensureAdminCookie() {
-    if (typeof window === "undefined") return;
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (accessToken && refreshToken) {
-      this.setTokens(accessToken, refreshToken);
+      // Clear admin_access_token cookie
+      document.cookie = `${ADMIN_COOKIE_NAME}=; path=/; max-age=0`;
     }
   }
 
@@ -63,6 +62,7 @@ class ApiClient {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
         },
         body: JSON.stringify({ refreshToken: this.refreshToken }),
       });
@@ -89,6 +89,22 @@ class ApiClient {
   ): Promise<T> {
     // Prepend baseURL if url doesn't start with http/https
     const fullUrl = url.startsWith('http') ? url : `${this.baseURL}${url}`;
+    
+    // Ensure tokens are loaded from localStorage on every request
+    // This handles the case where the ApiClient was created during SSR
+    // but tokens exist in localStorage after client-side hydration
+    if (typeof window !== "undefined") {
+      if (!this.accessToken) {
+        this.accessToken = localStorage.getItem("accessToken");
+      }
+      if (!this.refreshToken) {
+        this.refreshToken = localStorage.getItem("refreshToken");
+      }
+      // Sync cookie for proxy middleware (e.g. after refresh or cookie cleared)
+      if (this.accessToken) {
+        this.ensureAdminCookieFromToken(this.accessToken);
+      }
+    }
     
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
