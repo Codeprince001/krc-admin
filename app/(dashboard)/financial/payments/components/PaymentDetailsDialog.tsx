@@ -40,7 +40,7 @@ export function PaymentDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-background to-muted/30">
         <DialogHeader>
           <DialogTitle>Payment Details - {payment.paymentRef}</DialogTitle>
           <DialogDescription>
@@ -53,7 +53,16 @@ export function PaymentDetailsDialog({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Status</p>
-              <Badge variant="outline" className="mt-1">
+              <Badge 
+                variant="outline" 
+                className={`mt-1 ${
+                  payment.status === 'SUCCESSFUL' || payment.status === 'PAID'
+                    ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400'
+                    : payment.status === 'PENDING'
+                    ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-yellow-400'
+                    : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400'
+                }`}
+              >
                 {payment.status}
               </Badge>
             </div>
@@ -112,10 +121,10 @@ export function PaymentDetailsDialog({
           <Separator />
 
           {/* Amount */}
-          <div className="bg-muted p-4 rounded-lg">
+          <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
             <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">Amount</span>
-              <span className="text-2xl font-bold">
+              <span className="text-lg font-semibold text-purple-900 dark:text-purple-100">Amount</span>
+              <span className="text-2xl font-bold text-purple-700 dark:text-purple-300">
                 ₦{formatPaymentAmount(Number(payment.amount)).toLocaleString()}
               </span>
             </div>
