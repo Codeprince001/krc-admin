@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, Heart, User } from "lucide-react";
+import { Trash2, Heart, User, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
 import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { PrayerRequest, PrayerRequestStatus } from "@/types";
@@ -30,6 +30,7 @@ interface PrayerRequestsTableProps {
   isLoading?: boolean;
   onStatusChange: (id: string, status: PrayerRequestStatus) => void;
   onDelete: (id: string) => void;
+  onViewDetails: (request: PrayerRequest) => void;
   isDeleting?: boolean;
 }
 
@@ -38,6 +39,7 @@ export function PrayerRequestsTable({
   isLoading = false,
   onStatusChange,
   onDelete,
+  onViewDetails,
   isDeleting = false,
 }: PrayerRequestsTableProps) {
   if (isLoading) {
@@ -86,12 +88,7 @@ export function PrayerRequestsTable({
           {prayerRequests.map((request) => (
             <TableRow key={request.id} className="hover:bg-muted/50">
               <TableCell>
-                <div>
-                  <div className="font-semibold">{request.title}</div>
-                  <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                    {request.content}
-                  </div>
-                </div>
+                <div className="font-semibold">{request.title}</div>
               </TableCell>
               <TableCell>
                 {request.isAnonymous ? (
@@ -137,15 +134,27 @@ export function PrayerRequestsTable({
                 {formatDate(request.createdAt, "PP")}
               </TableCell>
               <TableCell className="text-right">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(request.id)}
-                  disabled={isDeleting}
-                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onViewDetails(request)}
+                    className="h-8 w-8 p-0"
+                    title="View details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(request.id)}
+                    disabled={isDeleting}
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
