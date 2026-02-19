@@ -58,11 +58,30 @@ export interface Order {
   paidAt?: string;
   customerNotes?: string;
   adminNotes?: string;
+  trackingNote?: string;
+  cancellationReason?: string;
   createdAt: string;
   updatedAt: string;
   completedAt?: string;
   cancelledAt?: string;
   items: OrderItem[];
+  auditLogs?: OrderAuditLog[];
+}
+
+export interface OrderAuditLog {
+  id: string;
+  orderId: string;
+  action: string;
+  previousValue?: string;
+  newValue?: string;
+  note?: string;
+  performedBy?: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+  };
+  createdAt: string;
 }
 
 export interface OrdersResponse {
@@ -78,6 +97,9 @@ export interface OrdersResponse {
 export interface UpdateOrderStatusRequest {
   status: OrderStatus;
   adminNotes?: string;
+  trackingNote?: string;
+  cancellationReason?: string;
+  notifyCustomer?: boolean;
 }
 
 export interface ProcessPaymentRequest {
