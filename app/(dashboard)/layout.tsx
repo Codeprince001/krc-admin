@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -17,25 +17,17 @@ export default function DashboardLayout({
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
   const { sidebarOpen } = useUIStore();
-  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
-
-  // Give a small delay before checking auth to allow state to settle
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setHasCheckedAuth(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
-    // Only redirect if we've given auth time to initialize
-    if (hasCheckedAuth && !isLoading && !isAuthenticated) {
+    // Only redirect if auth check is complete and user is not authenticated
+    // isLoading will be true while fetching profile
+    if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, isLoading, hasCheckedAuth, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  // Show loading while checking auth or if still initializing
-  if (isLoading || !hasCheckedAuth) {
+  // Show loading while checking auth
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -43,6 +35,7 @@ export default function DashboardLayout({
     );
   }
 
+  // Don't render anything if not authenticated (redirect is happening)
   if (!isAuthenticated) {
     return null;
   }
