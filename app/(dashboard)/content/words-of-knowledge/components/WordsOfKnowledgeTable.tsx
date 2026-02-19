@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Brain, Share2 } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { stripHtml } from "@/lib/utils/stripHtml";
 import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import type { WordOfKnowledge } from "@/types";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -74,7 +75,7 @@ export function WordsOfKnowledgeTable({
                   <div>
                     <div className="font-semibold">{word.title}</div>
                     <div className="text-xs text-muted-foreground line-clamp-1">
-                      {word.content.substring(0, 60)}...
+                      {stripHtml(word.content).substring(0, 60)}...
                     </div>
                   </div>
                 </div>
