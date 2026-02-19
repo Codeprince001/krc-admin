@@ -90,6 +90,18 @@ export const ordersService = {
     return apiClient.patch<Order>(`${endpoints.orders}/${id}/status`, data);
   },
 
+  async bulkUpdateStatus(
+    ids: string[],
+    status: string,
+    notifyCustomers: boolean = true
+  ): Promise<{ succeeded: number; failed: number; total: number }> {
+    return apiClient.patch(`${endpoints.orders}/bulk/status`, { ids, status, notifyCustomers });
+  },
+
+  async getOrderAdmin(id: string): Promise<Order> {
+    return apiClient.get<Order>(`${endpoints.orders}/${id}/admin`);
+  },
+
   async processPayment(
     id: string,
     data: ProcessPaymentRequest
