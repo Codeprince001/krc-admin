@@ -30,8 +30,10 @@ export const mediaService = {
 
     // Use fetch directly for file uploads since apiClient uses JSON
     const accessToken = localStorage.getItem("accessToken");
-    const headers: Record<string, string> = {};
-    
+    const headers: Record<string, string> = {
+      "X-Requested-With": "XMLHttpRequest", // Required for CSRF validation
+    };
+
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -68,8 +70,10 @@ export const mediaService = {
 
     // Use fetch directly for file uploads since apiClient uses JSON
     const accessToken = localStorage.getItem("accessToken");
-    const headers: Record<string, string> = {};
-    
+    const headers: Record<string, string> = {
+      "X-Requested-With": "XMLHttpRequest", // Required for CSRF validation
+    };
+
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`;
     }
