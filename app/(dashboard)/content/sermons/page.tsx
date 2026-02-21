@@ -54,14 +54,16 @@ export default function SermonsPage() {
   };
 
   const handleSubmit = (data: CreateSermonRequest | UpdateSermonRequest) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingSermon(null);
+      setPage(1);
+    };
     if (editingSermon) {
-      updateSermon({ id: editingSermon.id, data });
+      updateSermon({ id: editingSermon.id, data }, { onSuccess });
     } else {
-      createSermon(data as CreateSermonRequest);
+      createSermon(data as CreateSermonRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingSermon(null);
-    setPage(1);
   };
 
   return (

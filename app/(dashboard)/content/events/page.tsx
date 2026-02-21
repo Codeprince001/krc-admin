@@ -56,14 +56,16 @@ export default function EventsPage() {
   };
 
   const handleSubmit = (data: CreateEventRequest | UpdateEventRequest) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingEvent(null);
+      setPage(1);
+    };
     if (editingEvent) {
-      updateEvent({ id: editingEvent.id, data });
+      updateEvent({ id: editingEvent.id, data }, { onSuccess });
     } else {
-      createEvent(data as CreateEventRequest);
+      createEvent(data as CreateEventRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingEvent(null);
-    setPage(1);
   };
 
   return (

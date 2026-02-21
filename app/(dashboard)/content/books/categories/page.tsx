@@ -51,13 +51,15 @@ export default function BookCategoriesPage() {
   const handleSubmit = (
     data: CreateBookCategoryRequest | UpdateBookCategoryRequest
   ) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingCategory(null);
+    };
     if (editingCategory) {
-      updateCategory({ id: editingCategory.id, data });
+      updateCategory({ id: editingCategory.id, data }, { onSuccess });
     } else {
-      createCategory(data as CreateBookCategoryRequest);
+      createCategory(data as CreateBookCategoryRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingCategory(null);
   };
 
   return (

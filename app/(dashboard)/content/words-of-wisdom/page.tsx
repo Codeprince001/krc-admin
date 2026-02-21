@@ -52,14 +52,16 @@ export default function WordsOfWisdomPage() {
   };
 
   const handleSubmit = (data: CreateWordOfWisdomRequest | UpdateWordOfWisdomRequest) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingWordOfWisdom(null);
+      setPage(1);
+    };
     if (editingWordOfWisdom) {
-      updateWordOfWisdom({ id: editingWordOfWisdom.id, data });
+      updateWordOfWisdom({ id: editingWordOfWisdom.id, data }, { onSuccess });
     } else {
-      createWordOfWisdom(data as CreateWordOfWisdomRequest);
+      createWordOfWisdom(data as CreateWordOfWisdomRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingWordOfWisdom(null);
-    setPage(1);
   };
 
   return (
