@@ -13,13 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, Eye, Save, Code, Type, AlertCircle } from "lucide-react";
+import { Loader2, Eye, Save, Code, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { emailTemplatesService, EmailTemplate } from "@/lib/api/services/email-templates.service";
+import { EmailTemplateRichEditor } from "./EmailTemplateRichEditor";
 
 interface Props {
   template: EmailTemplate | null;
@@ -159,36 +159,16 @@ export function EmailTemplateEditorDialog({ template, onClose }: Props) {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="body">Email Body (HTML)</Label>
-                    {template.availableVariables && (
-                      <div className="flex flex-wrap gap-1">
-                        {template.availableVariables.slice(0, 5).map((v) => (
-                          <Badge
-                            key={v}
-                            variant="outline"
-                            className="text-xs cursor-pointer hover:bg-muted"
-                            onClick={() => {
-                              setBody((prev) => prev + `{{${v}}}`);
-                            }}
-                          >
-                            {v}
-                          </Badge>
-                        ))}
-                        {(template.availableVariables.length > 5) && (
-                          <Badge variant="outline" className="text-xs">
-                            +{template.availableVariables.length - 5} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <Textarea
-                    id="body"
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    placeholder="<h2>Welcome, {{firstName}}!</h2>..."
-                    className="font-mono text-sm min-h-[350px] resize-y"
+                  <Label>Email Body</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Use the toolbar to format text. Click <strong>Insert Variable</strong> to add dynamic content like names or order details.
+                  </p>
+                  <EmailTemplateRichEditor
+                    key={template.type}
+                    content={body}
+                    onChange={setBody}
+                    availableVariables={template.availableVariables || []}
+                    placeholder="Write your email content here. Use Insert Variable for dynamic content."
                   />
                 </div>
 
