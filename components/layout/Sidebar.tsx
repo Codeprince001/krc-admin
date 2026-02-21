@@ -29,6 +29,7 @@ import {
   Lightbulb,
   Brain,
   Bell,
+  LayoutGrid,
   Send,
   FileText,
   Clock,
@@ -87,6 +88,9 @@ const navGroups: NavGroup[] = [
     title: "Financial",
     items: [
       { title: "Giving", href: "/financial/giving", icon: DollarSign },
+      { title: "Giving Categories", href: "/financial/giving-categories", icon: LayoutGrid },
+      { title: "Giving Campaigns", href: "/financial/giving-campaigns", icon: Target },
+      { title: "Transactions", href: "/financial/giving-transactions", icon: CreditCard },
       { title: "Payments", href: "/financial/payments", icon: CreditCard },
       { title: "Orders", href: "/financial/orders", icon: ShoppingCart },
     ],
