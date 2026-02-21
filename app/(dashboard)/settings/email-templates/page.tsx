@@ -10,6 +10,7 @@ import { Loader2, Mail, Edit2, RotateCcw, Eye, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { EmailTemplateEditorDialog } from "./components/EmailTemplateEditorDialog";
 import { EmailPreviewDialog } from "./components/EmailPreviewDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const TYPE_ICONS: Record<string, string> = {
   WELCOME: "👋",
@@ -28,6 +29,7 @@ export default function EmailTemplatesPage() {
   const queryClient = useQueryClient();
   const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null);
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
+  const [resetTarget, setResetTarget] = useState<EmailTemplateType | null>(null);
 
   const { data: templates, isLoading } = useQuery({
     queryKey: ["email-templates"],
@@ -43,9 +45,12 @@ export default function EmailTemplatesPage() {
     onError: () => toast.error("Failed to reset template"),
   });
 
-  const handleReset = (type: EmailTemplateType) => {
-    if (confirm("Are you sure you want to reset this template to the default version?")) {
-      resetMutation.mutate(type);
+  const handleReset = (type: EmailTemplateType) => setResetTarget(type);
+
+  const handleConfirmReset = () => {
+    if (resetTarget) {
+      resetMutation.mutate(resetTarget);
+      setResetTarget(null);
     }
   };
 
@@ -193,6 +198,17 @@ export default function EmailTemplatesPage() {
       <EmailPreviewDialog
         template={previewTemplate}
         onClose={() => setPreviewTemplate(null)}
+      />
+
+      <ConfirmDialog
+        open={!!resetTarget}
+        onOpenChange={(open) => !open && setResetTarget(null)}
+        title="Reset template"
+        description="Are you sure you want to reset this template to the default version?"
+        confirmLabel="Reset"
+        onConfirm={handleConfirmReset}
+        variant="destructive"
+        isLoading={resetMutation.isPending}
       />
     </div>
   );

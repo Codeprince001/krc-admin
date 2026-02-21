@@ -7,6 +7,7 @@ import { useGiving } from "./hooks/useGiving";
 import { GivingFilters } from "./components/GivingFilters";
 import { GivingTable } from "./components/GivingTable";
 import { GivingDetailsDialog } from "./components/GivingDetailsDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { GivingStats } from "./components/GivingStats";
 import type { Giving, GivingCategory } from "@/types/api/giving.types";
 
@@ -16,6 +17,7 @@ export default function GivingPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [selectedGiving, setSelectedGiving] = useState<Giving | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const limit = 10;
 
   const queryParams = {
@@ -39,9 +41,12 @@ export default function GivingPage() {
     setIsDetailsOpen(true);
   };
 
-  const handleDeleteGiving = (id: string) => {
-    if (confirm("Are you sure you want to delete this giving record?")) {
-      deleteGiving(id);
+  const handleDeleteGiving = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteGiving(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -114,6 +119,17 @@ export default function GivingPage() {
         giving={selectedGiving}
         open={isDetailsOpen}
         onOpenChange={setIsDetailsOpen}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete giving record"
+        description="Are you sure you want to delete this giving record?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

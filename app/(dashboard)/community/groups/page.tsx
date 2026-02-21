@@ -37,6 +37,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const groupSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters").max(200, "Name must be less than 200 characters"),
@@ -64,6 +65,7 @@ export default function GroupsPage() {
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const limit = 10;
   const queryClient = useQueryClient();
 
@@ -154,9 +156,12 @@ export default function GroupsPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this group?")) {
-      deleteMutation.mutate(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteMutation.mutate(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -403,6 +408,17 @@ export default function GroupsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete group"
+        description="Are you sure you want to delete this group?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

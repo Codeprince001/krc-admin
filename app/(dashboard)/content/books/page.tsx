@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, FolderTree } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useBooks } from "./hooks/useBooks";
 import { BooksTable } from "./components/BooksTable";
 import { BooksFilters } from "./components/BooksFilters";
@@ -19,6 +20,7 @@ export default function BooksPage() {
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     books,
@@ -46,9 +48,12 @@ export default function BooksPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this book? This action cannot be undone.")) {
-      deleteBook(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteBook(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -151,6 +156,17 @@ export default function BooksPage() {
         book={editingBook}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete book"
+        description="Are you sure you want to delete this book? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

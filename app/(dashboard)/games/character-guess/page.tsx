@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { gamesService } from '@/lib/api/services/games.service';
 import { DifficultyLevel, type CharacterGuess } from '@/types/api/games';
 import { CharacterGuessDialog } from './components/CharacterGuessDialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { CharacterGuessPreview } from './components/CharacterGuessPreview';
 
 export default function CharacterGuessPage() {
@@ -27,6 +28,7 @@ export default function CharacterGuessPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterGuess | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const limit = 20;
 
   const { data, isLoading } = useQuery({
@@ -144,7 +146,7 @@ export default function CharacterGuessPage() {
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedCharacter(character); setPreviewOpen(true); }}><Eye className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="sm" onClick={() => toggleActiveMutation.mutate({ id: character.id, isActive: character.isActive })}>{character.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedCharacter(character); setDialogOpen(true); }}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="sm" onClick={() => { if (confirm('Delete this character?')) deleteMutation.mutate(character.id); }} disabled={deleteMutation.isPending}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(character.id)} disabled={deleteMutation.isPending}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -159,6 +161,17 @@ export default function CharacterGuessPage() {
       {data?.pagination && <Pagination currentPage={page} totalPages={data.pagination.totalPages} total={data.pagination.total} onPageChange={setPage} />}
       <CharacterGuessDialog open={dialogOpen} onOpenChange={setDialogOpen} character={selectedCharacter} />
       <CharacterGuessPreview open={previewOpen} onOpenChange={setPreviewOpen} character={selectedCharacter} />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete character"
+        description="Are you sure you want to delete this character?"
+        confirmLabel="Delete"
+        onConfirm={() => { if (deleteTarget) { deleteMutation.mutate(deleteTarget); setDeleteTarget(null); } }}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

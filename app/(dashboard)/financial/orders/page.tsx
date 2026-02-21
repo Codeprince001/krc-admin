@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useOrders, useOrderStats } from "./hooks/useOrders";
 import { EnhancedOrderDetailsDialog } from "./components/EnhancedOrderDetailsDialog";
 import { ordersService } from "@/lib/api/services/orders.service";
@@ -95,6 +96,7 @@ export default function OrdersPage() {
   const [deliveryTypeFilter, setDeliveryTypeFilter] = useState<string>("all");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [detailOrderId, setDetailOrderId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const limit = 20;
 
@@ -134,9 +136,12 @@ export default function OrdersPage() {
     } as any);
   };
 
-  const handleDeleteOrder = (id: string) => {
-    if (confirm("Are you sure you want to delete this order?")) {
-      deleteOrder(id);
+  const handleDeleteOrder = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteOrder(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -485,6 +490,17 @@ export default function OrdersPage() {
       <EnhancedOrderDetailsDialog
         orderId={detailOrderId}
         onClose={() => setDetailOrderId(null)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete order"
+        description="Are you sure you want to delete this order?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

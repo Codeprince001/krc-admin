@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Pagination } from "@/components/shared/Pagination";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useAnnouncements } from "./hooks/useAnnouncements";
 import { AnnouncementsTable } from "./components/AnnouncementsTable";
 import { AnnouncementsFilters } from "./components/AnnouncementsFilters";
@@ -23,6 +24,7 @@ export default function AnnouncementsPage() {
   const [category, setCategory] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     announcements,
@@ -52,8 +54,13 @@ export default function AnnouncementsPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this announcement?")) {
-      deleteAnnouncement(id);
+    setDeleteTarget(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteAnnouncement(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -129,6 +136,17 @@ export default function AnnouncementsPage() {
         announcement={editingAnnouncement}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete announcement"
+        description="Are you sure you want to delete this announcement?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

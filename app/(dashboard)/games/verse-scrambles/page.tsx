@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { gamesService } from '@/lib/api/services/games.service';
 import { DifficultyLevel, type VerseScramble } from '@/types/api/games';
 import { VerseScrambleDialog } from './components/VerseScrambleDialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { VerseScramblePreview } from './components/VerseScramblePreview';
 
 export default function VerseScramblesPage() {
@@ -28,6 +29,7 @@ export default function VerseScramblesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedVerse, setSelectedVerse] = useState<VerseScramble | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const limit = 20;
 
   const { data, isLoading } = useQuery({
@@ -156,7 +158,7 @@ export default function VerseScramblesPage() {
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedVerse(verse); setPreviewOpen(true); }}><Eye className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="sm" onClick={() => toggleActiveMutation.mutate({ id: verse.id, isActive: verse.isActive })}>{verse.isActive ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedVerse(verse); setDialogOpen(true); }}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="sm" onClick={() => { if (confirm('Delete this verse?')) deleteMutation.mutate(verse.id); }} disabled={deleteMutation.isPending}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(verse.id)} disabled={deleteMutation.isPending}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -171,6 +173,17 @@ export default function VerseScramblesPage() {
       {data?.pagination && <Pagination currentPage={page} totalPages={data.pagination.totalPages} total={data.pagination.total} onPageChange={setPage} />}
       <VerseScrambleDialog open={dialogOpen} onOpenChange={setDialogOpen} verse={selectedVerse} />
       <VerseScramblePreview open={previewOpen} onOpenChange={setPreviewOpen} verse={selectedVerse} />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete verse"
+        description="Are you sure you want to delete this verse?"
+        confirmLabel="Delete"
+        onConfirm={() => { if (deleteTarget) { deleteMutation.mutate(deleteTarget); setDeleteTarget(null); } }}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

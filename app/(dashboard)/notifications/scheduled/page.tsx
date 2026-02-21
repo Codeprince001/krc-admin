@@ -33,6 +33,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Plus, X, Clock, Calendar as CalendarIcon } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { format } from "date-fns";
 import { Switch } from "@/components/ui/switch";
@@ -92,6 +93,7 @@ export default function ScheduledNotificationsPage() {
     actionUrl: "",
     templateId: "",
   });
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
   // Fetch scheduled notifications
   const { data: scheduledNotifications, isLoading } = useQuery<ScheduledNotification[]>({
@@ -168,9 +170,12 @@ export default function ScheduledNotificationsPage() {
     createMutation.mutate(payload);
   };
 
-  const handleCancel = (id: string) => {
-    if (confirm("Are you sure you want to cancel this scheduled notification?")) {
-      cancelMutation.mutate(id);
+  const handleCancel = (id: string) => setCancelTarget(id);
+
+  const handleConfirmCancel = () => {
+    if (cancelTarget) {
+      cancelMutation.mutate(cancelTarget);
+      setCancelTarget(null);
     }
   };
 
@@ -513,6 +518,17 @@ export default function ScheduledNotificationsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!cancelTarget}
+        onOpenChange={(open) => !open && setCancelTarget(null)}
+        title="Cancel scheduled notification"
+        description="Are you sure you want to cancel this scheduled notification?"
+        confirmLabel="Cancel Notification"
+        onConfirm={handleConfirmCancel}
+        variant="destructive"
+        isLoading={cancelMutation.isPending}
+      />
     </div>
   );
 }
