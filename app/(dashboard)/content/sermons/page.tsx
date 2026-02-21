@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/shared/Pagination";
 import { useSermons } from "./hooks/useSermons";
 import { SermonsTable } from "./components/SermonsTable";
@@ -19,6 +20,7 @@ export default function SermonsPage() {
   const [category, setCategory] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSermon, setEditingSermon] = useState<Sermon | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     sermons,
@@ -47,9 +49,12 @@ export default function SermonsPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this sermon?")) {
-      deleteSermon(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteSermon(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -123,6 +128,17 @@ export default function SermonsPage() {
         sermon={editingSermon}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete sermon"
+        description="Are you sure you want to delete this sermon?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

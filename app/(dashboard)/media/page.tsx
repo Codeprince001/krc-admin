@@ -7,6 +7,7 @@ import { useMedia } from "./hooks/useMedia";
 import { MediaFilters } from "./components/MediaFilters";
 import { MediaGrid } from "./components/MediaGrid";
 import { MediaViewDialog } from "./components/MediaViewDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { MediaStats } from "./components/MediaStats";
 import type { Media, MediaType } from "@/types/api/media.types";
 
@@ -15,6 +16,7 @@ export default function MediaPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const limit = 20;
 
   const queryParams = {
@@ -37,9 +39,12 @@ export default function MediaPage() {
     setIsViewOpen(true);
   };
 
-  const handleDeleteMedia = (id: string) => {
-    if (confirm("Are you sure you want to delete this media file?")) {
-      deleteMedia(id);
+  const handleDeleteMedia = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteMedia(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -105,6 +110,17 @@ export default function MediaPage() {
         media={selectedMedia}
         open={isViewOpen}
         onOpenChange={setIsViewOpen}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete media file"
+        description="Are you sure you want to delete this media file?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

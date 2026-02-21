@@ -33,6 +33,7 @@ import {
   XCircle,
   Eye,
 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { formatDistanceToNow } from "date-fns";
 
@@ -62,6 +63,8 @@ export default function QueueMonitorPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [selectedJob, setSelectedJob] = useState<QueueJob | null>(null);
   const [isJobDetailsOpen, setIsJobDetailsOpen] = useState(false);
+  const [removeJobTarget, setRemoveJobTarget] = useState<string | null>(null);
+  const [clearCompletedOpen, setClearCompletedOpen] = useState(false);
 
   // Fetch queue stats
   const { data: stats, isLoading: statsLoading } = useQuery<QueueStats>({
@@ -161,10 +164,18 @@ export default function QueueMonitorPage() {
     setIsJobDetailsOpen(true);
   };
 
-  const handleRemoveJob = (jobId: string) => {
-    if (confirm("Are you sure you want to remove this job? This action cannot be undone.")) {
-      removeJobMutation.mutate(jobId);
+  const handleRemoveJob = (jobId: string) => setRemoveJobTarget(jobId);
+
+  const handleConfirmRemoveJob = () => {
+    if (removeJobTarget) {
+      removeJobMutation.mutate(removeJobTarget);
+      setRemoveJobTarget(null);
     }
+  };
+
+  const handleConfirmClearCompleted = () => {
+    clearMutation.mutate();
+    setClearCompletedOpen(false);
   };
 
   const getStateIcon = (state: string) => {
@@ -328,11 +339,7 @@ export default function QueueMonitorPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => {
-                if (confirm("Are you sure you want to clear all completed jobs?")) {
-                  clearMutation.mutate();
-                }
-              }}
+              onClick={() => setClearCompletedOpen(true)}
               disabled={clearMutation.isPending || (stats?.completed || 0) === 0}
             >
               {clearMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -493,6 +500,28 @@ export default function QueueMonitorPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!removeJobTarget}
+        onOpenChange={(open) => !open && setRemoveJobTarget(null)}
+        title="Remove job"
+        description="Are you sure you want to remove this job? This action cannot be undone."
+        confirmLabel="Remove"
+        onConfirm={handleConfirmRemoveJob}
+        variant="destructive"
+        isLoading={removeJobMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={clearCompletedOpen}
+        onOpenChange={setClearCompletedOpen}
+        title="Clear completed jobs"
+        description="Are you sure you want to clear all completed jobs? This action cannot be undone."
+        confirmLabel="Clear All"
+        onConfirm={handleConfirmClearCompleted}
+        variant="destructive"
+        isLoading={clearMutation.isPending}
+      />
     </div>
   );
 }

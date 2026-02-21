@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/shared/Pagination";
 import { useDevotionals } from "./hooks/useDevotionals";
 import { DevotionalsTable } from "./components/DevotionalsTable";
@@ -18,6 +19,7 @@ export default function DevotionalsPage() {
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDevotional, setEditingDevotional] = useState<Devotional | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     devotionals,
@@ -45,9 +47,12 @@ export default function DevotionalsPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this devotional?")) {
-      deleteDevotional(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteDevotional(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -116,6 +121,17 @@ export default function DevotionalsPage() {
         devotional={editingDevotional}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete devotional"
+        description="Are you sure you want to delete this devotional?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

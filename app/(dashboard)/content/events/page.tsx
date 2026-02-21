@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/shared/Pagination";
 import { useEvents } from "./hooks/useEvents";
 import { EventsTable } from "./components/EventsTable";
@@ -20,6 +21,7 @@ export default function EventsPage() {
   const [status, setStatus] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     events,
@@ -49,9 +51,12 @@ export default function EventsPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this event?")) {
-      deleteEvent(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteEvent(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -130,6 +135,17 @@ export default function EventsPage() {
         event={editingEvent}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete event"
+        description="Are you sure you want to delete this event?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

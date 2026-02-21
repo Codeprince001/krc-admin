@@ -40,6 +40,7 @@ import { toast } from 'sonner';
 import { gamesService } from '@/lib/api/services/games.service';
 import { DifficultyLevel, type QuizQuestion } from '@/types/api/games';
 import { QuizQuestionDialog } from './components/QuizQuestionDialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { QuizQuestionPreview } from './components/QuizQuestionPreview';
 
 export default function QuizQuestionsPage() {
@@ -51,6 +52,7 @@ export default function QuizQuestionsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<QuizQuestion | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const limit = 20;
 
   // Fetch questions
@@ -105,9 +107,12 @@ export default function QuizQuestionsPage() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this question?')) {
-      deleteMutation.mutate(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteMutation.mutate(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -331,6 +336,17 @@ export default function QuizQuestionsPage() {
         open={previewOpen}
         onOpenChange={setPreviewOpen}
         question={selectedQuestion}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete question"
+        description="Are you sure you want to delete this question?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );

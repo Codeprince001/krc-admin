@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useTestimonies } from "./hooks/useTestimonies";
 import { TestimoniesTable } from "./components/TestimoniesTable";
 import { TestimoniesFilters } from "./components/TestimoniesFilters";
@@ -17,6 +18,8 @@ export default function TestimoniesPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [rejectTarget, setRejectTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     testimonies,
@@ -39,15 +42,21 @@ export default function TestimoniesPage() {
     approveTestimony(id);
   };
 
-  const handleReject = (id: string) => {
-    if (confirm("Are you sure you want to reject this testimony?")) {
-      rejectTestimony(id);
+  const handleReject = (id: string) => setRejectTarget(id);
+
+  const handleConfirmReject = () => {
+    if (rejectTarget) {
+      rejectTestimony(rejectTarget);
+      setRejectTarget(null);
     }
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this testimony?")) {
-      deleteTestimony(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteTestimony(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -104,6 +113,28 @@ export default function TestimoniesPage() {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={!!rejectTarget}
+        onOpenChange={(open) => !open && setRejectTarget(null)}
+        title="Reject testimony"
+        description="Are you sure you want to reject this testimony?"
+        confirmLabel="Reject"
+        onConfirm={handleConfirmReject}
+        variant="destructive"
+        isLoading={isRejecting}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete testimony"
+        description="Are you sure you want to delete this testimony?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

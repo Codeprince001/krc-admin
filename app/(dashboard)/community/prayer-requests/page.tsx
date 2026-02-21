@@ -8,6 +8,7 @@ import { usePrayerRequests } from "./hooks/usePrayerRequests";
 import { PrayerRequestsTable } from "./components/PrayerRequestsTable";
 import { PrayerRequestsFilters } from "./components/PrayerRequestsFilters";
 import { PrayerRequestDetailDialog } from "./components/PrayerRequestDetailDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PRAYER_REQUESTS_PAGE_SIZE } from "./constants";
 import type { PrayerRequestStatus, PrayerRequest } from "@/types";
 
@@ -17,6 +18,7 @@ export default function PrayerRequestsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedRequest, setSelectedRequest] = useState<PrayerRequest | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     prayerRequests,
@@ -36,9 +38,12 @@ export default function PrayerRequestsPage() {
     updatePrayerRequest({ id, data: { status } });
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this prayer request?")) {
-      deletePrayerRequest(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deletePrayerRequest(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -97,6 +102,17 @@ export default function PrayerRequestsPage() {
         prayerRequest={selectedRequest}
         open={isDetailDialogOpen}
         onOpenChange={setIsDetailDialogOpen}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete prayer request"
+        description="Are you sure you want to delete this prayer request?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

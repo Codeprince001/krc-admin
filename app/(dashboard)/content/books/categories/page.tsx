@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useBookCategories } from "./hooks/useBookCategories";
 import { CategoriesTable } from "./components/CategoriesTable";
 import { CategoryFormDialog } from "./components/CategoryFormDialog";
@@ -16,6 +17,7 @@ import type {
 export default function BookCategoriesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<BookCategory | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     categories,
@@ -39,12 +41,13 @@ export default function BookCategoriesPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (
-      confirm(
-        "Are you sure you want to delete this category? This action cannot be undone."
-      )
-    ) {
-      deleteCategory(id);
+    setDeleteTarget(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteCategory(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -89,6 +92,17 @@ export default function BookCategoriesPage() {
         category={editingCategory}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete category"
+        description="Are you sure you want to delete this category? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import { CounselingTable } from "./components/CounselingTable";
 import { CounselingFilters } from "./components/CounselingFilters";
 import { downloadExcel } from "@/lib/utils/exportExcel";
 import { formatDate } from "@/lib/utils/format";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { FileDown, Loader2 } from "lucide-react";
 import { COUNSELING_PAGE_SIZE } from "./constants";
@@ -20,6 +21,7 @@ export default function CounselingPage() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     sessions,
@@ -43,9 +45,12 @@ export default function CounselingPage() {
     updateSession({ id, data: { counselorNotes: notes } });
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this counseling session?")) {
-      deleteSession(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteSession(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -142,6 +147,17 @@ export default function CounselingPage() {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete counseling session"
+        description="Are you sure you want to delete this counseling session?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

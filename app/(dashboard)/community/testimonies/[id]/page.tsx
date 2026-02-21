@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { LoadingState } from "@/components/shared/LoadingState";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -41,6 +42,8 @@ export default function TestimonyDetailPage() {
   const [videoPreview, setVideoPreview] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [confirmApprove, setConfirmApprove] = useState(false);
+  const [confirmReject, setConfirmReject] = useState(false);
 
   // Fetch testimony details
   const { data: testimony, isLoading } = useQuery({
@@ -178,20 +181,18 @@ export default function TestimonyDetailPage() {
     });
   };
 
-  const handleApprove = () => {
-    if (
-      confirm(
-        "Are you sure you want to approve this testimony? It will be published immediately."
-      )
-    ) {
-      updateMutation.mutate({ status: "APPROVED" });
-    }
+  const handleApprove = () => setConfirmApprove(true);
+
+  const handleConfirmApprove = () => {
+    updateMutation.mutate({ status: "APPROVED" });
+    setConfirmApprove(false);
   };
 
-  const handleReject = () => {
-    if (confirm("Are you sure you want to reject this testimony?")) {
-      updateMutation.mutate({ status: "REJECTED" });
-    }
+  const handleReject = () => setConfirmReject(true);
+
+  const handleConfirmReject = () => {
+    updateMutation.mutate({ status: "REJECTED" });
+    setConfirmReject(false);
   };
 
   const handleDownloadImage = () => {
@@ -574,6 +575,28 @@ export default function TestimonyDetailPage() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmApprove}
+        onOpenChange={setConfirmApprove}
+        title="Approve testimony"
+        description="Are you sure you want to approve this testimony? It will be published immediately."
+        confirmLabel="Approve"
+        onConfirm={handleConfirmApprove}
+        variant="default"
+        isLoading={updateMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={confirmReject}
+        onOpenChange={setConfirmReject}
+        title="Reject testimony"
+        description="Are you sure you want to reject this testimony?"
+        confirmLabel="Reject"
+        onConfirm={handleConfirmReject}
+        variant="destructive"
+        isLoading={updateMutation.isPending}
+      />
     </div>
   );
 }

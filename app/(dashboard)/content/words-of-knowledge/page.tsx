@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/shared/Pagination";
 import { useWordsOfKnowledge } from "./hooks/useWordsOfKnowledge";
 import { WordsOfKnowledgeTable } from "./components/WordsOfKnowledgeTable";
@@ -18,6 +19,7 @@ export default function WordsOfKnowledgePage() {
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingWordOfKnowledge, setEditingWordOfKnowledge] = useState<WordOfKnowledge | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const {
     wordsOfKnowledge,
@@ -45,9 +47,12 @@ export default function WordsOfKnowledgePage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this word of knowledge?")) {
-      deleteWordOfKnowledge(id);
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      deleteWordOfKnowledge(deleteTarget);
+      setDeleteTarget(null);
     }
   };
 
@@ -116,6 +121,17 @@ export default function WordsOfKnowledgePage() {
         wordOfKnowledge={editingWordOfKnowledge}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete word of knowledge"
+        description="Are you sure you want to delete this word of knowledge?"
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

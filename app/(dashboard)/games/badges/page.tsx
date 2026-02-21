@@ -12,12 +12,14 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { toast } from 'sonner';
 import { gamesService } from '@/lib/api/services/games.service';
 import { BadgeCategory, type Badge } from '@/types/api/games';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BadgeDialog } from './components/BadgeDialog';
 
 export default function BadgesPage() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('');
 
   const { data: badges, isLoading } = useQuery({
@@ -83,7 +85,7 @@ export default function BadgesPage() {
                   </div>
                   <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button variant="ghost" size="sm" onClick={() => { setSelectedBadge(badge); setDialogOpen(true); }}><Edit className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="sm" onClick={() => { if (confirm('Delete this badge?')) deleteMutation.mutate(badge.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(badge.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -109,6 +111,17 @@ export default function BadgesPage() {
       )}
 
       <BadgeDialog open={dialogOpen} onOpenChange={setDialogOpen} badge={selectedBadge} />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete badge"
+        description="Are you sure you want to delete this badge?"
+        confirmLabel="Delete"
+        onConfirm={() => { if (deleteTarget) { deleteMutation.mutate(deleteTarget); setDeleteTarget(null); } }}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }
