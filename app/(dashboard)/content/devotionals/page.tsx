@@ -52,14 +52,16 @@ export default function DevotionalsPage() {
   };
 
   const handleSubmit = (data: CreateDevotionalRequest | UpdateDevotionalRequest) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingDevotional(null);
+      setPage(1);
+    };
     if (editingDevotional) {
-      updateDevotional({ id: editingDevotional.id, data });
+      updateDevotional({ id: editingDevotional.id, data }, { onSuccess });
     } else {
-      createDevotional(data as CreateDevotionalRequest);
+      createDevotional(data as CreateDevotionalRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingDevotional(null);
-    setPage(1);
   };
 
   return (

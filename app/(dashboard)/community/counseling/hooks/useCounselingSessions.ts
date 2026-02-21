@@ -39,9 +39,9 @@ export function useCounselingSessions(params: UseCounselingSessionsParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateCounselingSessionRequest }) =>
       counselingService.updateCounselingSession(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Counseling session updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["counseling-sessions"] });
+      await queryClient.refetchQueries({ queryKey: ["counseling-sessions"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update counseling session");
@@ -50,9 +50,9 @@ export function useCounselingSessions(params: UseCounselingSessionsParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => counselingService.deleteCounselingSession(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Counseling session deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["counseling-sessions"] });
+      await queryClient.refetchQueries({ queryKey: ["counseling-sessions"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete counseling session");

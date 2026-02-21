@@ -71,9 +71,9 @@ export default function CreateTestimonyPage() {
         videoUrl: videoUrl,
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Testimony created and published successfully");
-      queryClient.invalidateQueries({ queryKey: ["testimonies"] });
+      await queryClient.refetchQueries({ queryKey: ["testimonies"] });
       router.push("/community/testimonies");
     },
     onError: (error: any) => {

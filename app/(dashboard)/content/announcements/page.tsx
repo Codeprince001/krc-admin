@@ -60,14 +60,16 @@ export default function AnnouncementsPage() {
   const handleSubmit = (
     data: CreateAnnouncementRequest | UpdateAnnouncementRequest
   ) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingAnnouncement(null);
+      setPage(1);
+    };
     if (editingAnnouncement) {
-      updateAnnouncement({ id: editingAnnouncement.id, data });
+      updateAnnouncement({ id: editingAnnouncement.id, data }, { onSuccess });
     } else {
-      createAnnouncement(data as CreateAnnouncementRequest);
+      createAnnouncement(data as CreateAnnouncementRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingAnnouncement(null);
-    setPage(1);
   };
 
   return (

@@ -52,14 +52,16 @@ export default function WordsOfKnowledgePage() {
   };
 
   const handleSubmit = (data: CreateWordOfKnowledgeRequest | UpdateWordOfKnowledgeRequest) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingWordOfKnowledge(null);
+      setPage(1);
+    };
     if (editingWordOfKnowledge) {
-      updateWordOfKnowledge({ id: editingWordOfKnowledge.id, data });
+      updateWordOfKnowledge({ id: editingWordOfKnowledge.id, data }, { onSuccess });
     } else {
-      createWordOfKnowledge(data as CreateWordOfKnowledgeRequest);
+      createWordOfKnowledge(data as CreateWordOfKnowledgeRequest, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingWordOfKnowledge(null);
-    setPage(1);
   };
 
   return (

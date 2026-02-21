@@ -53,13 +53,15 @@ export default function BooksPage() {
   };
 
   const handleSubmit = (data: CreateBookRequest) => {
+    const onSuccess = () => {
+      setIsDialogOpen(false);
+      setEditingBook(null);
+    };
     if (editingBook) {
-      updateBook({ id: editingBook.id, data });
+      updateBook({ id: editingBook.id, data }, { onSuccess });
     } else {
-      createBook(data);
+      createBook(data, { onSuccess });
     }
-    setIsDialogOpen(false);
-    setEditingBook(null);
   };
 
   // Calculate stats from books data

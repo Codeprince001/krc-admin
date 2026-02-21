@@ -88,9 +88,9 @@ export default function GroupsPage() {
   const createMutation = useMutation({
     mutationFn: (data: CreateGroupRequest) =>
       groupsService.createGroup(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Group created successfully");
-      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      await queryClient.refetchQueries({ queryKey: ["groups"] });
       setIsDialogOpen(false);
       reset();
       setPage(1);
@@ -122,9 +122,9 @@ export default function GroupsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => groupsService.deleteGroup(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Group deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      await queryClient.refetchQueries({ queryKey: ["groups"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete group");

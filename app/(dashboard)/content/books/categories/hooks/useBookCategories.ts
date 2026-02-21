@@ -17,9 +17,9 @@ export function useBookCategories() {
 
   const createMutation = useMutation({
     mutationFn: (data: CreateBookCategoryRequest) => booksService.createCategory(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Category created successfully");
-      queryClient.invalidateQueries({ queryKey: ["book-categories"] });
+      await queryClient.refetchQueries({ queryKey: ["book-categories"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create category");
@@ -29,9 +29,9 @@ export function useBookCategories() {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateBookCategoryRequest }) =>
       booksService.updateCategory(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Category updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["book-categories"] });
+      await queryClient.refetchQueries({ queryKey: ["book-categories"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update category");
@@ -40,9 +40,9 @@ export function useBookCategories() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => booksService.deleteCategory(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Category deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["book-categories"] });
+      await queryClient.refetchQueries({ queryKey: ["book-categories"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete category");

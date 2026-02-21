@@ -31,9 +31,9 @@ export function useTestimonies(params: UseTestimoniesParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateTestimonyRequest }) =>
       testimoniesService.updateTestimony(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Testimony updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["testimonies"] });
+      await queryClient.refetchQueries({ queryKey: ["testimonies"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update testimony");
@@ -42,9 +42,9 @@ export function useTestimonies(params: UseTestimoniesParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => testimoniesService.deleteTestimony(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Testimony deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["testimonies"] });
+      await queryClient.refetchQueries({ queryKey: ["testimonies"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete testimony");
@@ -66,9 +66,9 @@ export function useTestimonies(params: UseTestimoniesParams) {
   const rejectMutation = useMutation({
     mutationFn: (id: string) =>
       testimoniesService.updateTestimony(id, { status: "REJECTED" }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Testimony rejected");
-      queryClient.invalidateQueries({ queryKey: ["testimonies"] });
+      await queryClient.refetchQueries({ queryKey: ["testimonies"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to reject testimony");

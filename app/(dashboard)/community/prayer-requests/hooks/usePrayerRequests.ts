@@ -30,9 +30,9 @@ export function usePrayerRequests(params: UsePrayerRequestsParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdatePrayerRequestRequest }) =>
       prayerRequestsService.updatePrayerRequest(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Prayer request updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["prayer-requests"] });
+      await queryClient.refetchQueries({ queryKey: ["prayer-requests"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update prayer request");
@@ -41,9 +41,9 @@ export function usePrayerRequests(params: UsePrayerRequestsParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => prayerRequestsService.deletePrayerRequest(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Prayer request deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["prayer-requests"] });
+      await queryClient.refetchQueries({ queryKey: ["prayer-requests"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete prayer request");

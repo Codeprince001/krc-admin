@@ -40,9 +40,9 @@ export function useWordsOfKnowledge(params: UseWordsOfKnowledgeParams) {
   const createMutation = useMutation({
     mutationFn: (data: CreateWordOfKnowledgeRequest) =>
       wordsOfKnowledgeService.createWordOfKnowledge(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Word of knowledge created successfully");
-      queryClient.invalidateQueries({ queryKey: ["wordsOfKnowledge"] });
+      await queryClient.refetchQueries({ queryKey: ["wordsOfKnowledge"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create word of knowledge");
@@ -57,9 +57,9 @@ export function useWordsOfKnowledge(params: UseWordsOfKnowledgeParams) {
       id: string;
       data: UpdateWordOfKnowledgeRequest;
     }) => wordsOfKnowledgeService.updateWordOfKnowledge(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Word of knowledge updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["wordsOfKnowledge"] });
+      await queryClient.refetchQueries({ queryKey: ["wordsOfKnowledge"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update word of knowledge");
@@ -69,9 +69,9 @@ export function useWordsOfKnowledge(params: UseWordsOfKnowledgeParams) {
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
       wordsOfKnowledgeService.deleteWordOfKnowledge(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Word of knowledge deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["wordsOfKnowledge"] });
+      await queryClient.refetchQueries({ queryKey: ["wordsOfKnowledge"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete word of knowledge");

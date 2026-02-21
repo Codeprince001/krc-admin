@@ -25,9 +25,9 @@ export function useDevotionals(params: UseDevotionalsParams) {
   const createMutation = useMutation({
     mutationFn: (data: CreateDevotionalRequest) =>
       devotionalsService.createDevotional(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Devotional created successfully");
-      queryClient.invalidateQueries({ queryKey: ["devotionals"] });
+      await queryClient.refetchQueries({ queryKey: ["devotionals"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create devotional");
@@ -37,9 +37,9 @@ export function useDevotionals(params: UseDevotionalsParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateDevotionalRequest }) =>
       devotionalsService.updateDevotional(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Devotional updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["devotionals"] });
+      await queryClient.refetchQueries({ queryKey: ["devotionals"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update devotional");
@@ -48,9 +48,9 @@ export function useDevotionals(params: UseDevotionalsParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => devotionalsService.deleteDevotional(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Devotional deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["devotionals"] });
+      await queryClient.refetchQueries({ queryKey: ["devotionals"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete devotional");
