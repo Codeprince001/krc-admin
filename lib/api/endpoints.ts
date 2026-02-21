@@ -43,6 +43,7 @@ export const endpoints = {
   groups: `${API_BASE_URL}/groups`,
   orders: `${API_BASE_URL}/orders`,
   giving: `${API_BASE_URL}/giving`,
+  givingManagement: `${API_BASE_URL}/giving-management`,
   payments: `${API_BASE_URL}/payments`,
   media: `${API_BASE_URL}/media`,
   notifications: `${API_BASE_URL}/notifications`,
