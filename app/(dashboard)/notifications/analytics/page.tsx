@@ -53,6 +53,17 @@ interface CampaignAnalytics {
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
+const defaultStats: OverallStats = {
+  totalSent: 0,
+  totalDelivered: 0,
+  totalOpened: 0,
+  totalClicked: 0,
+  deliveryRate: 0,
+  openRate: 0,
+  clickThroughRate: 0,
+  averageTimeToOpen: 0,
+};
+
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState("7");
 
@@ -60,21 +71,17 @@ export default function AnalyticsPage() {
   const { data: stats, isLoading: statsLoading } = useQuery<OverallStats>({
     queryKey: ["notification-analytics", "overall", dateRange],
     queryFn: async () => {
-      const startDate = subDays(new Date(), parseInt(dateRange));
-      const params = new URLSearchParams({
-        startDate: startDate.toISOString(),
-        endDate: new Date().toISOString(),
-      });
-      const response = await apiClient.get<OverallStats>(`/notifications/analytics/overall/stats?${params}`);
-      return response || {
-        totalSent: 0,
-        totalDelivered: 0,
-        totalOpened: 0,
-        totalClicked: 0,
-        deliveryRate: 0,
-        openRate: 0,
-        clickThroughRate: 0,
-      };
+      try {
+        const startDate = subDays(new Date(), parseInt(dateRange));
+        const params = new URLSearchParams({
+          startDate: startDate.toISOString(),
+          endDate: new Date().toISOString(),
+        });
+        const response = await apiClient.get<OverallStats>(`/notifications/analytics/overall/stats?${params}`);
+        return response || defaultStats;
+      } catch {
+        return defaultStats;
+      }
     },
   });
 
@@ -82,22 +89,45 @@ export default function AnalyticsPage() {
   const { data: campaigns } = useQuery<CampaignAnalytics[]>({
     queryKey: ["notification-analytics", "campaigns"],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>("/notifications/campaigns");
-      const campaignsData = response || [];
+      try {
+        const response = await apiClient.get<any[]>("/notifications/campaigns");
+        const campaignsData = Array.isArray(response) ? response : [];
 
-      // Fetch analytics for each campaign
-      const analyticsPromises = campaignsData.map(async (campaign: any) => {
-        const analyticsResponse = await apiClient.get<any>(
-          `/notifications/analytics/campaign/${campaign.id}`
-        );
-        return {
-          campaignId: campaign.id,
-          campaignName: campaign.name,
-          ...(analyticsResponse || {}),
-        };
-      });
+        const analyticsPromises = campaignsData.map(async (campaign: any) => {
+          try {
+            const analyticsResponse = await apiClient.get<any>(
+              `/notifications/analytics/campaign/${campaign.id}`
+            );
+            return {
+              campaignId: campaign.id,
+              campaignName: campaign.name,
+              totalSent: analyticsResponse?.totalSent ?? 0,
+              totalDelivered: analyticsResponse?.totalDelivered ?? 0,
+              totalOpened: analyticsResponse?.totalOpened ?? 0,
+              totalClicked: analyticsResponse?.totalClicked ?? 0,
+              deliveryRate: analyticsResponse?.deliveryRate ?? 0,
+              openRate: analyticsResponse?.openRate ?? 0,
+              clickThroughRate: analyticsResponse?.clickThroughRate ?? 0,
+            } as CampaignAnalytics;
+          } catch {
+            return {
+              campaignId: campaign.id,
+              campaignName: campaign.name,
+              totalSent: 0,
+              totalDelivered: 0,
+              totalOpened: 0,
+              totalClicked: 0,
+              deliveryRate: 0,
+              openRate: 0,
+              clickThroughRate: 0,
+            } as CampaignAnalytics;
+          }
+        });
 
-      return Promise.all(analyticsPromises);
+        return Promise.all(analyticsPromises);
+      } catch {
+        return [];
+      }
     },
   });
 

@@ -68,7 +68,7 @@ export default function EmailTemplatesPage() {
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Email Templates</h1>
         <p className="text-muted-foreground mt-1">
-          Customize transactional email templates sent to users. Use <code className="text-xs bg-muted px-1 py-0.5 rounded">{`{{variableName}}`}</code> syntax for dynamic content.
+          Customize transactional email templates with a visual editor. Format text, add images, and insert dynamic variables (e.g. names, order details) with a single click—no coding required.
         </p>
       </div>
 
