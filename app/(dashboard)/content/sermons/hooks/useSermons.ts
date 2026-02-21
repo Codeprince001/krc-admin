@@ -26,9 +26,9 @@ export function useSermons(params: UseSermonsParams) {
 
   const createMutation = useMutation({
     mutationFn: (data: CreateSermonRequest) => sermonsService.createSermon(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Sermon created successfully");
-      queryClient.invalidateQueries({ queryKey: ["sermons"] });
+      await queryClient.refetchQueries({ queryKey: ["sermons"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create sermon");
@@ -49,9 +49,9 @@ export function useSermons(params: UseSermonsParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => sermonsService.deleteSermon(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Sermon deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["sermons"] });
+      await queryClient.refetchQueries({ queryKey: ["sermons"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete sermon");

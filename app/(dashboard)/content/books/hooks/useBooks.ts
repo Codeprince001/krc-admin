@@ -34,9 +34,9 @@ export function useBooks(params: UseBooksParams) {
 
   const createMutation = useMutation({
     mutationFn: (data: CreateBookRequest) => booksService.createBook(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Book created successfully");
-      queryClient.invalidateQueries({ queryKey: ["books"] });
+      await queryClient.refetchQueries({ queryKey: ["books"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create book");
@@ -46,9 +46,9 @@ export function useBooks(params: UseBooksParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateBookRequest> }) =>
       booksService.updateBook(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Book updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["books"] });
+      await queryClient.refetchQueries({ queryKey: ["books"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update book");
@@ -57,9 +57,9 @@ export function useBooks(params: UseBooksParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => booksService.deleteBook(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Book deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["books"] });
+      await queryClient.refetchQueries({ queryKey: ["books"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete book");

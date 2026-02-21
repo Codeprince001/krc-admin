@@ -40,9 +40,9 @@ export function useWordsOfWisdom(params: UseWordsOfWisdomParams) {
   const createMutation = useMutation({
     mutationFn: (data: CreateWordOfWisdomRequest) =>
       wordsOfWisdomService.createWordOfWisdom(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Word of wisdom created successfully");
-      queryClient.invalidateQueries({ queryKey: ["wordsOfWisdom"] });
+      await queryClient.refetchQueries({ queryKey: ["wordsOfWisdom"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create word of wisdom");
@@ -57,9 +57,9 @@ export function useWordsOfWisdom(params: UseWordsOfWisdomParams) {
       id: string;
       data: UpdateWordOfWisdomRequest;
     }) => wordsOfWisdomService.updateWordOfWisdom(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Word of wisdom updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["wordsOfWisdom"] });
+      await queryClient.refetchQueries({ queryKey: ["wordsOfWisdom"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update word of wisdom");
@@ -68,9 +68,9 @@ export function useWordsOfWisdom(params: UseWordsOfWisdomParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => wordsOfWisdomService.deleteWordOfWisdom(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Word of wisdom deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["wordsOfWisdom"] });
+      await queryClient.refetchQueries({ queryKey: ["wordsOfWisdom"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete word of wisdom");

@@ -26,9 +26,9 @@ export function useAnnouncements(params: UseAnnouncementsParams) {
   const createMutation = useMutation({
     mutationFn: (data: CreateAnnouncementRequest) =>
       announcementsService.createAnnouncement(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Announcement created successfully");
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      await queryClient.refetchQueries({ queryKey: ["announcements"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create announcement");
@@ -38,9 +38,9 @@ export function useAnnouncements(params: UseAnnouncementsParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateAnnouncementRequest }) =>
       announcementsService.updateAnnouncement(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Announcement updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      await queryClient.refetchQueries({ queryKey: ["announcements"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update announcement");
@@ -49,9 +49,9 @@ export function useAnnouncements(params: UseAnnouncementsParams) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => announcementsService.deleteAnnouncement(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Announcement deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      await queryClient.refetchQueries({ queryKey: ["announcements"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete announcement");

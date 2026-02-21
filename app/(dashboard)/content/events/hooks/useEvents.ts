@@ -28,9 +28,9 @@ export function useEvents(params: UseEventsParams) {
 
   const createMutation = useMutation({
     mutationFn: (data: CreateEventRequest) => eventsService.createEvent(data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Event created successfully");
-      queryClient.invalidateQueries({ queryKey: ["events"] });
+      await queryClient.refetchQueries({ queryKey: ["events"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to create event");
@@ -40,9 +40,9 @@ export function useEvents(params: UseEventsParams) {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateEventRequest }) =>
       eventsService.updateEvent(id, data),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Event updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["events"] });
+      await queryClient.refetchQueries({ queryKey: ["events"] });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update event");
@@ -90,9 +90,9 @@ export function useEvents(params: UseEventsParams) {
         );
       }
     },
-    onSettled: () => {
+    onSettled: async () => {
       // Always refetch after error or success to ensure we have the latest data
-      queryClient.invalidateQueries({ queryKey: ["events"] });
+      await queryClient.refetchQueries({ queryKey: ["events"] });
     },
   });
 
