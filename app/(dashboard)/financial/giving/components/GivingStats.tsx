@@ -32,12 +32,12 @@ export function GivingStats({ stats, isLoading }: GivingStatsProps) {
   if (!stats) return null;
 
   const totalRecords = stats.totalRecords ?? (stats as { totalCount?: number }).totalCount ?? 0;
-  const byCategory = stats.byCategory ?? (stats as { givingByCategory?: { category: string; _sum: { amount: number }; _count: number }[] }).givingByCategory;
-  const normalizedByCategory = byCategory?.map((item) => ({
+  const rawByCategory = stats.byCategory ?? (stats as { givingByCategory?: unknown[] }).givingByCategory;
+  const normalizedByCategory = (rawByCategory ?? []).map((item: { category: string; amount?: number; count?: number; _sum?: { amount?: number }; _count?: number }) => ({
     category: item.category,
-    amount: Number("amount" in item ? item.amount : item._sum?.amount ?? 0),
-    count: Number("count" in item ? item.count : item._count ?? 0),
-  })) ?? [];
+    amount: Number(item.amount ?? item._sum?.amount ?? 0),
+    count: Number(item.count ?? item._count ?? 0),
+  }));
 
   const totalAmount = Number(stats.totalAmount ?? 0);
   const avgPerGift = totalRecords > 0 ? totalAmount / totalRecords : 0;
