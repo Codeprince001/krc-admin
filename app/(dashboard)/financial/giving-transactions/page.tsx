@@ -20,7 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Download, Loader2, Filter } from "lucide-react";
+import { FileDown, Loader2, Filter } from "lucide-react";
+import { toast } from "sonner";
+import { downloadExcel } from "@/lib/utils/exportExcel";
+import { formatDate } from "@/lib/utils/format";
 import { givingManagementService } from "@/lib/api/services/giving-management.service";
 import type {
   GivingTransaction,
@@ -36,55 +39,9 @@ function formatCurrency(amount: number, currency = "NGN") {
   }).format(amount);
 }
 
-function formatDate(s: string) {
-  return new Date(s).toLocaleDateString(undefined, {
-    dateStyle: "medium",
-  });
-}
-
-function exportToCsv(rows: GivingTransaction[]) {
-  const headers = [
-    "Date",
-    "User",
-    "Category",
-    "Campaign",
-    "Amount",
-    "Currency",
-    "Payment Method",
-    "Status",
-  ];
-  const csvRows = [
-    headers.join(","),
-    ...rows.map((r) =>
-      [
-        formatDate(r.createdAt),
-        r.isAnonymous
-          ? "Anonymous"
-          : r.user
-            ? `${r.user.firstName} ${r.user.lastName}`
-            : "",
-        r.category?.name ?? "",
-        r.campaign?.name ?? "",
-        r.amount,
-        r.currency,
-        r.paymentMethod,
-        r.paymentStatus,
-      ].join(",")
-    ),
-  ];
-  const blob = new Blob([csvRows.join("\n")], {
-    type: "text/csv;charset=utf-8",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `giving-report-${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 export default function GivingTransactionsPage() {
   const [page, setPage] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
   const [filters, setFilters] = useState<QueryGivingTransactionsParams>({
     page: 1,
     limit: 20,
@@ -123,11 +80,35 @@ export default function GivingTransactionsPage() {
   });
 
   const handleExport = useCallback(async () => {
-    const report = await givingManagementService.getTransactionReport({
-      ...filters,
-      limit: 10000,
-    });
-    exportToCsv(report as GivingTransaction[]);
+    setIsExporting(true);
+    try {
+      const report = await givingManagementService.getTransactionReport({
+        ...filters,
+        limit: 10000,
+      });
+      const rows = (report as GivingTransaction[]).map((r) => ({
+        Date: formatDate(r.createdAt, "yyyy-MM-dd HH:mm"),
+        User: r.isAnonymous
+          ? "Anonymous"
+          : r.user
+            ? `${r.user.firstName} ${r.user.lastName}`.trim()
+            : "-",
+        Category: r.category?.name ?? "-",
+        "Custom Title": r.customTitle ?? "",
+        Campaign: r.campaign?.name ?? "-",
+        Amount: r.amount,
+        Currency: r.currency,
+        "Payment Method": r.paymentMethod,
+        Status: r.paymentStatus,
+        "Paid At": r.paidAt ? formatDate(r.paidAt, "yyyy-MM-dd HH:mm") : "",
+      }));
+      downloadExcel(rows, `giving-transactions-${new Date().toISOString().slice(0, 10)}`, "Giving Transactions");
+      toast.success(`Exported ${rows.length} transactions`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setIsExporting(false);
+    }
   }, [filters]);
 
   const transactions = (data?.data ?? []) as GivingTransaction[];
@@ -145,9 +126,18 @@ export default function GivingTransactionsPage() {
             Online giving with Paystack & Stripe
           </p>
         </div>
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="h-4 w-4" />
-          Export CSV
+        <Button
+          variant="outline"
+          onClick={handleExport}
+          disabled={isExporting}
+          className="w-full sm:w-auto"
+        >
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <FileDown className="mr-2 h-4 w-4" />
+          )}
+          Export Excel
         </Button>
       </div>
 
