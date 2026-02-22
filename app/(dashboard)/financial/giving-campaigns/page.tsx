@@ -13,6 +13,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Pencil, Trash2, Loader2, Target } from "lucide-react";
 import { toast } from "sonner";
 import { givingManagementService } from "@/lib/api/services/giving-management.service";
@@ -52,6 +59,7 @@ export default function GivingCampaignsPage() {
     currency: "NGN",
     sortOrder: 0,
     isActive: true,
+    status: "ACTIVE",
   });
 
   const { data: campaigns = [], isLoading } = useQuery({
@@ -112,6 +120,7 @@ export default function GivingCampaignsPage() {
       currency: "NGN",
       sortOrder: 0,
       isActive: true,
+      status: "ACTIVE",
     });
   };
 
@@ -133,6 +142,7 @@ export default function GivingCampaignsPage() {
       currency: c.currency,
       sortOrder: c.sortOrder,
       isActive: c.isActive,
+      status: c.status,
     });
     setDialogOpen(true);
   };
@@ -320,6 +330,26 @@ export default function GivingCampaignsPage() {
                   setForm((p) => ({ ...p, endDate: e.target.value }))
                 }
               />
+            </div>
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={form.status}
+                onValueChange={(value) =>
+                  setForm((p) => ({ ...p, status: value as any }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DRAFT">Draft</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="PAUSED">Paused</SelectItem>
+                  <SelectItem value="COMPLETED">Completed</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
