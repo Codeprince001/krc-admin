@@ -63,6 +63,7 @@ export interface CreateGivingCampaignInput {
   currency?: string;
   sortOrder?: number;
   isActive?: boolean;
+  status?: CampaignStatus;
 }
 
 export interface UpdateGivingCampaignInput extends Partial<CreateGivingCampaignInput> {
