@@ -46,8 +46,7 @@ export default function LeaderboardPage() {
       if (gameType && gameType !== 'ALL') params.append('gameType', gameType);
       
       try {
-        const response = await apiClient.get<{ data: LeaderboardData }>(`/games/leaderboards?${params.toString()}`);
-        return response.data;
+        return await apiClient.get<LeaderboardData>(`/games/leaderboards?${params.toString()}`);
       } catch (error) {
         // Mock data for development
         return {
