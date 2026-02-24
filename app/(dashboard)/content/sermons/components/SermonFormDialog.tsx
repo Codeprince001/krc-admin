@@ -56,6 +56,13 @@ export function SermonFormDialog({
     resolver: zodResolver(sermonSchema),
     defaultValues: {
       isFeatured: false,
+      isLive: false,
+      videoUrl: "",
+      audioUrl: "",
+      youtubeId: "",
+      facebookVideoId: "",
+      thumbnail: "",
+      bibleReference: "",
     },
   });
 
@@ -73,25 +80,41 @@ export function SermonFormDialog({
       setValue("audioUrl", sermon.audioUrl || "");
       setValue("thumbnail", sermon.thumbnail || "");
       setValue("duration", sermon.duration);
+      setValue("youtubeId", sermon.youtubeId || "");
+      setValue("facebookVideoId", sermon.facebookVideoId || "");
+      setValue("isLive", sermon.isLive);
       setValue("isFeatured", sermon.isFeatured);
     } else {
       reset({
         isFeatured: false,
+        isLive: false,
+        videoUrl: "",
+        audioUrl: "",
+        youtubeId: "",
+        facebookVideoId: "",
+        thumbnail: "",
+        bibleReference: "",
       });
     }
   }, [sermon, setValue, reset]);
 
   const handleFormSubmit = (data: SermonFormData) => {
+    // Helper to convert empty strings to undefined
+    const cleanValue = (val: any) => (val === "" || val === null) ? undefined : val;
+    
     onSubmit({
       title: data.title,
       description: data.description,
       speaker: data.speaker,
       category: data.category,
-      bibleReference: data.bibleReference || undefined,
-      videoUrl: data.videoUrl || undefined,
-      audioUrl: data.audioUrl || undefined,
-      thumbnail: data.thumbnail || undefined,
-      duration: data.duration,
+      bibleReference: cleanValue(data.bibleReference),
+      videoUrl: cleanValue(data.videoUrl),
+      audioUrl: cleanValue(data.audioUrl),
+      thumbnail: cleanValue(data.thumbnail),
+      duration: data.duration && data.duration > 0 ? data.duration : undefined,
+      youtubeId: cleanValue(data.youtubeId),
+      facebookVideoId: cleanValue(data.facebookVideoId),
+      isLive: data.isLive,
       isFeatured: data.isFeatured,
     });
   };
@@ -250,9 +273,13 @@ export function SermonFormDialog({
                 id="duration"
                 type="number"
                 min="0"
-                {...register("duration", { valueAsNumber: true })}
-                placeholder="0"
+                {...register("duration", { 
+                  valueAsNumber: true,
+                  required: false 
+                })}
+                placeholder="Leave empty if unknown"
               />
+              <p className="text-xs text-muted-foreground">Optional - leave empty if unknown</p>
             </div>
             <div className="space-y-2">
               <Label>Thumbnail</Label>
