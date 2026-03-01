@@ -130,7 +130,7 @@ export default function LeaderboardPage() {
       {/* Filters */}
       <div className="flex space-x-4">
         <Select value={period} onValueChange={setPeriod}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -141,7 +141,7 @@ export default function LeaderboardPage() {
           </SelectContent>
         </Select>
         <Select value={gameType} onValueChange={setGameType}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -165,7 +165,7 @@ export default function LeaderboardPage() {
                 <div className="flex flex-col items-center text-center space-y-3">
                   <div className="relative">
                     <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
-                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">
+                      <div className="w-full h-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">
                         {entry.user.firstName[0]}{entry.user.lastName[0]}
                       </div>
                     </Avatar>
@@ -203,8 +203,8 @@ export default function LeaderboardPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[80px]">Rank</TableHead>
-              <TableHead className="w-[60px]">Trend</TableHead>
+              <TableHead className="w-20">Rank</TableHead>
+              <TableHead className="w-15">Trend</TableHead>
               <TableHead>Player</TableHead>
               <TableHead>Email</TableHead>
               <TableHead className="text-right">Score</TableHead>
@@ -226,7 +226,7 @@ export default function LeaderboardPage() {
                 <TableCell>
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-10 w-10">
-                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
+                      <div className="w-full h-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
                         {entry.user.firstName[0]}{entry.user.lastName[0]}
                       </div>
                     </Avatar>
