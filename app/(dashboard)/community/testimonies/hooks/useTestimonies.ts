@@ -75,6 +75,28 @@ export function useTestimonies(params: UseTestimoniesParams) {
     },
   });
 
+  const bulkApproveMutation = useMutation({
+    mutationFn: (ids: string[]) => testimoniesService.bulkApprove(ids),
+    onSuccess: () => {
+      toast.success("Testimonies approved");
+      queryClient.invalidateQueries({ queryKey: ["testimonies"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to bulk approve testimonies");
+    },
+  });
+
+  const bulkRejectMutation = useMutation({
+    mutationFn: (ids: string[]) => testimoniesService.bulkReject(ids),
+    onSuccess: () => {
+      toast.success("Testimonies rejected");
+      queryClient.invalidateQueries({ queryKey: ["testimonies"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to bulk reject testimonies");
+    },
+  });
+
   return {
     testimonies: data?.data || [],
     meta: data?.meta,
@@ -85,10 +107,14 @@ export function useTestimonies(params: UseTestimoniesParams) {
     deleteTestimony: deleteMutation.mutate,
     approveTestimony: approveMutation.mutate,
     rejectTestimony: rejectMutation.mutate,
+    bulkApprove: bulkApproveMutation.mutate,
+    bulkReject: bulkRejectMutation.mutate,
     isUpdating: updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
     isApproving: approveMutation.isPending,
     isRejecting: rejectMutation.isPending,
+    isBulkApproving: bulkApproveMutation.isPending,
+    isBulkRejecting: bulkRejectMutation.isPending,
   };
 }
 
