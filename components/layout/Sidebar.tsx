@@ -121,6 +121,9 @@ const navGroups: NavGroup[] = [
       { title: "Analytics", href: "/analytics", icon: BarChart3 },
       { title: "Settings", href: "/settings", icon: Settings },
       { title: "Email Templates", href: "/settings/email-templates", icon: Mail },
+      { title: "Activity Log", href: "/settings/activity-log", icon: Activity },
+      { title: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck },
+      { title: "Reports & Export", href: "/financial/reports", icon: FileText },
     ],
   },
 ];
