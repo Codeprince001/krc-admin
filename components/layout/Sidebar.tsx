@@ -38,6 +38,7 @@ import {
   Activity,
   Mail,
   HandHelping,
+  Tv2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -94,6 +95,12 @@ const navGroups: NavGroup[] = [
       { title: "Giving Transactions", href: "/financial/giving-transactions", icon: HandHelping },
       { title: "Payments", href: "/financial/payments", icon: CreditCard },
       { title: "Orders", href: "/financial/orders", icon: ShoppingCart },
+    ],
+  },
+  {
+    title: "Advertisements",
+    items: [
+      { title: "Manage Ads", href: "/advertisements", icon: Tv2 },
     ],
   },
   {
