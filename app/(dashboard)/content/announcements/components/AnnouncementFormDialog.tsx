@@ -95,6 +95,7 @@ export function AnnouncementFormDialog({
       isPinned: data.isPinned,
       image: data.image || undefined,
       expiresAt: data.expiresAt || undefined,
+      publishAt: (data as any).publishAt || undefined,
     });
   };
 
@@ -191,18 +192,30 @@ export function AnnouncementFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Options</Label>
-              <label className="flex items-center gap-2 cursor-pointer group mt-2">
-                <input
-                  type="checkbox"
-                  {...register("isPinned")}
-                  className="h-4 w-4 rounded border-input cursor-pointer accent-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                />
-                <span className="text-sm font-medium group-hover:text-foreground transition-colors">
-                  Pin to top
-                </span>
-              </label>
+              <Label htmlFor="publishAt">
+                Publish At <span className="text-muted-foreground text-xs">(scheduled)</span>
+              </Label>
+              <Input
+                id="publishAt"
+                type="datetime-local"
+                {...register("publishAt")}
+              />
+              <p className="text-xs text-muted-foreground">Leave blank to publish immediately</p>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Options</Label>
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="checkbox"
+                {...register("isPinned")}
+                className="h-4 w-4 rounded border-input cursor-pointer accent-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              />
+              <span className="text-sm font-medium group-hover:text-foreground transition-colors">
+                Pin to top
+              </span>
+            </label>
           </div>
 
           <DialogFooter>
