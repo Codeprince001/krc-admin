@@ -118,6 +118,7 @@ export interface CreateSermonRequest {
   facebookVideoId?: string;
   isLive?: boolean;
   isFeatured?: boolean;
+  publishAt?: string;
 }
 
 export interface UpdateSermonRequest extends Partial<CreateSermonRequest> {}
@@ -158,6 +159,7 @@ export interface CreateDevotionalRequest {
   author: string;
   image?: string;
   prayer?: string;
+  publishAt?: string;
 }
 
 export interface UpdateDevotionalRequest extends Partial<CreateDevotionalRequest> {}
