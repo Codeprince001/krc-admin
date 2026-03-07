@@ -70,15 +70,17 @@ export default function ActivityLogPage() {
 
   // Client-side filter by search / resource
   const filtered = logs.filter((log) => {
+    const action = log.action ?? "";
+    const resource = log.resource ?? "";
     const matchesSearch =
       !search ||
-      log.action.toLowerCase().includes(search.toLowerCase()) ||
-      log.resource.toLowerCase().includes(search.toLowerCase()) ||
+      action.toLowerCase().includes(search.toLowerCase()) ||
+      resource.toLowerCase().includes(search.toLowerCase()) ||
       (log.user?.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
       `${log.user?.firstName ?? ""} ${log.user?.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase());
 
     const matchesResource =
-      resourceFilter === "all" || log.resource.toLowerCase() === resourceFilter.toLowerCase();
+      resourceFilter === "all" || resource.toLowerCase() === resourceFilter.toLowerCase();
 
     return matchesSearch && matchesResource;
   });
@@ -108,7 +110,7 @@ export default function ActivityLogPage() {
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+              <div className="p-2 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg">
                 <Activity className="h-5 w-5 text-white" />
               </div>
               Recent Admin Actions
@@ -162,20 +164,20 @@ export default function ActivityLogPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-[160px]">Admin</TableHead>
-                    <TableHead className="min-w-[120px]">Action</TableHead>
-                    <TableHead className="min-w-[120px]">Resource</TableHead>
-                    <TableHead className="min-w-[140px]">Resource ID</TableHead>
-                    <TableHead className="min-w-[180px]">Details</TableHead>
-                    <TableHead className="min-w-[160px]">When</TableHead>
+                    <TableHead className="min-w-40">Admin</TableHead>
+                    <TableHead className="min-w-30">Action</TableHead>
+                    <TableHead className="min-w-30">Resource</TableHead>
+                    <TableHead className="min-w-35">Resource ID</TableHead>
+                    <TableHead className="min-w-45">Details</TableHead>
+                    <TableHead className="min-w-40">When</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((log) => (
-                    <TableRow key={log.id} className="hover:bg-muted/50">
+                  {filtered.map((log, i) => (
+                    <TableRow key={log.id ?? `log-${i}`} className="hover:bg-muted/50">
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-sm shrink-0">
+                          <div className="h-8 w-8 rounded-full bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-sm shrink-0">
                             <User className="h-4 w-4 text-white" />
                           </div>
                           <div>
@@ -205,10 +207,10 @@ export default function ActivityLogPage() {
                           {log.resource}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground max-w-[140px] truncate">
+                      <TableCell className="font-mono text-xs text-muted-foreground max-w-35 truncate">
                         {log.resourceId ?? "—"}
                       </TableCell>
-                      <TableCell className="max-w-[200px]">
+                      <TableCell className="max-w-50">
                         {log.metadata ? (
                           <details className="text-xs text-muted-foreground cursor-pointer">
                             <summary className="hover:text-foreground transition-colors">
