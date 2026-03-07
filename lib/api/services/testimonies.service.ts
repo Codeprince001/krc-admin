@@ -79,5 +79,15 @@ export const testimoniesService = {
   async deleteTestimony(id: string): Promise<void> {
     return apiClient.delete<void>(`${endpoints.testimonies}/${id}`);
   },
+
+  /** Bulk approve: runs individual updates sequentially */
+  async bulkApprove(ids: string[]): Promise<void> {
+    await Promise.all(ids.map((id) => apiClient.patch(`${endpoints.testimonies}/${id}`, { status: "APPROVED" })));
+  },
+
+  /** Bulk reject: runs individual updates sequentially */
+  async bulkReject(ids: string[]): Promise<void> {
+    await Promise.all(ids.map((id) => apiClient.patch(`${endpoints.testimonies}/${id}`, { status: "REJECTED" })));
+  },
 };
 
