@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Check, X, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useTestimonies } from "./hooks/useTestimonies";
 import { TestimoniesTable } from "./components/TestimoniesTable";
@@ -20,6 +21,7 @@ export default function TestimoniesPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [rejectTarget, setRejectTarget] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const {
     testimonies,
@@ -28,9 +30,13 @@ export default function TestimoniesPage() {
     approveTestimony,
     rejectTestimony,
     deleteTestimony,
+    bulkApprove,
+    bulkReject,
     isDeleting,
     isApproving,
     isRejecting,
+    isBulkApproving,
+    isBulkRejecting,
   } = useTestimonies({
     page,
     limit: TESTIMONIES_PAGE_SIZE,
@@ -38,26 +44,42 @@ export default function TestimoniesPage() {
     status: statusFilter !== "all" ? statusFilter : undefined,
   });
 
-  const handleApprove = (id: string) => {
-    approveTestimony(id);
-  };
-
+  const handleApprove = (id: string) => approveTestimony(id);
   const handleReject = (id: string) => setRejectTarget(id);
-
   const handleConfirmReject = () => {
     if (rejectTarget) {
       rejectTestimony(rejectTarget);
       setRejectTarget(null);
     }
   };
-
   const handleDelete = (id: string) => setDeleteTarget(id);
-
   const handleConfirmDelete = () => {
     if (deleteTarget) {
       deleteTestimony(deleteTarget);
       setDeleteTarget(null);
     }
+  };
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }, []);
+
+  const toggleAll = useCallback(() => {
+    setSelectedIds((prev) =>
+      prev.length === testimonies.length ? [] : testimonies.map((t) => t.id)
+    );
+  }, [testimonies]);
+
+  const handleBulkApprove = () => {
+    if (!selectedIds.length) return;
+    bulkApprove(selectedIds, { onSuccess: () => setSelectedIds([]) } as any);
+  };
+
+  const handleBulkReject = () => {
+    if (!selectedIds.length) return;
+    bulkReject(selectedIds, { onSuccess: () => setSelectedIds([]) } as any);
   };
 
   return (
@@ -76,19 +98,61 @@ export default function TestimoniesPage() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <CardTitle>All Testimonies</CardTitle>
-            <TestimoniesFilters
-              search={search}
-              status={statusFilter}
-              onSearchChange={(value) => {
-                setSearch(value);
-                setPage(1);
-              }}
-              onStatusChange={(value) => {
-                setStatusFilter(value);
-                setPage(1);
-              }}
-            />
+            <div className="flex items-center gap-3">
+              <CardTitle>All Testimonies</CardTitle>
+              {selectedIds.length > 0 && (
+                <Badge variant="secondary" className="font-bold">
+                  {selectedIds.length} selected
+                </Badge>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Bulk action buttons */}
+              {selectedIds.length > 0 && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 text-green-700 border-green-300 hover:bg-green-50"
+                    onClick={handleBulkApprove}
+                    disabled={isBulkApproving}
+                  >
+                    {isBulkApproving ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Check className="h-3.5 w-3.5" />
+                    )}
+                    Approve ({selectedIds.length})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 text-red-700 border-red-300 hover:bg-red-50"
+                    onClick={handleBulkReject}
+                    disabled={isBulkRejecting}
+                  >
+                    {isBulkRejecting ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <X className="h-3.5 w-3.5" />
+                    )}
+                    Reject ({selectedIds.length})
+                  </Button>
+                </>
+              )}
+              <TestimoniesFilters
+                search={search}
+                status={statusFilter}
+                onSearchChange={(value) => {
+                  setSearch(value);
+                  setPage(1);
+                }}
+                onStatusChange={(value) => {
+                  setStatusFilter(value);
+                  setPage(1);
+                }}
+              />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -101,6 +165,9 @@ export default function TestimoniesPage() {
             isDeleting={isDeleting}
             isApproving={isApproving}
             isRejecting={isRejecting}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onToggleAll={toggleAll}
           />
           {meta && meta.totalPages > 1 && (
             <Pagination

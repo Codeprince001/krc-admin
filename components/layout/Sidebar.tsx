@@ -38,6 +38,7 @@ import {
   Activity,
   Mail,
   HandHelping,
+  Tv2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -97,6 +98,12 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    title: "Advertisements",
+    items: [
+      { title: "Manage Ads", href: "/advertisements", icon: Tv2 },
+    ],
+  },
+  {
     title: "Engagement",
     items: [
       { title: "Bible Games", href: "/games", icon: Gamepad2 },
@@ -121,6 +128,9 @@ const navGroups: NavGroup[] = [
       { title: "Analytics", href: "/analytics", icon: BarChart3 },
       { title: "Settings", href: "/settings", icon: Settings },
       { title: "Email Templates", href: "/settings/email-templates", icon: Mail },
+      { title: "Activity Log", href: "/settings/activity-log", icon: Activity },
+      { title: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck },
+      { title: "Reports & Export", href: "/financial/reports", icon: FileText },
     ],
   },
 ];

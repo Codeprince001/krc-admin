@@ -51,5 +51,6 @@ export const endpoints = {
   games: `${API_BASE_URL}/games`,
   wordsOfWisdom: `${API_BASE_URL}/words-of-wisdom`,
   wordsOfKnowledge: `${API_BASE_URL}/words-of-knowledge`,
+  advertisements: `${API_BASE_URL}/advertisements`,
 };
 

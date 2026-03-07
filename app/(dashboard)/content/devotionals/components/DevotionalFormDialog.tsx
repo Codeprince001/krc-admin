@@ -69,6 +69,7 @@ export function DevotionalFormDialog({
       setValue("author", devotional.author);
       setValue("image", devotional.image || "");
       setValue("prayer", devotional.prayer || "");
+      setValue("publishAt" as any, (devotional as any).publishAt || "");
     } else {
       reset();
       setContent("");
@@ -81,6 +82,7 @@ export function DevotionalFormDialog({
       ...data,
       content: content,
       image: data.image || undefined,
+      publishAt: (data as any).publishAt || undefined,
     });
   };
 
@@ -214,6 +216,21 @@ export function DevotionalFormDialog({
               placeholder="Prayer text (optional)"
               rows={3}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="publishAt">
+                Publish At{" "}
+                <span className="text-muted-foreground text-xs">(scheduled)</span>
+              </Label>
+              <Input
+                id="publishAt"
+                type="datetime-local"
+                {...register("publishAt" as any)}
+              />
+              <p className="text-xs text-muted-foreground">Leave blank to publish immediately</p>
+            </div>
           </div>
 
           <DialogFooter>

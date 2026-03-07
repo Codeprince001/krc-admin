@@ -113,5 +113,7 @@ export interface QueryOrdersParams {
   status?: OrderStatus;
   deliveryType?: DeliveryType;
   search?: string;
+  startDate?: string;
+  endDate?: string;
 }
 

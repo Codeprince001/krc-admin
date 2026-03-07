@@ -14,6 +14,7 @@ interface PendingAlertsProps {
       testimonies: { pending: number };
     };
     books: { lowStock: number };
+    counseling: { scheduled: number };
   };
 }
 
@@ -42,6 +43,12 @@ export function PendingAlerts({ stats }: PendingAlertsProps) {
       count: stats.books.lowStock,
       href: "/content/books",
       show: stats.books.lowStock > 0,
+    },
+    {
+      label: "Scheduled Counseling Sessions",
+      count: stats.counseling?.scheduled ?? 0,
+      href: "/community/counseling",
+      show: (stats.counseling?.scheduled ?? 0) > 0,
     },
   ].filter((alert) => alert.show);
 

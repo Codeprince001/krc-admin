@@ -20,6 +20,7 @@ export const announcementSchema = z.object({
   isPinned: z.boolean().default(false),
   image: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   expiresAt: z.string().optional(),
+  publishAt: z.string().optional(),
 });
 
 export type AnnouncementFormData = z.infer<typeof announcementSchema>;

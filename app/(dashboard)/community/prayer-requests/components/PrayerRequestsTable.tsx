@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,10 @@ interface PrayerRequestsTableProps {
   onDelete: (id: string) => void;
   onViewDetails: (request: PrayerRequest) => void;
   isDeleting?: boolean;
+  // Bulk selection
+  selectedIds?: string[];
+  onToggleSelect?: (id: string) => void;
+  onToggleAll?: () => void;
 }
 
 export function PrayerRequestsTable({
@@ -41,6 +46,9 @@ export function PrayerRequestsTable({
   onDelete,
   onViewDetails,
   isDeleting = false,
+  selectedIds = [],
+  onToggleSelect,
+  onToggleAll,
 }: PrayerRequestsTableProps) {
   if (isLoading) {
     return <LoadingState message="Loading prayer requests..." />;
@@ -55,6 +63,9 @@ export function PrayerRequestsTable({
       />
     );
   }
+
+  const allSelected = prayerRequests.length > 0 && selectedIds.length === prayerRequests.length;
+  const someSelected = selectedIds.length > 0 && !allSelected;
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -76,6 +87,16 @@ export function PrayerRequestsTable({
       <Table>
         <TableHeader>
           <TableRow>
+            {onToggleAll && (
+              <TableHead className="w-10">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={onToggleAll}
+                  aria-label="Select all"
+                  data-state={someSelected ? "indeterminate" : undefined}
+                />
+              </TableHead>
+            )}
             <TableHead className="min-w-[300px]">Request</TableHead>
             <TableHead className="min-w-[150px]">User</TableHead>
             <TableHead className="min-w-[150px]">Status</TableHead>
@@ -86,7 +107,19 @@ export function PrayerRequestsTable({
         </TableHeader>
         <TableBody>
           {prayerRequests.map((request) => (
-            <TableRow key={request.id} className="hover:bg-muted/50">
+            <TableRow
+              key={request.id}
+              className={`hover:bg-muted/50 ${selectedIds.includes(request.id) ? "bg-blue-50/50" : ""}`}
+            >
+              {onToggleSelect && (
+                <TableCell>
+                  <Checkbox
+                    checked={selectedIds.includes(request.id)}
+                    onCheckedChange={() => onToggleSelect(request.id)}
+                    aria-label={`Select ${request.title}`}
+                  />
+                </TableCell>
+              )}
               <TableCell>
                 <div className="font-semibold">{request.title}</div>
               </TableCell>

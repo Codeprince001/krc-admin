@@ -43,13 +43,15 @@ export const ordersService = {
   },
 
   async exportOrders(params: QueryOrdersParams = {}): Promise<OrdersResponse> {
-    const { page = 1, limit = 10000, status, deliveryType, search } = params;
+    const { page = 1, limit = 10000, status, deliveryType, search, startDate, endDate } = params;
     const queryParams = new URLSearchParams();
     queryParams.append("page", page.toString());
     queryParams.append("limit", limit.toString());
     if (status) queryParams.append("status", status);
     if (deliveryType) queryParams.append("deliveryType", deliveryType);
     if (search) queryParams.append("search", search);
+    if (startDate) queryParams.append("startDate", startDate);
+    if (endDate) queryParams.append("endDate", endDate);
 
     const url = `${endpoints.orders}/export?${queryParams.toString()}`;
     const response = await apiClient.get<any>(url);

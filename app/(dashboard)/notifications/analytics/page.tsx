@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, TrendingUp, Eye, MousePointer, Send, CheckCircle2 } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
-import { subDays, format } from "date-fns";
+import { subDays } from "date-fns";
 import {
   BarChart,
   Bar,
@@ -20,13 +20,20 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
   LineChart,
   Line,
-  PieChart,
-  Pie,
   Cell,
 } from "recharts";
+
+interface DailyStatPoint {
+  date: string;
+  sent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+}
 
 interface OverallStats {
   totalSent: number;
@@ -37,6 +44,7 @@ interface OverallStats {
   openRate: number;
   clickThroughRate: number;
   averageTimeToOpen: number;
+  dailyStats?: DailyStatPoint[];
 }
 
 interface CampaignAnalytics {
@@ -68,26 +76,23 @@ export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState("7");
 
   // Fetch overall stats
-  const { data: stats, isLoading: statsLoading } = useQuery<OverallStats>({
+  const { data: stats, isLoading: statsLoading, isError: statsError } = useQuery<OverallStats>({
     queryKey: ["notification-analytics", "overall", dateRange],
     queryFn: async () => {
-      try {
-        const startDate = subDays(new Date(), parseInt(dateRange));
-        const params = new URLSearchParams({
-          startDate: startDate.toISOString(),
-          endDate: new Date().toISOString(),
-        });
-        const response = await apiClient.get<OverallStats>(`/notifications/analytics/overall/stats?${params}`);
-        return response || defaultStats;
-      } catch {
-        return defaultStats;
-      }
+      const startDate = subDays(new Date(), parseInt(dateRange));
+      const params = new URLSearchParams({
+        startDate: startDate.toISOString(),
+        endDate: new Date().toISOString(),
+      });
+      const response = await apiClient.get<OverallStats>(`/notifications/analytics/overall/stats?${params}`);
+      return response ?? defaultStats;
     },
+    retry: 1,
   });
 
   // Fetch campaign analytics
   const { data: campaigns } = useQuery<CampaignAnalytics[]>({
-    queryKey: ["notification-analytics", "campaigns"],
+    queryKey: ["notification-analytics", "campaigns", dateRange],
     queryFn: async () => {
       try {
         const response = await apiClient.get<any[]>("/notifications/campaigns");
@@ -182,6 +187,18 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
+      ) : statsError ? (
+        <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+          <p className="text-muted-foreground text-sm">
+            Could not load analytics data. Check your connection or permissions and try again.
+          </p>
+          <button
+            className="text-sm underline text-muted-foreground hover:text-foreground"
+            onClick={() => window.location.reload()}
+          >
+            Reload page
+          </button>
+        </div>
       ) : (
         <>
           {/* Overview Cards */}
@@ -238,6 +255,45 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Daily Trend */}
+          {stats?.dailyStats && stats.dailyStats.length > 1 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Daily Trend</CardTitle>
+                <CardDescription>
+                  Notification activity over the selected period
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={stats.dailyStats}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(v: string) => {
+                        const [, month, day] = v.split("-");
+                        return `${month}/${day}`;
+                      }}
+                      tick={{ fontSize: 11 }}
+                    />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <Tooltip
+                      labelFormatter={(label: string) => {
+                        const [year, month, day] = label.split("-");
+                        return `${month}/${day}/${year}`;
+                      }}
+                    />
+                    <Legend />
+                    <Line type="monotone" dataKey="sent" stroke="#3b82f6" dot={false} name="Sent" />
+                    <Line type="monotone" dataKey="delivered" stroke="#10b981" dot={false} name="Delivered" />
+                    <Line type="monotone" dataKey="opened" stroke="#f59e0b" dot={false} name="Opened" />
+                    <Line type="monotone" dataKey="clicked" stroke="#ef4444" dot={false} name="Clicked" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Charts */}
           <div className="grid gap-6 lg:grid-cols-2">

@@ -50,6 +50,18 @@ export function usePrayerRequests(params: UsePrayerRequestsParams) {
     },
   });
 
+  const bulkUpdateMutation = useMutation({
+    mutationFn: ({ ids, status }: { ids: string[]; status: string }) =>
+      prayerRequestsService.bulkUpdateStatus(ids, status),
+    onSuccess: () => {
+      toast.success("Prayer requests updated");
+      queryClient.invalidateQueries({ queryKey: ["prayer-requests"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update prayer requests");
+    },
+  });
+
   return {
     prayerRequests: data?.data || [],
     meta: data?.meta,
@@ -58,8 +70,10 @@ export function usePrayerRequests(params: UsePrayerRequestsParams) {
     refetch,
     updatePrayerRequest: updateMutation.mutate,
     deletePrayerRequest: deleteMutation.mutate,
+    bulkUpdatePrayerRequests: bulkUpdateMutation.mutate,
     isUpdating: updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
+    isBulkUpdating: bulkUpdateMutation.isPending,
   };
 }
 

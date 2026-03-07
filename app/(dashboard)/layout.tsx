@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -17,17 +17,22 @@ export default function DashboardLayout({
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
   const { sidebarOpen } = useUIStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Only redirect if auth check is complete and user is not authenticated
     // isLoading will be true while fetching profile
-    if (!isLoading && !isAuthenticated) {
+    if (mounted && !isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, mounted, router]);
 
-  // Show loading while checking auth
-  if (isLoading) {
+  // Render a consistent placeholder until the client has mounted
+  if (!mounted || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -35,7 +40,7 @@ export default function DashboardLayout({
     );
   }
 
-  // Don't render anything if not authenticated (redirect is happening)
+  // Don't render the layout while the redirect is in progress
   if (!isAuthenticated) {
     return null;
   }
