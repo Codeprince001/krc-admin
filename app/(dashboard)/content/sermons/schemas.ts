@@ -27,6 +27,7 @@ export const sermonSchema = z.object({
   facebookVideoId: z.string().optional().or(z.literal("")),
   isLive: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
+  publishAt: z.string().optional(),
 });
 
 export type SermonFormData = z.infer<typeof sermonSchema>;
