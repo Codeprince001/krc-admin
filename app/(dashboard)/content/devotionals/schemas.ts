@@ -14,6 +14,7 @@ export const devotionalSchema = z.object({
   author: z.string().min(3, "Author name is required"),
   image: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   prayer: z.string().optional(),
+  publishAt: z.string().optional(),
 });
 
 export type DevotionalFormData = z.infer<typeof devotionalSchema>;
