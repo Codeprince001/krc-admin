@@ -1,11 +1,17 @@
 import { format as dateFnsFormat, formatDistanceToNow } from "date-fns";
 
-export const formatDate = (date: string | Date, format = "PPp") => {
-  return dateFnsFormat(new Date(date), format);
+export const formatDate = (date: string | Date | null | undefined, format = "PPp") => {
+  if (!date) return "—";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "—";
+  return dateFnsFormat(d, format);
 };
 
-export const formatRelativeTime = (date: string | Date) => {
-  return formatDistanceToNow(new Date(date), { addSuffix: true });
+export const formatRelativeTime = (date: string | Date | null | undefined) => {
+  if (!date) return "—";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "—";
+  return formatDistanceToNow(d, { addSuffix: true });
 };
 
 export const formatCurrency = (amount: number, currency = "NGN") => {
