@@ -22,6 +22,7 @@ export interface CreateAnnouncementRequest {
   isPinned?: boolean;
   image?: string;
   expiresAt?: string;
+  publishAt?: string;
 }
 
 export interface UpdateAnnouncementRequest extends Partial<CreateAnnouncementRequest> {}
