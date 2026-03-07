@@ -58,5 +58,15 @@ export const prayerRequestsService = {
   async deletePrayerRequest(id: string): Promise<void> {
     return apiClient.delete<void>(`${endpoints.prayerRequests}/${id}`);
   },
+
+  /** Bulk status update: runs individual updates in parallel */
+  async bulkUpdateStatus(ids: string[], status: string): Promise<void> {
+    const backendStatus = mapStatusToBackend(status);
+    await Promise.all(
+      ids.map((id) =>
+        apiClient.put(`${endpoints.prayerRequests}/${id}`, { status: backendStatus })
+      )
+    );
+  },
 };
 
