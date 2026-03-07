@@ -84,6 +84,7 @@ export function SermonFormDialog({
       setValue("facebookVideoId", sermon.facebookVideoId || "");
       setValue("isLive", sermon.isLive);
       setValue("isFeatured", sermon.isFeatured);
+      setValue("publishAt" as any, (sermon as any).publishAt || "");
     } else {
       reset({
         isFeatured: false,
@@ -116,6 +117,7 @@ export function SermonFormDialog({
       facebookVideoId: cleanValue(data.facebookVideoId),
       isLive: data.isLive,
       isFeatured: data.isFeatured,
+      publishAt: cleanValue((data as any).publishAt),
     });
   };
 
@@ -289,6 +291,21 @@ export function SermonFormDialog({
                 label="Upload thumbnail"
                 context="sermons"
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="publishAt">
+                Publish At{" "}
+                <span className="text-muted-foreground text-xs">(scheduled)</span>
+              </Label>
+              <Input
+                id="publishAt"
+                type="datetime-local"
+                {...register("publishAt" as any)}
+              />
+              <p className="text-xs text-muted-foreground">Leave blank to publish immediately</p>
             </div>
           </div>
 
