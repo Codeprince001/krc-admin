@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check, X, Trash2, User, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
 import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
@@ -28,6 +29,10 @@ interface TestimoniesTableProps {
   isDeleting?: boolean;
   isApproving?: boolean;
   isRejecting?: boolean;
+  // Bulk selection
+  selectedIds?: string[];
+  onToggleSelect?: (id: string) => void;
+  onToggleAll?: () => void;
 }
 
 export function TestimoniesTable({
@@ -39,6 +44,9 @@ export function TestimoniesTable({
   isDeleting = false,
   isApproving = false,
   isRejecting = false,
+  selectedIds = [],
+  onToggleSelect,
+  onToggleAll,
 }: TestimoniesTableProps) {
   const router = useRouter();
 
@@ -55,6 +63,9 @@ export function TestimoniesTable({
       />
     );
   }
+
+  const allSelected = testimonies.length > 0 && selectedIds.length === testimonies.length;
+  const someSelected = selectedIds.length > 0 && !allSelected;
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -78,6 +89,16 @@ export function TestimoniesTable({
       <Table>
         <TableHeader>
           <TableRow>
+            {onToggleAll && (
+              <TableHead className="w-10">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={onToggleAll}
+                  aria-label="Select all"
+                  data-state={someSelected ? "indeterminate" : undefined}
+                />
+              </TableHead>
+            )}
             <TableHead className="min-w-[300px]">Testimony</TableHead>
             <TableHead className="min-w-[150px]">Author</TableHead>
             <TableHead className="min-w-[120px]">Status</TableHead>
@@ -87,9 +108,21 @@ export function TestimoniesTable({
         </TableHeader>
         <TableBody>
           {testimonies.map((testimony) => (
-            <TableRow key={testimony.id} className="hover:bg-muted/50">
+            <TableRow
+              key={testimony.id}
+              className={`hover:bg-muted/50 ${selectedIds.includes(testimony.id) ? "bg-blue-50/50" : ""}`}
+            >
+              {onToggleSelect && (
+                <TableCell>
+                  <Checkbox
+                    checked={selectedIds.includes(testimony.id)}
+                    onCheckedChange={() => onToggleSelect(testimony.id)}
+                    aria-label={`Select ${testimony.title}`}
+                  />
+                </TableCell>
+              )}
               <TableCell>
-                <div 
+                <div
                   className="flex items-center gap-3 cursor-pointer"
                   onClick={() => router.push(`/community/testimonies/${testimony.id}`)}
                 >
