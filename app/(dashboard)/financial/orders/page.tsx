@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,6 +55,7 @@ import {
   Package,
 } from "lucide-react";
 import type { Order, OrderStatus, DeliveryType, PaymentStatus } from "@/types/api/orders.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 const STATUS_FILTERS = [
   { value: "all", label: "All Orders" },
@@ -89,7 +90,7 @@ const PAYMENT_STATUS_COLORS: Record<string, string> = {
   REFUNDED: "bg-orange-100 text-orange-800",
 };
 
-export default function OrdersPage() {
+function OrdersPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -506,3 +507,11 @@ export default function OrdersPage() {
   );
 }
 
+
+export default function OrdersPage() {
+  return (
+    <PermissionGuard permission="orders">
+      <OrdersPageContent />
+    </PermissionGuard>
+  );
+}
