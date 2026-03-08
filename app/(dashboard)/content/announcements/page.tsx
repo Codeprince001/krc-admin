@@ -12,13 +12,14 @@ import { AnnouncementsTable } from "./components/AnnouncementsTable";
 import { AnnouncementsFilters } from "./components/AnnouncementsFilters";
 import { AnnouncementFormDialog } from "./components/AnnouncementFormDialog";
 import { ANNOUNCEMENT_PAGE_SIZE } from "./constants";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   Announcement,
   CreateAnnouncementRequest,
   UpdateAnnouncementRequest,
 } from "@/types";
 
-export default function AnnouncementsPage() {
+function AnnouncementsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -149,5 +150,13 @@ export default function AnnouncementsPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function AnnouncementsPage() {
+  return (
+    <PermissionGuard permission="announcements">
+      <AnnouncementsPageContent />
+    </PermissionGuard>
   );
 }
