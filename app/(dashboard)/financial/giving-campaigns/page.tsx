@@ -23,6 +23,7 @@ import {
 import { Plus, Pencil, Trash2, Loader2, Target } from "lucide-react";
 import { toast } from "sonner";
 import { givingManagementService } from "@/lib/api/services/giving-management.service";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   GivingCampaign,
   CreateGivingCampaignInput,
@@ -45,7 +46,7 @@ function slugify(s: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export default function GivingCampaignsPage() {
+function GivingCampaignsPageContent() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<GivingCampaign | null>(null);
@@ -369,5 +370,13 @@ export default function GivingCampaignsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function GivingCampaignsPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <GivingCampaignsPageContent />
+    </PermissionGuard>
   );
 }
