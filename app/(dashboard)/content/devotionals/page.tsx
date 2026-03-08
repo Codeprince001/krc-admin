@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +13,9 @@ import { DevotionalsFilters } from "./components/DevotionalsFilters";
 import { DevotionalFormDialog } from "./components/DevotionalFormDialog";
 import { DEVOTIONALS_PAGE_SIZE } from "./constants";
 import type { Devotional, CreateDevotionalRequest, UpdateDevotionalRequest } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function DevotionalsPage() {
+function DevotionalsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -134,5 +135,13 @@ export default function DevotionalsPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function DevotionalsPage() {
+  return (
+    <PermissionGuard permission="devotionals">
+      <DevotionalsPageContent />
+    </PermissionGuard>
   );
 }
