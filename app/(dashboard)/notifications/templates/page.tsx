@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -36,6 +36,7 @@ import { Loader2, Plus, Pencil, Trash2, FileText, Eye } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { formatDistanceToNow } from "date-fns";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 interface Template {
   id: string;
@@ -61,7 +62,7 @@ const notificationTypes = [
   { value: "PRAYER_MEETING", label: "Prayer Meeting" },
 ];
 
-export default function TemplatesPage() {
+function TemplatesPageContent() {
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -502,5 +503,13 @@ export default function TemplatesPage() {
         isLoading={deleteMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function TemplatesPage() {
+  return (
+    <PermissionGuard permission="notifications">
+      <TemplatesPageContent />
+    </PermissionGuard>
   );
 }
