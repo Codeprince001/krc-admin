@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +13,9 @@ import { SermonsFilters } from "./components/SermonsFilters";
 import { SermonFormDialog } from "./components/SermonFormDialog";
 import { SERMONS_PAGE_SIZE } from "./constants";
 import type { Sermon, CreateSermonRequest, UpdateSermonRequest } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function SermonsPage() {
+function SermonsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -141,5 +142,13 @@ export default function SermonsPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function SermonsPage() {
+  return (
+    <PermissionGuard permission="sermons">
+      <SermonsPageContent />
+    </PermissionGuard>
   );
 }
