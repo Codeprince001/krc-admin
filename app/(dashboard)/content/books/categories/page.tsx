@@ -8,13 +8,14 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useBookCategories } from "./hooks/useBookCategories";
 import { CategoriesTable } from "./components/CategoriesTable";
 import { CategoryFormDialog } from "./components/CategoryFormDialog";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   BookCategory,
   CreateBookCategoryRequest,
   UpdateBookCategoryRequest,
 } from "@/types";
 
-export default function BookCategoriesPage() {
+function BookCategoriesPageContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<BookCategory | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
@@ -105,5 +106,13 @@ export default function BookCategoriesPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function BookCategoriesPage() {
+  return (
+    <PermissionGuard permission="books">
+      <BookCategoriesPageContent />
+    </PermissionGuard>
   );
 }
