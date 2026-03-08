@@ -4,19 +4,26 @@ import type { NextRequest } from "next/server";
 const ADMIN_COOKIE_NAME = "admin_access_token";
 const ALLOWED_ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN"];
 
+interface JwtPayload {
+  role?: string;
+  roleSlug?: string;
+  canAccessAdmin?: boolean;
+  exp?: number;
+}
+
 /**
  * Decode JWT payload without verification (for role check only).
  * Backend still verifies the token on every API call.
  * Returns null if token is invalid or malformed.
  */
-function decodeJwtPayload(token: string): { role?: string; exp?: number } | null {
+function decodeJwtPayload(token: string): JwtPayload | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
     const payload = parts[1];
     const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
     const decoded = atob(base64);
-    return JSON.parse(decoded) as { role?: string; exp?: number };
+    return JSON.parse(decoded) as JwtPayload;
   } catch {
     return null;
   }
@@ -26,8 +33,8 @@ function decodeJwtPayload(token: string): { role?: string; exp?: number } | null
  * Server-side route protection for the admin panel.
  * - Protects all dashboard routes (everything except /login and static assets).
  * - Requires admin_access_token cookie (set by API client on login).
- * - Optionally validates that JWT payload role is ADMIN or SUPER_ADMIN
- *   so that members cannot see dashboard UI even with a valid token.
+ * - Allows access if user has canAccessAdmin OR role is ADMIN/SUPER_ADMIN
+ *   (supports custom roles with admin access).
  */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -55,7 +62,12 @@ export function proxy(request: NextRequest) {
   }
 
   const payload = decodeJwtPayload(token);
-  if (payload?.role && !ALLOWED_ADMIN_ROLES.includes(payload.role)) {
+  const roleSlug = payload?.roleSlug ?? payload?.role;
+  const canAccessAdmin = payload?.canAccessAdmin === true;
+  const isAllowed =
+    canAccessAdmin || (roleSlug && ALLOWED_ADMIN_ROLES.includes(roleSlug));
+
+  if (!isAllowed) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("unauthorized", "1");
     return NextResponse.redirect(loginUrl);
