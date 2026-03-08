@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +11,9 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { Loader2, User, Lock, Mail, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function SettingsPage() {
+function SettingsPageContent() {
   const queryClient = useQueryClient();
   const { user: storeUser, setUser } = useAuthStore();
 
@@ -289,5 +290,13 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <PermissionGuard permission="settings">
+      <SettingsPageContent />
+    </PermissionGuard>
   );
 }
