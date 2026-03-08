@@ -19,6 +19,7 @@ import { useAdvertisements, useAdStats } from "./hooks/useAdvertisements";
 import { AdvertisementsTable } from "./components/AdvertisementsTable";
 import { AdvertisementFormDialog } from "./components/AdvertisementFormDialog";
 import { AD_PAGE_SIZE, AD_STATUS_OPTIONS, AD_PLACEMENT_OPTIONS } from "./constants";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   Advertisement,
   CreateAdvertisementRequest,
@@ -60,7 +61,7 @@ function StatCard({
   );
 }
 
-export default function AdvertisementsPage() {
+function AdvertisementsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -268,5 +269,13 @@ export default function AdvertisementsPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function AdvertisementsPage() {
+  return (
+    <PermissionGuard permission="advertisements">
+      <AdvertisementsPageContent />
+    </PermissionGuard>
   );
 }
