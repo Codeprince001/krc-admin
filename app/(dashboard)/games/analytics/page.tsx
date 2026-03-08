@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -30,10 +30,11 @@ import {
 import { gamesService } from "@/lib/api/services/games.service";
 import { Loader2 } from "lucide-react";
 import { formatNumber } from "@/lib/utils/format";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 const CHART_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#06b6d4", "#a855f7"];
 
-export default function GamesAnalyticsPage() {
+function GamesAnalyticsPageContent() {
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ["games-admin-stats"],
     queryFn: () => gamesService.getStats(),
@@ -321,5 +322,13 @@ export default function GamesAnalyticsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function GamesAnalyticsPage() {
+  return (
+    <PermissionGuard permission="games">
+      <GamesAnalyticsPageContent />
+    </PermissionGuard>
   );
 }
