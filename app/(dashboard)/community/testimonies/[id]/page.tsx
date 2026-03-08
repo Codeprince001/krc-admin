@@ -26,8 +26,9 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
 import type { Testimony } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function TestimonyDetailPage() {
+function TestimonyDetailPageContent() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -598,5 +599,13 @@ export default function TestimonyDetailPage() {
         isLoading={updateMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function TestimonyDetailPage() {
+  return (
+    <PermissionGuard permission="testimonies">
+      <TestimonyDetailPageContent />
+    </PermissionGuard>
   );
 }
