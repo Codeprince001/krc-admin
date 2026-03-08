@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +10,9 @@ import { GivingDetailsDialog } from "./components/GivingDetailsDialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { GivingStats } from "./components/GivingStats";
 import type { Giving, GivingCategory } from "@/types/api/giving.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function GivingPage() {
+function GivingPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -132,5 +133,13 @@ export default function GivingPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function GivingPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <GivingPageContent />
+    </PermissionGuard>
   );
 }
