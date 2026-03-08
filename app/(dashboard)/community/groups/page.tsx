@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,6 +38,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 const groupSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters").max(200, "Name must be less than 200 characters"),
@@ -60,7 +61,7 @@ const GROUP_CATEGORIES = [
   "OTHER",
 ];
 
-export default function GroupsPage() {
+function GroupsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -420,5 +421,13 @@ export default function GroupsPage() {
         isLoading={deleteMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function GroupsPage() {
+  return (
+    <PermissionGuard permission="groups">
+      <GroupsPageContent />
+    </PermissionGuard>
   );
 }
