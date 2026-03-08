@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useDashboardStats } from "@/lib/hooks/useAdmin";
 import { StatsCard } from "@/components/dashboard/StatsCard";
@@ -27,8 +27,9 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatNumber } from "@/lib/utils/format";
 import { Loader2 } from "lucide-react";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const { data: stats, isLoading } = useDashboardStats();
 
   if (isLoading) {
@@ -224,3 +225,11 @@ export default function DashboardPage() {
   );
 }
 
+
+export default function DashboardPage() {
+  return (
+    <PermissionGuard permission="dashboard">
+      <DashboardPageContent />
+    </PermissionGuard>
+  );
+}
