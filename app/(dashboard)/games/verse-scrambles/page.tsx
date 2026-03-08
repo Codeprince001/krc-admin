@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -19,8 +19,9 @@ import { DifficultyLevel, type VerseScramble } from '@/types/api/games';
 import { VerseScrambleDialog } from './components/VerseScrambleDialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { VerseScramblePreview } from './components/VerseScramblePreview';
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function VerseScramblesPage() {
+function VerseScramblesPageContent() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -188,3 +189,11 @@ export default function VerseScramblesPage() {
   );
 }
 
+
+export default function VerseScramblesPage() {
+  return (
+    <PermissionGuard permission="games">
+      <VerseScramblesPageContent />
+    </PermissionGuard>
+  );
+}
