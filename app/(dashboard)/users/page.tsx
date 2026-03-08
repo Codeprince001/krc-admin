@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -22,8 +22,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function UsersPage() {
+function UsersPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const limit = 10;
@@ -221,3 +222,11 @@ export default function UsersPage() {
   );
 }
 
+
+export default function UsersPage() {
+  return (
+    <PermissionGuard permission="users">
+      <UsersPageContent />
+    </PermissionGuard>
+  );
+}
