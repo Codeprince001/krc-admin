@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -13,8 +13,9 @@ import { useTestimonies } from "./hooks/useTestimonies";
 import { TestimoniesTable } from "./components/TestimoniesTable";
 import { TestimoniesFilters } from "./components/TestimoniesFilters";
 import { TESTIMONIES_PAGE_SIZE } from "./constants";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function TestimoniesPage() {
+function TestimoniesPageContent() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -203,5 +204,13 @@ export default function TestimoniesPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function TestimoniesPage() {
+  return (
+    <PermissionGuard permission="testimonies">
+      <TestimoniesPageContent />
+    </PermissionGuard>
   );
 }
