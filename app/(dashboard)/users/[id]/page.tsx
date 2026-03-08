@@ -1,9 +1,10 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { usersService } from "@/lib/api/services/users.service";
+import { rolesService } from "@/lib/api/services/roles.service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +16,9 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserRoleSchema, type UpdateUserRoleInput } from "@/lib/utils/validations";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function UserDetailPage({
+function UserDetailPageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -28,6 +30,11 @@ export default function UserDetailPage({
   const { data: user, isLoading } = useQuery({
     queryKey: ["user", resolvedParams.id],
     queryFn: () => usersService.getUserById(resolvedParams.id),
+  });
+
+  const { data: roles = [] } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => rolesService.list(),
   });
 
   const toggleStatusMutation = useMutation({
@@ -61,12 +68,17 @@ export default function UserDetailPage({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<UpdateUserRoleInput>({
     resolver: zodResolver(updateUserRoleSchema),
-    defaultValues: {
-      role: user?.role || "USER",
-    },
   });
+
+  useEffect(() => {
+    if (user && roles.length > 0) {
+      const currentRoleId = (user as { roleId?: string }).roleId;
+      reset({ roleId: currentRoleId || roles[0]?.id });
+    }
+  }, [user, roles, reset]);
 
   const onSubmit = (data: UpdateUserRoleInput) => {
     updateRoleMutation.mutate(data);
@@ -165,22 +177,21 @@ export default function UserDetailPage({
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <Label htmlFor="role">Update Role</Label>
+                <Label htmlFor="roleId">Update Role</Label>
                 <select
-                  id="role"
-                  {...register("role")}
+                  id="roleId"
+                  {...register("roleId")}
                   className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <option value="USER">User</option>
-                  <option value="MEMBER">Member</option>
-                  <option value="WORKER">Worker</option>
-                  <option value="PASTOR">Pastor</option>
-                  <option value="ADMIN">Admin</option>
-                  <option value="SUPER_ADMIN">Super Admin</option>
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name} {r.canAccessAdmin ? "(Admin access)" : ""}
+                    </option>
+                  ))}
                 </select>
-                {errors.role && (
+                {errors.roleId && (
                   <p className="mt-1 text-sm text-destructive">
-                    {errors.role.message}
+                    {errors.roleId.message}
                   </p>
                 )}
               </div>
@@ -222,3 +233,14 @@ export default function UserDetailPage({
   );
 }
 
+export default function UserDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <PermissionGuard permission="users">
+      <UserDetailPageContent params={params} />
+    </PermissionGuard>
+  );
+}
