@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { downloadExcel } from "@/lib/utils/exportExcel";
 import { formatDate } from "@/lib/utils/format";
 import { givingManagementService } from "@/lib/api/services/giving-management.service";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   GivingTransaction,
   GivingTransactionStats,
@@ -39,7 +40,7 @@ function formatCurrency(amount: number, currency = "NGN") {
   }).format(amount);
 }
 
-export default function GivingTransactionsPage() {
+function GivingTransactionsPageContent() {
   const [page, setPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [filters, setFilters] = useState<QueryGivingTransactionsParams>({
@@ -360,5 +361,13 @@ export default function GivingTransactionsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function GivingTransactionsPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <GivingTransactionsPageContent />
+    </PermissionGuard>
   );
 }
