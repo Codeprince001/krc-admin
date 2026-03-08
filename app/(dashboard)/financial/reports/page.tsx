@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -28,6 +28,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import type { OrderStatus } from "@/types/api/orders.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 // ─── Giving Report ────────────────────────────────────────────────────────────
 function GivingExportCard() {
@@ -353,7 +354,7 @@ function UsersExportCard() {
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-export default function ReportsPage() {
+function ReportsPageContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -376,5 +377,13 @@ export default function ReportsPage() {
         <UsersExportCard />
       </div>
     </div>
+  );
+}
+
+export default function ReportsPage() {
+  return (
+    <PermissionGuard permission="reports">
+      <ReportsPageContent />
+    </PermissionGuard>
   );
 }
