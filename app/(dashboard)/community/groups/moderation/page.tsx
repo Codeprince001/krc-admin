@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -45,10 +45,11 @@ import type {
   ReportStatus,
 } from "@/types";
 import NextImage from "next/image";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 type TabType = "queue" | "reported";
 
-export default function GroupModerationPage() {
+function GroupModerationPageContent() {
   const [activeTab, setActiveTab] = useState<TabType>("queue");
   const [page, setPage] = useState(1);
   const [reportedPage, setReportedPage] = useState(1);
@@ -607,3 +608,11 @@ export default function GroupModerationPage() {
   );
 }
 
+
+export default function GroupModerationPage() {
+  return (
+    <PermissionGuard permission="groups">
+      <GroupModerationPageContent />
+    </PermissionGuard>
+  );
+}
