@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +10,9 @@ import { MediaViewDialog } from "./components/MediaViewDialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { MediaStats } from "./components/MediaStats";
 import type { Media, MediaType } from "@/types/api/media.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function MediaPage() {
+function MediaPageContent() {
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
@@ -123,5 +124,13 @@ export default function MediaPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function MediaPage() {
+  return (
+    <PermissionGuard permission="media">
+      <MediaPageContent />
+    </PermissionGuard>
   );
 }
