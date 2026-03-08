@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +13,9 @@ import { WordsOfWisdomFilters } from "./components/WordsOfWisdomFilters";
 import { WordOfWisdomFormDialog } from "./components/WordOfWisdomFormDialog";
 import { WORDS_OF_WISDOM_PAGE_SIZE } from "./constants";
 import type { WordOfWisdom, CreateWordOfWisdomRequest, UpdateWordOfWisdomRequest } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function WordsOfWisdomPage() {
+function WordsOfWisdomPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -137,3 +138,11 @@ export default function WordsOfWisdomPage() {
   );
 }
 
+
+export default function WordsOfWisdomPage() {
+  return (
+    <PermissionGuard permission="devotionals">
+      <WordsOfWisdomPageContent />
+    </PermissionGuard>
+  );
+}
