@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,8 +13,9 @@ import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { toast } from "sonner";
 import { ArrowLeft, Save, Upload, X, Loader2 } from "lucide-react";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function CreateTestimonyPage() {
+function CreateTestimonyPageContent() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -407,5 +408,13 @@ export default function CreateTestimonyPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function CreateTestimonyPage() {
+  return (
+    <PermissionGuard permission="testimonies">
+      <CreateTestimonyPageContent />
+    </PermissionGuard>
   );
 }
