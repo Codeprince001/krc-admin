@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +13,9 @@ import { EventsFilters } from "./components/EventsFilters";
 import { EventFormDialog } from "./components/EventFormDialog";
 import { EVENTS_PAGE_SIZE } from "./constants";
 import type { Event, CreateEventRequest, UpdateEventRequest } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function EventsPage() {
+function EventsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -148,5 +149,13 @@ export default function EventsPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function EventsPage() {
+  return (
+    <PermissionGuard permission="events">
+      <EventsPageContent />
+    </PermissionGuard>
   );
 }
