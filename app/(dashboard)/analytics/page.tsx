@@ -8,6 +8,7 @@ import { UserRoleChart } from "@/components/dashboard/UserRoleChart";
 import { ContentOverview } from "@/components/dashboard/ContentOverview";
 import { CommunityStats } from "@/components/dashboard/CommunityStats";
 import { formatCurrency, formatNumber } from "@/lib/utils/format";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import {
   Users,
   DollarSign,
@@ -21,7 +22,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-export default function AnalyticsPage() {
+function AnalyticsPageContent() {
   const { data: stats, isLoading } = useDashboardStats();
 
   if (isLoading) {
@@ -169,5 +170,13 @@ export default function AnalyticsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AnalyticsPage() {
+  return (
+    <PermissionGuard permission="reports">
+      <AnalyticsPageContent />
+    </PermissionGuard>
   );
 }
