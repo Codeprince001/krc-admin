@@ -3,20 +3,38 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usersService } from "@/lib/api/services/users.service";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { rolesService } from "@/lib/api/services/roles.service";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { createUserSchema, type CreateUserInput } from "@/lib/utils/validations";
+import {
+  createUserSchema,
+  type CreateUserInput,
+} from "@/lib/utils/validations";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function NewUserPage() {
+const DEFAULT_ROLE_ID = "role_member";
+
+function NewUserPageContent() {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { data: roles = [], isLoading: loadingRoles } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => rolesService.list(),
+  });
 
   const {
     register,
@@ -25,7 +43,7 @@ export default function NewUserPage() {
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
-      role: "MEMBER",
+      roleId: DEFAULT_ROLE_ID,
     },
   });
 
@@ -50,9 +68,12 @@ export default function NewUserPage() {
             Back to Users
           </Link>
         </Button>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Add User</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          Add User
+        </h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Create a new user account. They can sign in with the email and password you set.
+          Create a new user account. They can log in with the email and password
+          you set.
         </p>
       </div>
 
@@ -67,7 +88,10 @@ export default function NewUserPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit((data) => createMutation.mutate(data))} className="space-y-4">
+          <form
+            onSubmit={handleSubmit((data) => createMutation.mutate(data))}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First name *</Label>
@@ -78,7 +102,9 @@ export default function NewUserPage() {
                   className={errors.firstName ? "border-destructive" : ""}
                 />
                 {errors.firstName && (
-                  <p className="text-sm text-destructive">{errors.firstName.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.firstName.message}
+                  </p>
                 )}
               </div>
               <div className="space-y-2">
@@ -90,7 +116,9 @@ export default function NewUserPage() {
                   className={errors.lastName ? "border-destructive" : ""}
                 />
                 {errors.lastName && (
-                  <p className="text-sm text-destructive">{errors.lastName.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.lastName.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -105,7 +133,9 @@ export default function NewUserPage() {
                 className={errors.email ? "border-destructive" : ""}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -120,7 +150,9 @@ export default function NewUserPage() {
                 autoComplete="new-password"
               />
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -134,17 +166,18 @@ export default function NewUserPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="roleId">Role</Label>
               <select
-                id="role"
-                {...register("role")}
+                id="roleId"
+                {...register("roleId")}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                disabled={loadingRoles}
               >
-                <option value="MEMBER">Member</option>
-                <option value="WORKER">Worker</option>
-                <option value="PASTOR">Pastor</option>
-                <option value="ADMIN">Admin</option>
-                <option value="SUPER_ADMIN">Super Admin</option>
+                {roles.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name} {r.canAccessAdmin ? "(Admin access)" : ""}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -163,5 +196,13 @@ export default function NewUserPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function NewUserPage() {
+  return (
+    <PermissionGuard permission="users">
+      <NewUserPageContent />
+    </PermissionGuard>
   );
 }
