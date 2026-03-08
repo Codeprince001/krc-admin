@@ -13,6 +13,7 @@ import {
 import { Loader2, TrendingUp, Eye, MousePointer, Send, CheckCircle2 } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
 import { subDays } from "date-fns";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import {
   BarChart,
   Bar,
@@ -72,7 +73,7 @@ const defaultStats: OverallStats = {
   averageTimeToOpen: 0,
 };
 
-export default function AnalyticsPage() {
+function AnalyticsPageContent() {
   const [dateRange, setDateRange] = useState("7");
 
   // Fetch overall stats
@@ -486,5 +487,13 @@ export default function AnalyticsPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function AnalyticsPage() {
+  return (
+    <PermissionGuard permission="notifications">
+      <AnalyticsPageContent />
+    </PermissionGuard>
   );
 }
