@@ -12,7 +12,10 @@ export interface User {
   displayName?: string | null;
   phoneNumber?: string | null;
   phone?: string | null;
-  role: "USER" | "ADMIN" | "SUPER_ADMIN" | "MEMBER" | "WORKER" | "PASTOR";
+  role: string; // Role slug (SUPER_ADMIN, ADMIN, MEMBER, or custom e.g. CONTENT_CREATOR)
+  roleId?: string;
+  permissions?: string[];
+  canAccessAdmin?: boolean;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
