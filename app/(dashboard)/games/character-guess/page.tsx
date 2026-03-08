@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -19,8 +19,9 @@ import { DifficultyLevel, type CharacterGuess } from '@/types/api/games';
 import { CharacterGuessDialog } from './components/CharacterGuessDialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { CharacterGuessPreview } from './components/CharacterGuessPreview';
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function CharacterGuessPage() {
+function CharacterGuessPageContent() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -176,3 +177,11 @@ export default function CharacterGuessPage() {
   );
 }
 
+
+export default function CharacterGuessPage() {
+  return (
+    <PermissionGuard permission="games">
+      <CharacterGuessPageContent />
+    </PermissionGuard>
+  );
+}
