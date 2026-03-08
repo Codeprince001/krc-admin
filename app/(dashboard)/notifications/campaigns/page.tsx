@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ import { Loader2, Plus, Pencil, Trash2, Target, TrendingUp } from "lucide-react"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { formatDistanceToNow } from "date-fns";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 interface Campaign {
   id: string;
@@ -45,7 +46,7 @@ interface Campaign {
   updatedAt: string;
 }
 
-export default function CampaignsPage() {
+function CampaignsPageContent() {
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -468,5 +469,13 @@ export default function CampaignsPage() {
         isLoading={deleteMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function CampaignsPage() {
+  return (
+    <PermissionGuard permission="notifications">
+      <CampaignsPageContent />
+    </PermissionGuard>
   );
 }
