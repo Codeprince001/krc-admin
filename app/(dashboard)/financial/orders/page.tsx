@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +36,7 @@ import { downloadExcel } from "@/lib/utils/exportExcel";
 import { formatDate } from "@/lib/utils/format";
 import { toast } from "sonner";
 import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
+import { Pagination } from "@/components/shared/Pagination";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import {
   ShoppingCart,
@@ -47,8 +48,6 @@ import {
   Search,
   MoreHorizontal,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
   FileDown,
   Eye,
   Trash2,
@@ -456,32 +455,19 @@ function OrdersPageContent() {
 
           {/* Pagination */}
           {meta && meta.totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-4 border-t">
-              <p className="text-sm text-muted-foreground">
-                Showing {(meta.page - 1) * meta.limit + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total} orders
-                {isFetching && <Loader2 className="inline ml-2 h-3 w-3 animate-spin" />}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => p - 1)}
-                  disabled={page === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm font-medium px-2">
-                  {meta.page} / {meta.totalPages}
+            <div className="relative border-t pt-4">
+              {isFetching && (
+                <span className="absolute right-0 top-1/2 -translate-y-1/2">
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => p + 1)}
-                  disabled={page === meta.totalPages}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              )}
+              <Pagination
+                currentPage={page}
+                totalPages={meta.totalPages}
+                total={meta.total}
+                onPageChange={setPage}
+                pageSize={meta.limit}
+              />
             </div>
           )}
         </CardContent>
