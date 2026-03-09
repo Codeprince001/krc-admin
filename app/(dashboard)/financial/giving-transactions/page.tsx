@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/shared/Pagination";
 import { FileDown, Loader2, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { downloadExcel } from "@/lib/utils/exportExcel";
@@ -328,33 +329,13 @@ function GivingTransactionsPageContent() {
                 </TableBody>
               </Table>
               {meta && meta.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                  <p className="text-sm text-muted-foreground">
-                    Page {meta.page} of {meta.totalPages} ({meta.total} total)
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        setPage((p) =>
-                          Math.min(meta.totalPages, p + 1)
-                        )
-                      }
-                      disabled={page === meta.totalPages}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
+                <Pagination
+                  currentPage={page}
+                  totalPages={meta.totalPages}
+                  total={meta.total}
+                  onPageChange={setPage}
+                  pageSize={filters.limit ?? 20}
+                />
               )}
             </>
           )}
