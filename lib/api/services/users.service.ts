@@ -19,12 +19,14 @@ export const usersService = {
   async getUsers(
     page = 1,
     limit = 10,
-    search?: string
+    search?: string,
+    roleId?: string
   ): Promise<UsersResponse> {
     const params = new URLSearchParams();
     params.append("page", page.toString());
     params.append("limit", limit.toString());
     if (search) params.append("search", search);
+    if (roleId) params.append("roleId", roleId);
     const url = `${endpoints.users.list}?${params.toString()}`;
     return apiClient.get<UsersResponse>(url);
   },
@@ -32,12 +34,14 @@ export const usersService = {
   async exportUsers(
     page = 1,
     limit = 10000,
-    search?: string
+    search?: string,
+    roleId?: string
   ): Promise<UsersResponse> {
     const params = new URLSearchParams();
     params.append("page", page.toString());
     params.append("limit", limit.toString());
     if (search) params.append("search", search);
+    if (roleId) params.append("roleId", roleId);
     const url = `${endpoints.users.list}/export?${params.toString()}`;
     return apiClient.get<UsersResponse>(url);
   },
