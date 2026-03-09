@@ -20,29 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
+import { UsersTable } from "./components/UsersTable";
 import { Pagination } from "@/components/shared/Pagination";
 import { PermissionGuard } from "@/components/guards/PermissionGuard";
+
+const PAGE_SIZE = 20;
 
 function UsersPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [roleId, setRoleId] = useState<string>("");
-  const limit = 10;
 
-  // Debounce search input with 500ms delay
   const debouncedSearch = useDebounce(search, 500);
 
-  // Reset to first page when filters change
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, roleId]);
@@ -52,36 +42,49 @@ function UsersPageContent() {
     queryFn: () => rolesService.list(),
   });
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["users", page, limit, debouncedSearch, roleId],
+  const {
+    data,
+    isLoading,
+    error,
+    isFetching,
+  } = useQuery({
+    queryKey: ["users", page, PAGE_SIZE, debouncedSearch, roleId],
     queryFn: () =>
-      usersService.getUsers(page, limit, debouncedSearch || undefined, roleId || undefined),
+      usersService.getUsers(
+        page,
+        PAGE_SIZE,
+        debouncedSearch || undefined,
+        roleId || undefined
+      ),
   });
 
-  // Debug logging to see what we're getting
-  if (process.env.NODE_ENV === 'development') {
-    if (data) console.log('Users response:', data);
-    if (error) console.error('Users error:', error);
-  }
-
-  const users = data?.data || [];
+  const users = data?.data ?? [];
   const meta = data?.meta;
 
   const [isExporting, setIsExporting] = useState(false);
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const res = await usersService.exportUsers(1, 10000, debouncedSearch || undefined, roleId || undefined);
-      const list = res?.data || [];
+      const res = await usersService.exportUsers(
+        1,
+        10000,
+        debouncedSearch || undefined,
+        roleId || undefined
+      );
+      const list = res?.data ?? [];
       const rows = list.map((u) => ({
         Name: u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : "N/A",
         Email: u.email,
         Role: u.role,
         Status: u.isActive ? "Active" : "Inactive",
-        Phone: u.phone ?? "",
+        Phone: u.phone ?? u.phoneNumber ?? "",
         "Created At": formatDate(u.createdAt, "yyyy-MM-dd HH:mm"),
       }));
-      downloadExcel(rows, `users-export-${new Date().toISOString().slice(0, 10)}`, "Users");
+      downloadExcel(
+        rows,
+        `users-export-${new Date().toISOString().slice(0, 10)}`,
+        "Users"
+      );
       toast.success(`Exported ${rows.length} users`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Export failed");
@@ -94,7 +97,9 @@ function UsersPageContent() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Users</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Users
+          </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             Manage users and their permissions
           </p>
@@ -127,7 +132,10 @@ function UsersPageContent() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>All Users</CardTitle>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:items-center">
-              <Select value={roleId || "all"} onValueChange={(v) => setRoleId(v === "all" ? "" : v)}>
+              <Select
+                value={roleId || "all"}
+                onValueChange={(v) => setRoleId(v === "all" ? "" : v)}
+              >
                 <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
@@ -154,75 +162,36 @@ function UsersPageContent() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <p className="text-destructive mb-2">Error loading users</p>
+            <div className="flex flex-col items-center justify-center py-12">
+              <p className="text-destructive mb-2 font-medium">
+                Error loading users
+              </p>
               <p className="text-sm text-muted-foreground">
                 {error instanceof Error ? error.message : "Unknown error"}
               </p>
             </div>
           ) : (
             <>
-              <ResponsiveTableWrapper>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[150px]">Name</TableHead>
-                      <TableHead className="min-w-[200px]">Email</TableHead>
-                      <TableHead className="min-w-[100px]">Role</TableHead>
-                      <TableHead className="min-w-[100px]">Status</TableHead>
-                      <TableHead className="min-w-[120px]">Created</TableHead>
-                      <TableHead className="text-right min-w-[100px]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8">
-                          No users found
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      users.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">
-                            {user.firstName && user.lastName
-                              ? `${user.firstName} ${user.lastName}`
-                              : "N/A"}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{user.email}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{user.role}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={user.isActive ? "default" : "secondary"}
-                            >
-                              {user.isActive ? "Active" : "Inactive"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{formatDate(user.createdAt, "PP")}</TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="sm" asChild>
-                              <Link href={`/users/${user.id}`}>View</Link>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </ResponsiveTableWrapper>
+              <div className="relative">
+                {isFetching && (
+                  <div className="absolute right-0 top-0 z-10 flex items-center gap-1 text-xs text-muted-foreground">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Updating...
+                  </div>
+                )}
+                <UsersTable users={users} />
+              </div>
               {meta && meta.totalPages > 1 && (
                 <Pagination
                   currentPage={page}
                   totalPages={meta.totalPages}
                   total={meta.total}
                   onPageChange={setPage}
-                  pageSize={limit}
+                  pageSize={PAGE_SIZE}
                 />
               )}
             </>
@@ -232,7 +201,6 @@ function UsersPageContent() {
     </div>
   );
 }
-
 
 export default function UsersPage() {
   return (
