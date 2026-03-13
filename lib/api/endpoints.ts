@@ -29,6 +29,7 @@ export const endpoints = {
     changePassword: `${API_BASE_URL}/users/change-password`,
     detail: (id: string) => `${API_BASE_URL}/users/${id}`,
     updateRole: (id: string) => `${API_BASE_URL}/users/${id}/role`,
+    resetPassword: (id: string) => `${API_BASE_URL}/users/${id}/reset-password`,
     toggleStatus: (id: string) => `${API_BASE_URL}/users/${id}/toggle-status`,
     delete: (id: string) => `${API_BASE_URL}/users/${id}`,
   },
