@@ -19,6 +19,8 @@ export interface User {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  /** LOCAL, GOOGLE, etc. — from GET /users/:id */
+  authProvider?: string;
 }
 
 export interface LoginRequest {
