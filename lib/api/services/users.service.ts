@@ -65,6 +65,16 @@ export const usersService = {
     return apiClient.put<User>(endpoints.users.toggleStatus(id));
   },
 
+  async adminResetUserPassword(
+    id: string,
+    data: { newPassword: string; confirmPassword: string }
+  ): Promise<{ message: string }> {
+    return apiClient.put<{ message: string }>(
+      endpoints.users.resetPassword(id),
+      data
+    );
+  },
+
   async deleteUser(id: string): Promise<void> {
     return apiClient.delete<void>(endpoints.users.delete(id));
   },
