@@ -15,8 +15,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUserRoleSchema, type UpdateUserRoleInput } from "@/lib/utils/validations";
+import {
+  updateUserRoleSchema,
+  adminResetUserPasswordSchema,
+  type UpdateUserRoleInput,
+  type AdminResetUserPasswordInput,
+} from "@/lib/utils/validations";
 import { PermissionGuard } from "@/components/guards/PermissionGuard";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 function UserDetailPageContent({
   params,
@@ -26,6 +32,7 @@ function UserDetailPageContent({
   const resolvedParams = use(params);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { user: adminUser } = useAuth();
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["user", resolvedParams.id],
@@ -46,6 +53,22 @@ function UserDetailPageContent({
     },
     onError: (error: any) => {
       const message = typeof error?.message === 'string' ? error.message : "Failed to update user status";
+      toast.error(message);
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: (data: AdminResetUserPasswordInput) =>
+      usersService.adminResetUserPassword(resolvedParams.id, data),
+    onSuccess: (res) => {
+      toast.success(res?.message ?? "Password reset successfully");
+      resetPasswordForm.reset();
+    },
+    onError: (error: any) => {
+      const message =
+        typeof error?.message === "string"
+          ? error.message
+          : "Failed to reset password";
       toast.error(message);
     },
   });
@@ -73,6 +96,11 @@ function UserDetailPageContent({
     resolver: zodResolver(updateUserRoleSchema),
   });
 
+  const resetPasswordForm = useForm<AdminResetUserPasswordInput>({
+    resolver: zodResolver(adminResetUserPasswordSchema),
+    defaultValues: { newPassword: "", confirmPassword: "" },
+  });
+
   useEffect(() => {
     if (user && roles.length > 0) {
       const currentRoleId = (user as { roleId?: string }).roleId;
@@ -83,6 +111,12 @@ function UserDetailPageContent({
   const onSubmit = (data: UpdateUserRoleInput) => {
     updateRoleMutation.mutate(data);
   };
+
+  const onResetPasswordSubmit = (data: AdminResetUserPasswordInput) => {
+    resetPasswordMutation.mutate(data);
+  };
+
+  const isOwnProfile = adminUser?.id === resolvedParams.id;
 
   if (isLoading) {
     return (
@@ -226,6 +260,77 @@ function UserDetailPageContent({
                 `Mark as ${user.isActive ? "Inactive" : "Active"}`
               )}
             </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Reset password</CardTitle>
+            <p className="text-sm text-muted-foreground font-normal">
+              Set a new password for this user. They will be signed out everywhere
+              and must sign in with the new password.
+            </p>
+          </CardHeader>
+          <CardContent>
+            {isOwnProfile ? (
+              <p className="text-sm text-muted-foreground">
+                To change your own password, use your account settings (change
+                password), not this screen.
+              </p>
+            ) : (
+              <form
+                onSubmit={resetPasswordForm.handleSubmit(onResetPasswordSubmit)}
+                className="grid gap-4 sm:grid-cols-2 sm:max-w-xl"
+              >
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="newPassword">New password</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    {...resetPasswordForm.register("newPassword")}
+                  />
+                  {resetPasswordForm.formState.errors.newPassword && (
+                    <p className="text-sm text-destructive">
+                      {resetPasswordForm.formState.errors.newPassword.message}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="confirmPassword">Confirm password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    {...resetPasswordForm.register("confirmPassword")}
+                  />
+                  {resetPasswordForm.formState.errors.confirmPassword && (
+                    <p className="text-sm text-destructive">
+                      {
+                        resetPasswordForm.formState.errors.confirmPassword
+                          .message
+                      }
+                    </p>
+                  )}
+                </div>
+                <div className="sm:col-span-2">
+                  <Button
+                    type="submit"
+                    variant="secondary"
+                    disabled={resetPasswordMutation.isPending}
+                  >
+                    {resetPasswordMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Resetting…
+                      </>
+                    ) : (
+                      "Reset password"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
