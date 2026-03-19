@@ -101,6 +101,7 @@ const navGroups: NavGroup[] = [
     title: "Advertisements",
     items: [
       { title: "Manage Ads", href: "/advertisements", icon: Tv2 },
+      { title: "In-App Popups", href: "/in-app-popups", icon: Bell },
     ],
   },
   {
