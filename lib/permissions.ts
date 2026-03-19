@@ -28,7 +28,8 @@ export type Permission =
   | "games"
   | "notifications"
   | "media"
-  | "advertisements";
+  | "advertisements"
+  | "inAppPopups";
 
 export type SystemRole =
   | "SUPER_ADMIN"
@@ -81,6 +82,7 @@ export const PERMISSION_GROUPS: {
       { key: "books", label: "Books / Store" },
       { key: "media", label: "Media Library" },
       { key: "advertisements", label: "Advertisements" },
+      { key: "inAppPopups", label: "In-App Popups" },
     ],
   },
   {
