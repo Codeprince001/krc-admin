@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,7 @@ import { Loader2, Send, Users, UserCheck } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { apiClient } from "@/lib/api/client";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 const notificationTypes = [
   { value: "EVENT_REMINDER", label: "Event Reminder" },
@@ -56,7 +57,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function SendNotificationPage() {
+function SendNotificationPageContent() {
   const [isSending, setIsSending] = useState(false);
 
   const form = useForm<FormData>({
@@ -403,5 +404,13 @@ export default function SendNotificationPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function SendNotificationPage() {
+  return (
+    <PermissionGuard permission="notifications">
+      <SendNotificationPageContent />
+    </PermissionGuard>
   );
 }

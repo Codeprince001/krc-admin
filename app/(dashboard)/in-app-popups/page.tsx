@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import type { ElementType } from "react";
+import { Plus, Search, MessageSquareWarning, Eye, MousePointerClick, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,20 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, Eye, MousePointerClick, TrendingUp, Megaphone } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Pagination } from "@/components/shared/Pagination";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useAdvertisements, useAdStats } from "./hooks/useAdvertisements";
-import { AdvertisementsTable } from "./components/AdvertisementsTable";
-import { AdvertisementFormDialog } from "./components/AdvertisementFormDialog";
-import { AD_PAGE_SIZE, AD_STATUS_OPTIONS, AD_PLACEMENT_OPTIONS } from "./constants";
 import { PermissionGuard } from "@/components/guards/PermissionGuard";
-import type {
-  Advertisement,
-  CreateAdvertisementRequest,
-  UpdateAdvertisementRequest,
-} from "@/types";
+import {
+  IN_APP_POPUP_PAGE_SIZE,
+  POPUP_CONTEXT_OPTIONS,
+  POPUP_STATUS_OPTIONS,
+} from "./constants";
+import { useInAppPopups, useInAppPopupStats } from "./hooks/useInAppPopups";
+import { InAppPopupsTable } from "./components/InAppPopupsTable";
+import { InAppPopupFormDialog } from "./components/InAppPopupFormDialog";
+import type { CreateInAppPopupRequest, InAppPopup, UpdateInAppPopupRequest } from "@/types";
 
 function StatCard({
   icon: Icon,
@@ -34,7 +35,7 @@ function StatCard({
   color,
   isLoading,
 }: {
-  icon: React.ElementType;
+  icon: ElementType;
   label: string;
   value: string | number;
   sub?: string;
@@ -61,87 +62,70 @@ function StatCard({
   );
 }
 
-function AdvertisementsPageContent() {
+function InAppPopupsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const [placement, setPlacement] = useState("all");
+  const [context, setContext] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingAd, setEditingAd] = useState<Advertisement | null>(null);
+  const [editingPopup, setEditingPopup] = useState<InAppPopup | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  const { data: stats, isLoading: statsLoading } = useAdStats();
-
+  const { data: stats, isLoading: statsLoading } = useInAppPopupStats();
   const {
-    advertisements,
+    popups,
     meta,
     isLoading,
-    createAdvertisement,
-    updateAdvertisement,
-    deleteAdvertisement,
+    createPopup,
+    updatePopup,
+    deletePopup,
     isCreating,
     isUpdating,
     isDeleting,
-  } = useAdvertisements({
+  } = useInAppPopups({
     page,
-    limit: AD_PAGE_SIZE,
+    limit: IN_APP_POPUP_PAGE_SIZE,
     search: search || undefined,
     status: status !== "all" ? status : undefined,
-    placement: placement !== "all" ? placement : undefined,
+    context: context !== "all" ? context : undefined,
   });
 
-  const handleAdd = () => {
-    setEditingAd(null);
-    setIsDialogOpen(true);
-  };
-
-  const handleEdit = (ad: Advertisement) => {
-    setEditingAd(ad);
-    setIsDialogOpen(true);
-  };
-
-  const handleDelete = (id: string) => {
-    setDeleteTarget(id);
-  };
-
-  const handleConfirmDelete = () => {
-    if (deleteTarget) {
-      deleteAdvertisement(deleteTarget);
-      setDeleteTarget(null);
-    }
-  };
-
-  const handleSubmit = (data: CreateAdvertisementRequest | UpdateAdvertisementRequest) => {
+  const handleSubmit = (data: CreateInAppPopupRequest | UpdateInAppPopupRequest) => {
     const onSuccess = () => {
       setIsDialogOpen(false);
-      setEditingAd(null);
+      setEditingPopup(null);
       setPage(1);
     };
-    if (editingAd) {
-      updateAdvertisement({ id: editingAd.id, data }, { onSuccess });
+    if (editingPopup) {
+      updatePopup({ id: editingPopup.id, data }, { onSuccess });
     } else {
-      createAdvertisement(data as CreateAdvertisementRequest, { onSuccess });
+      createPopup(data as CreateInAppPopupRequest, { onSuccess });
     }
   };
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <PageHeader
-        title="Advertisements"
-        description="Manage banner ads displayed across the app"
+        title="In-App Popups"
+        description="Manage reminder popups shown to users inside the app."
         actions={
-          <Button onClick={handleAdd} className="w-full sm:w-auto">
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setEditingPopup(null);
+              setIsDialogOpen(true);
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" />
-            New Advertisement
+            New Popup
           </Button>
         }
       />
 
-      {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard
-          icon={Megaphone}
-          label="Total Ads"
+          icon={MessageSquareWarning}
+          label="Total Popups"
           value={stats?.total ?? 0}
           sub={`${stats?.active ?? 0} active`}
           color="bg-blue-500"
@@ -149,50 +133,49 @@ function AdvertisementsPageContent() {
         />
         <StatCard
           icon={Eye}
-          label="Total Impressions"
-          value={(stats?.totalImpressions ?? 0).toLocaleString()}
+          label="Total Shown"
+          value={(stats?.totalShown ?? 0).toLocaleString()}
           color="bg-purple-500"
           isLoading={statsLoading}
         />
         <StatCard
           icon={MousePointerClick}
-          label="Total Clicks"
-          value={(stats?.totalClicks ?? 0).toLocaleString()}
+          label="Total Clicked"
+          value={(stats?.totalClicked ?? 0).toLocaleString()}
           color="bg-green-500"
           isLoading={statsLoading}
         />
         <StatCard
           icon={TrendingUp}
-          label="Avg. CTR"
+          label="CTR"
           value={`${stats?.ctr ?? 0}%`}
-          sub="click-through rate"
+          sub={`${stats?.dismissRate ?? 0}% dismiss rate`}
           color="bg-orange-500"
           isLoading={statsLoading}
         />
       </div>
 
-      {/* Table */}
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle>All Advertisements</CardTitle>
+            <CardTitle>All Popups</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search ads..."
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="h-9 w-44 pl-8 text-sm"
+                  placeholder="Search popups..."
+                  className="h-9 w-48 pl-8 text-sm"
                 />
               </div>
               <Select
                 value={status}
-                onValueChange={(v) => {
-                  setStatus(v);
+                onValueChange={(value) => {
+                  setStatus(value);
                   setPage(1);
                 }}
               >
@@ -200,8 +183,8 @@ function AdvertisementsPageContent() {
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  {AD_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem value="all">All statuses</SelectItem>
+                  {POPUP_STATUS_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -209,18 +192,18 @@ function AdvertisementsPageContent() {
                 </SelectContent>
               </Select>
               <Select
-                value={placement}
-                onValueChange={(v) => {
-                  setPlacement(v);
+                value={context}
+                onValueChange={(value) => {
+                  setContext(value);
                   setPage(1);
                 }}
               >
                 <SelectTrigger className="h-9 w-40 text-sm">
-                  <SelectValue placeholder="All placements" />
+                  <SelectValue placeholder="All contexts" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Placements</SelectItem>
-                  {AD_PLACEMENT_OPTIONS.map((opt) => (
+                  <SelectItem value="all">All contexts</SelectItem>
+                  {POPUP_CONTEXT_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -231,12 +214,15 @@ function AdvertisementsPageContent() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <AdvertisementsTable
-            advertisements={advertisements}
+          <InAppPopupsTable
+            popups={popups}
             isLoading={isLoading}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
             isDeleting={isDeleting}
+            onEdit={(popup) => {
+              setEditingPopup(popup);
+              setIsDialogOpen(true);
+            }}
+            onDelete={setDeleteTarget}
           />
           {meta && meta.totalPages > 1 && (
             <Pagination
@@ -244,38 +230,42 @@ function AdvertisementsPageContent() {
               totalPages={meta.totalPages}
               total={meta.total}
               onPageChange={setPage}
-              pageSize={AD_PAGE_SIZE}
+              pageSize={IN_APP_POPUP_PAGE_SIZE}
             />
           )}
         </CardContent>
       </Card>
 
-      <AdvertisementFormDialog
+      <InAppPopupFormDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
-        advertisement={editingAd}
+        popup={editingPopup}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
       />
 
       <ConfirmDialog
-        open={!!deleteTarget}
+        open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete advertisement"
-        description="This will permanently remove the advertisement and all its analytics. This action cannot be undone."
+        title="Delete in-app popup"
+        description="This popup and all tracking analytics will be removed permanently."
         confirmLabel="Delete"
-        onConfirm={handleConfirmDelete}
         variant="destructive"
         isLoading={isDeleting}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          deletePopup(deleteTarget);
+          setDeleteTarget(null);
+        }}
       />
     </div>
   );
 }
 
-export default function AdvertisementsPage() {
+export default function InAppPopupsPage() {
   return (
-    <PermissionGuard permission="advertisements">
-      <AdvertisementsPageContent />
+    <PermissionGuard permission="inAppPopups">
+      <InAppPopupsPageContent />
     </PermissionGuard>
   );
 }

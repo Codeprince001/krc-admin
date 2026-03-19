@@ -27,6 +27,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { ResponsiveTableWrapper } from "@/components/shared/ResponsiveTableWrapper";
 import { useActivityLog } from "@/lib/hooks/useAdmin";
 import { formatDate } from "@/lib/utils/format";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import {
   Activity,
   Search,
@@ -58,7 +59,7 @@ function getActionColor(action: string): string {
 
 const PAGE_SIZE = 20;
 
-export default function ActivityLogPage() {
+function ActivityLogPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [resourceFilter, setResourceFilter] = useState("all");
@@ -266,5 +267,13 @@ export default function ActivityLogPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ActivityLogPage() {
+  return (
+    <PermissionGuard permission="activityLog">
+      <ActivityLogPageContent />
+    </PermissionGuard>
   );
 }

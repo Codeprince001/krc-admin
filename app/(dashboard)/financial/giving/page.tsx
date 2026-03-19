@@ -9,9 +9,11 @@ import { GivingTable } from "./components/GivingTable";
 import { GivingDetailsDialog } from "./components/GivingDetailsDialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { GivingStats } from "./components/GivingStats";
+import { Pagination } from "@/components/shared/Pagination";
 import type { Giving, GivingCategory } from "@/types/api/giving.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function GivingPage() {
+function GivingPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -86,31 +88,13 @@ export default function GivingPage() {
             isDeleting={isDeleting}
           />
           {meta && meta.totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t">
-              <p className="text-sm text-muted-foreground">
-                Page {meta.page} of {meta.totalPages} ({meta.total} total)
-              </p>
-              <div className="flex gap-2 w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="flex-1 sm:flex-none"
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-                  disabled={page === meta.totalPages}
-                  className="flex-1 sm:flex-none"
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={meta.totalPages}
+              total={meta.total}
+              onPageChange={setPage}
+              pageSize={limit}
+            />
           )}
         </CardContent>
       </Card>
@@ -132,5 +116,13 @@ export default function GivingPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function GivingPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <GivingPageContent />
+    </PermissionGuard>
   );
 }

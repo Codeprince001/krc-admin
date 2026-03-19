@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -36,6 +36,7 @@ import {
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { formatDistanceToNow } from "date-fns";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 interface QueueStats {
   waiting: number;
@@ -58,7 +59,7 @@ interface QueueJob {
   state: "waiting" | "active" | "completed" | "failed" | "delayed";
 }
 
-export default function QueueMonitorPage() {
+function QueueMonitorPageContent() {
   const queryClient = useQueryClient();
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [selectedJob, setSelectedJob] = useState<QueueJob | null>(null);
@@ -528,4 +529,12 @@ export default function QueueMonitorPage() {
 
 function Label({ children, className }: { children: React.ReactNode; className?: string }) {
   return <div className={className}>{children}</div>;
+}
+
+export default function QueueMonitorPage() {
+  return (
+    <PermissionGuard permission="notifications">
+      <QueueMonitorPageContent />
+    </PermissionGuard>
+  );
 }

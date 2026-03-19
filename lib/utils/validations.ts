@@ -22,8 +22,26 @@ export const changePasswordSchema = z.object({
 });
 
 export const updateUserRoleSchema = z.object({
-  role: z.enum(["USER", "MEMBER", "WORKER", "PASTOR", "ADMIN", "SUPER_ADMIN"]),
+  roleId: z.string().min(1, "Role is required"),
 });
+
+/** Admin reset another user's password (min 8 chars, matches API). */
+export const adminResetUserPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password is too long"),
+    confirmPassword: z.string().min(8, "Confirm password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export type AdminResetUserPasswordInput = z.infer<
+  typeof adminResetUserPasswordSchema
+>;
 
 export const createUserSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -31,7 +49,7 @@ export const createUserSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   phoneNumber: z.string().optional(),
-  role: z.enum(["MEMBER", "WORKER", "PASTOR", "ADMIN", "SUPER_ADMIN"]).default("MEMBER"),
+  roleId: z.string().optional(),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

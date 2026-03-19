@@ -26,11 +26,11 @@ export interface CreateUserRequest {
   firstName: string;
   lastName: string;
   phoneNumber?: string;
-  role?: "MEMBER" | "WORKER" | "PASTOR" | "ADMIN" | "SUPER_ADMIN";
+  roleId?: string;
 }
 
 export interface UpdateUserRoleRequest {
-  role: "USER" | "ADMIN" | "SUPER_ADMIN" | "MEMBER" | "WORKER" | "PASTOR";
+  roleId: string;
 }
 
 export interface UpdateUserRequest {

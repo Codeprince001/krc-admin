@@ -8,10 +8,12 @@ import { MediaFilters } from "./components/MediaFilters";
 import { MediaGrid } from "./components/MediaGrid";
 import { MediaViewDialog } from "./components/MediaViewDialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Pagination } from "@/components/shared/Pagination";
 import { MediaStats } from "./components/MediaStats";
 import type { Media, MediaType } from "@/types/api/media.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function MediaPage() {
+function MediaPageContent() {
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
@@ -79,29 +81,13 @@ export default function MediaPage() {
             isDeleting={isDeleting}
           />
           {meta && meta.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
-                Page {meta.page} of {meta.totalPages} ({meta.total} total)
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-                  disabled={page === meta.totalPages}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={meta.totalPages}
+              total={meta.total}
+              onPageChange={setPage}
+              pageSize={limit}
+            />
           )}
         </CardContent>
       </Card>
@@ -123,5 +109,13 @@ export default function MediaPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function MediaPage() {
+  return (
+    <PermissionGuard permission="media">
+      <MediaPageContent />
+    </PermissionGuard>
   );
 }

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { StatsCard } from '@/components/shared/StatsCard';
 import { apiClient } from '@/lib/api/client';
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 interface LeaderboardEntry {
   rank: number;
@@ -35,7 +36,7 @@ interface LeaderboardData {
   entries: LeaderboardEntry[];
 }
 
-export default function LeaderboardPage() {
+function LeaderboardPageContent() {
   const [period, setPeriod] = useState<string>('WEEKLY');
   const [gameType, setGameType] = useState<string>('ALL');
 
@@ -251,3 +252,11 @@ export default function LeaderboardPage() {
   );
 }
 
+
+export default function LeaderboardPage() {
+  return (
+    <PermissionGuard permission="games">
+      <LeaderboardPageContent />
+    </PermissionGuard>
+  );
+}

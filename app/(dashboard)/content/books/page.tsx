@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -14,8 +14,9 @@ import { BooksStats } from "./components/BooksStats";
 import { Pagination } from "@/components/shared/Pagination";
 import { BOOKS_PAGE_SIZE } from "./constants";
 import type { Book, CreateBookRequest } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function BooksPage() {
+function BooksPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -169,5 +170,13 @@ export default function BooksPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function BooksPage() {
+  return (
+    <PermissionGuard permission="books">
+      <BooksPageContent />
+    </PermissionGuard>
   );
 }

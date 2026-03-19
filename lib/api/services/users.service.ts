@@ -19,12 +19,14 @@ export const usersService = {
   async getUsers(
     page = 1,
     limit = 10,
-    search?: string
+    search?: string,
+    roleId?: string
   ): Promise<UsersResponse> {
     const params = new URLSearchParams();
     params.append("page", page.toString());
     params.append("limit", limit.toString());
     if (search) params.append("search", search);
+    if (roleId) params.append("roleId", roleId);
     const url = `${endpoints.users.list}?${params.toString()}`;
     return apiClient.get<UsersResponse>(url);
   },
@@ -32,12 +34,14 @@ export const usersService = {
   async exportUsers(
     page = 1,
     limit = 10000,
-    search?: string
+    search?: string,
+    roleId?: string
   ): Promise<UsersResponse> {
     const params = new URLSearchParams();
     params.append("page", page.toString());
     params.append("limit", limit.toString());
     if (search) params.append("search", search);
+    if (roleId) params.append("roleId", roleId);
     const url = `${endpoints.users.list}/export?${params.toString()}`;
     return apiClient.get<UsersResponse>(url);
   },
@@ -59,6 +63,16 @@ export const usersService = {
 
   async toggleUserStatus(id: string): Promise<User> {
     return apiClient.put<User>(endpoints.users.toggleStatus(id));
+  },
+
+  async adminResetUserPassword(
+    id: string,
+    data: { newPassword: string; confirmPassword: string }
+  ): Promise<{ message: string }> {
+    return apiClient.put<{ message: string }>(
+      endpoints.users.resetPassword(id),
+      data
+    );
   },
 
   async deleteUser(id: string): Promise<void> {

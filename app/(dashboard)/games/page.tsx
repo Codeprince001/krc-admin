@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -19,8 +19,9 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatsCard } from '@/components/shared/StatsCard';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { gamesService } from '@/lib/api/services/games.service';
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function GamesPage() {
+function GamesPageContent() {
   // Fetch games statistics
   const { data: stats, isLoading } = useQuery({
     queryKey: ['games-stats'],
@@ -230,3 +231,11 @@ export default function GamesPage() {
   );
 }
 
+
+export default function GamesPage() {
+  return (
+    <PermissionGuard permission="games">
+      <GamesPageContent />
+    </PermissionGuard>
+  );
+}

@@ -25,6 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { givingManagementService } from "@/lib/api/services/giving-management.service";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   GivingCategory,
   CreateGivingCategoryInput,
@@ -39,7 +40,7 @@ function slugify(s: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export default function GivingCategoriesPage() {
+function GivingCategoriesPageContent() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<GivingCategory | null>(null);
@@ -315,5 +316,13 @@ export default function GivingCategoriesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function GivingCategoriesPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <GivingCategoriesPageContent />
+    </PermissionGuard>
   );
 }

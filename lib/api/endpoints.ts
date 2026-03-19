@@ -29,6 +29,7 @@ export const endpoints = {
     changePassword: `${API_BASE_URL}/users/change-password`,
     detail: (id: string) => `${API_BASE_URL}/users/${id}`,
     updateRole: (id: string) => `${API_BASE_URL}/users/${id}/role`,
+    resetPassword: (id: string) => `${API_BASE_URL}/users/${id}/reset-password`,
     toggleStatus: (id: string) => `${API_BASE_URL}/users/${id}/toggle-status`,
     delete: (id: string) => `${API_BASE_URL}/users/${id}`,
   },
@@ -52,5 +53,8 @@ export const endpoints = {
   wordsOfWisdom: `${API_BASE_URL}/words-of-wisdom`,
   wordsOfKnowledge: `${API_BASE_URL}/words-of-knowledge`,
   advertisements: `${API_BASE_URL}/advertisements`,
+  inAppPopups: `${API_BASE_URL}/in-app-popups`,
+  // Roles (Enterprise RBAC)
+  roles: `${API_BASE_URL}/roles`,
 };
 

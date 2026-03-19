@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,8 +16,9 @@ import { toast } from "sonner";
 import { FileDown, Loader2 } from "lucide-react";
 import { COUNSELING_PAGE_SIZE } from "./constants";
 import type { CounselingStatus } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function CounselingPage() {
+function CounselingPageContent() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -159,5 +160,13 @@ export default function CounselingPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function CounselingPage() {
+  return (
+    <PermissionGuard permission="counseling">
+      <CounselingPageContent />
+    </PermissionGuard>
   );
 }

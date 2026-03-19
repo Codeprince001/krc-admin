@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -42,8 +42,9 @@ import { DifficultyLevel, type QuizQuestion } from '@/types/api/games';
 import { QuizQuestionDialog } from './components/QuizQuestionDialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { QuizQuestionPreview } from './components/QuizQuestionPreview';
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function QuizQuestionsPage() {
+function QuizQuestionsPageContent() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -352,3 +353,11 @@ export default function QuizQuestionsPage() {
   );
 }
 
+
+export default function QuizQuestionsPage() {
+  return (
+    <PermissionGuard permission="games">
+      <QuizQuestionsPageContent />
+    </PermissionGuard>
+  );
+}

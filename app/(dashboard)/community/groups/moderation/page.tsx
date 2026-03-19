@@ -37,6 +37,7 @@ import {
   FileText,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils/format";
+import { Pagination } from "@/components/shared/Pagination";
 import { toast } from "sonner";
 import type {
   GroupPost,
@@ -45,10 +46,11 @@ import type {
   ReportStatus,
 } from "@/types";
 import NextImage from "next/image";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 type TabType = "queue" | "reported";
 
-export default function GroupModerationPage() {
+function GroupModerationPageContent() {
   const [activeTab, setActiveTab] = useState<TabType>("queue");
   const [page, setPage] = useState(1);
   const [reportedPage, setReportedPage] = useState(1);
@@ -458,50 +460,15 @@ export default function GroupModerationPage() {
 
               {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Page {pagination.page} of {pagination.totalPages} (
-                    {pagination.total} total)
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        activeTab === "queue"
-                          ? setPage((p) => Math.max(1, p - 1))
-                          : setReportedPage((p) => Math.max(1, p - 1))
-                      }
-                      disabled={
-                        activeTab === "queue"
-                          ? page === 1
-                          : reportedPage === 1
-                      }
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        activeTab === "queue"
-                          ? setPage((p) =>
-                              Math.min(pagination.totalPages, p + 1)
-                            )
-                          : setReportedPage((p) =>
-                              Math.min(pagination.totalPages, p + 1)
-                            )
-                      }
-                      disabled={
-                        activeTab === "queue"
-                          ? page === pagination.totalPages
-                          : reportedPage === pagination.totalPages
-                      }
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
+                <Pagination
+                  currentPage={activeTab === "queue" ? page : reportedPage}
+                  totalPages={pagination.totalPages}
+                  total={pagination.total}
+                  onPageChange={(p) =>
+                    activeTab === "queue" ? setPage(p) : setReportedPage(p)
+                  }
+                  pageSize={limit}
+                />
               )}
             </div>
           )}
@@ -607,3 +574,11 @@ export default function GroupModerationPage() {
   );
 }
 
+
+export default function GroupModerationPage() {
+  return (
+    <PermissionGuard permission="groups">
+      <GroupModerationPageContent />
+    </PermissionGuard>
+  );
+}

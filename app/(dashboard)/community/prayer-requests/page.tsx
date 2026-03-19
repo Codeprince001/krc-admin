@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,8 +14,9 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PRAYER_REQUESTS_PAGE_SIZE } from "./constants";
 import { CheckCheck, Loader2 } from "lucide-react";
 import type { PrayerRequestStatus, PrayerRequest } from "@/types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function PrayerRequestsPage() {
+function PrayerRequestsPageContent() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -193,5 +194,13 @@ export default function PrayerRequestsPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function PrayerRequestsPage() {
+  return (
+    <PermissionGuard permission="prayerRequests">
+      <PrayerRequestsPageContent />
+    </PermissionGuard>
   );
 }

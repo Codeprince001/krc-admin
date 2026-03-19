@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,6 +37,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { format } from "date-fns";
 import { Switch } from "@/components/ui/switch";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 interface ScheduledNotification {
   id: string;
@@ -78,7 +79,7 @@ const statusColors: Record<string, string> = {
   CANCELLED: "bg-gray-500",
 };
 
-export default function ScheduledNotificationsPage() {
+function ScheduledNotificationsPageContent() {
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -530,5 +531,13 @@ export default function ScheduledNotificationsPage() {
         isLoading={cancelMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function ScheduledNotificationsPage() {
+  return (
+    <PermissionGuard permission="notifications">
+      <ScheduledNotificationsPageContent />
+    </PermissionGuard>
   );
 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { EmailTemplateEditorDialog } from "./components/EmailTemplateEditorDialog";
 import { EmailPreviewDialog } from "./components/EmailPreviewDialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
 const TYPE_ICONS: Record<string, string> = {
   WELCOME: "👋",
@@ -25,7 +26,7 @@ const TYPE_ICONS: Record<string, string> = {
   CUSTOM: "⚙️",
 };
 
-export default function EmailTemplatesPage() {
+function EmailTemplatesPageContent() {
   const queryClient = useQueryClient();
   const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null);
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
@@ -211,5 +212,13 @@ export default function EmailTemplatesPage() {
         isLoading={resetMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function EmailTemplatesPage() {
+  return (
+    <PermissionGuard permission="settings">
+      <EmailTemplatesPageContent />
+    </PermissionGuard>
   );
 }

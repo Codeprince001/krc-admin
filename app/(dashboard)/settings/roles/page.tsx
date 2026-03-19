@@ -1,15 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import {
-  ShieldCheck,
-  Plus,
-  Edit2,
-  Trash2,
-  Check,
-  X,
-  Info,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ShieldCheck, Plus, Edit2, Trash2, Info, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,169 +22,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Permission =
-  | "dashboard"
-  | "users"
-  | "orders"
-  | "books"
-  | "sermons"
-  | "devotionals"
-  | "announcements"
-  | "events"
-  | "testimonies"
-  | "prayerRequests"
-  | "groups"
-  | "counseling"
-  | "giving"
-  | "activityLog"
-  | "reports"
-  | "settings";
-
-interface RoleDefinition {
-  id: string;
-  name: string;
-  label: string;
-  description: string;
-  system: boolean; // built-in roles can't be deleted
-  permissions: Permission[];
-  color: string;
-}
-
-// ─── Permission metadata ──────────────────────────────────────────────────────
-
-const PERMISSION_GROUPS: { label: string; permissions: { key: Permission; label: string }[] }[] = [
-  {
-    label: "Core",
-    permissions: [
-      { key: "dashboard", label: "Dashboard" },
-      { key: "activityLog", label: "Activity Log" },
-      { key: "reports", label: "Reports & Export" },
-      { key: "settings", label: "Settings" },
-    ],
-  },
-  {
-    label: "Financial",
-    permissions: [
-      { key: "orders", label: "Orders" },
-      { key: "giving", label: "Giving / Offerings" },
-    ],
-  },
-  {
-    label: "Content",
-    permissions: [
-      { key: "sermons", label: "Sermons" },
-      { key: "devotionals", label: "Devotionals" },
-      { key: "announcements", label: "Announcements" },
-      { key: "events", label: "Events" },
-      { key: "books", label: "Books / Store" },
-    ],
-  },
-  {
-    label: "Community",
-    permissions: [
-      { key: "testimonies", label: "Testimonies" },
-      { key: "prayerRequests", label: "Prayer Requests" },
-      { key: "groups", label: "Groups" },
-      { key: "counseling", label: "Counseling" },
-    ],
-  },
-  {
-    label: "Administration",
-    permissions: [{ key: "users", label: "User Management" }],
-  },
-];
-
-const ALL_PERMISSIONS: Permission[] = PERMISSION_GROUPS.flatMap((g) =>
-  g.permissions.map((p) => p.key)
-);
-
-// ─── Default system roles ─────────────────────────────────────────────────────
-
-const DEFAULT_ROLES: RoleDefinition[] = [
-  {
-    id: "super_admin",
-    name: "SUPER_ADMIN",
-    label: "Super Admin",
-    description: "Full access to all features and settings.",
-    system: true,
-    color: "bg-red-100 text-red-800 border-red-200",
-    permissions: ALL_PERMISSIONS,
-  },
-  {
-    id: "admin",
-    name: "ADMIN",
-    label: "Admin",
-    description: "Administrative access excluding system settings.",
-    system: true,
-    color: "bg-orange-100 text-orange-800 border-orange-200",
-    permissions: ALL_PERMISSIONS.filter((p) => p !== "settings"),
-  },
-  {
-    id: "pastor",
-    name: "PASTOR",
-    label: "Pastor",
-    description: "Access to content, community, and counseling.",
-    system: true,
-    color: "bg-purple-100 text-purple-800 border-purple-200",
-    permissions: [
-      "dashboard",
-      "sermons",
-      "devotionals",
-      "announcements",
-      "events",
-      "testimonies",
-      "prayerRequests",
-      "groups",
-      "counseling",
-      "giving",
-      "reports",
-    ],
-  },
-  {
-    id: "worker",
-    name: "WORKER",
-    label: "Worker",
-    description: "Limited access to content and community moderation.",
-    system: true,
-    color: "bg-blue-100 text-blue-800 border-blue-200",
-    permissions: [
-      "dashboard",
-      "announcements",
-      "events",
-      "testimonies",
-      "prayerRequests",
-      "groups",
-    ],
-  },
-  {
-    id: "member",
-    name: "MEMBER",
-    label: "Member",
-    description: "Read-only access to dashboard.",
-    system: true,
-    color: "bg-gray-100 text-gray-700 border-gray-200",
-    permissions: ["dashboard"],
-  },
-];
-
-function loadCustomRoles(): RoleDefinition[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const stored = localStorage.getItem("churchapp_custom_roles");
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCustomRoles(roles: RoleDefinition[]) {
-  localStorage.setItem("churchapp_custom_roles", JSON.stringify(roles));
-}
-
-// ─── Permission checkbox grid ─────────────────────────────────────────────────
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
+import { rolesService, type Role, type CreateRoleRequest } from "@/lib/api/services/roles.service";
+import {
+  type Permission,
+  PERMISSION_GROUPS,
+  ALL_PERMISSIONS,
+} from "@/lib/permissions";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 function PermissionGrid({
   selected,
@@ -205,7 +45,9 @@ function PermissionGrid({
   const toggle = (key: Permission) => {
     if (disabled || !onChange) return;
     onChange(
-      selected.includes(key) ? selected.filter((p) => p !== key) : [...selected, key]
+      selected.includes(key)
+        ? selected.filter((p) => p !== key)
+        : [...selected, key]
     );
   };
 
@@ -246,37 +88,53 @@ function PermissionGrid({
   );
 }
 
-// ─── Role card ────────────────────────────────────────────────────────────────
-
 function RoleCard({
   role,
   onEdit,
   onDelete,
+  canEdit,
 }: {
-  role: RoleDefinition;
-  onEdit: (role: RoleDefinition) => void;
+  role: Role;
+  onEdit: (role: Role) => void;
   onDelete: (id: string) => void;
+  canEdit: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const perms = role.permissions ?? [];
+  const validPerms = perms.filter((p) =>
+    ALL_PERMISSIONS.includes(p as Permission)
+  ) as Permission[];
 
   return (
     <Card className="relative overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${role.color}`}>
-              {role.name}
+            <span
+              className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${role.color ?? "bg-gray-100 text-gray-800 border-gray-200"}`}
+            >
+              {role.slug}
             </span>
-            <CardTitle className="text-base">{role.label}</CardTitle>
-            {role.system && (
+            <CardTitle className="text-base">{role.name}</CardTitle>
+            {role.isSystem && (
               <Badge variant="outline" className="text-xs text-muted-foreground">
                 System
               </Badge>
             )}
+            {role.canAccessAdmin && (
+              <Badge variant="secondary" className="text-xs">
+                Admin access
+              </Badge>
+            )}
           </div>
-          {!role.system && (
+          {!role.isSystem && canEdit && (
             <div className="flex gap-1 shrink-0">
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(role)}>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7"
+                onClick={() => onEdit(role)}
+              >
                 <Edit2 className="h-3.5 w-3.5" />
               </Button>
               <Button
@@ -290,12 +148,17 @@ function RoleCard({
             </div>
           )}
         </div>
-        <CardDescription className="text-xs">{role.description}</CardDescription>
+        <CardDescription className="text-xs">
+          {role.description || "No description"}
+        </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs text-muted-foreground">
-            {role.permissions.length} / {ALL_PERMISSIONS.length} permissions
+            {validPerms.length} / {ALL_PERMISSIONS.length} permissions
+            {typeof role.userCount === "number" && (
+              <> · {role.userCount} user(s)</>
+            )}
           </p>
           <button
             type="button"
@@ -305,50 +168,72 @@ function RoleCard({
             {expanded ? "Hide" : "View"} permissions
           </button>
         </div>
-        {expanded && (
-          <PermissionGrid selected={role.permissions} disabled />
-        )}
+        {expanded && <PermissionGrid selected={validPerms} disabled />}
       </CardContent>
     </Card>
   );
 }
-
-// ─── Create/Edit dialog ───────────────────────────────────────────────────────
 
 function RoleFormDialog({
   open,
   onOpenChange,
   existing,
   onSave,
+  isSaving,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  existing?: RoleDefinition | null;
-  onSave: (role: Omit<RoleDefinition, "id" | "system" | "color">) => void;
+  existing?: Role | null;
+  onSave: (data: CreateRoleRequest) => void;
+  isSaving: boolean;
 }) {
   const isEditing = !!existing;
-  const [name, setName] = useState(existing?.label ?? "");
-  const [description, setDescription] = useState(existing?.description ?? "");
-  const [permissions, setPermissions] = useState<Permission[]>(
+  const [name, setName] = useState(existing?.name ?? "");
+  const [description, setDescription] = useState(
+    existing?.description ?? ""
+  );
+  const [canAccessAdmin, setCanAccessAdmin] = useState(
+    existing?.canAccessAdmin ?? false
+  );
+  const [permissions, setPermissions] = useState<string[]>(
     existing?.permissions ?? ["dashboard"]
   );
 
-  const handleOpen = (v: boolean) => {
-    if (v && !existing) {
-      setName("");
-      setDescription("");
-      setPermissions(["dashboard"]);
+  // Sync form state when dialog opens or existing role changes
+  useEffect(() => {
+    if (open) {
+      if (existing) {
+        setName(existing.name ?? "");
+        setDescription(existing.description ?? "");
+        setCanAccessAdmin(existing.canAccessAdmin ?? false);
+        setPermissions(
+          Array.isArray(existing.permissions) && existing.permissions.length > 0
+            ? existing.permissions
+            : ["dashboard"]
+        );
+      } else {
+        setName("");
+        setDescription("");
+        setCanAccessAdmin(false);
+        setPermissions(["dashboard"]);
+      }
     }
+  }, [open, existing]);
+
+  const handleOpen = (v: boolean) => {
     onOpenChange(v);
   };
 
   const handleSave = () => {
     if (!name.trim()) return;
+    const validPerms = permissions.filter((p) =>
+      ALL_PERMISSIONS.includes(p as Permission)
+    );
     onSave({
-      label: name.trim(),
-      name: name.trim().toUpperCase().replace(/\s+/g, "_"),
-      description: description.trim(),
-      permissions,
+      name: name.trim(),
+      description: description.trim() || undefined,
+      permissions: validPerms,
+      canAccessAdmin,
     });
     onOpenChange(false);
   };
@@ -357,7 +242,9 @@ function RoleFormDialog({
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Role" : "Create Custom Role"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Edit Role" : "Create Custom Role"}
+          </DialogTitle>
           <DialogDescription>
             Define a custom role and the sections it can access.
           </DialogDescription>
@@ -370,7 +257,7 @@ function RoleFormDialog({
                 id="role-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Content Manager"
+                placeholder="e.g., Content Creator"
               />
             </div>
             <div className="space-y-2">
@@ -379,9 +266,22 @@ function RoleFormDialog({
                 id="role-desc"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Short description of this role"
+                placeholder="Short description"
               />
             </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="can-access-admin"
+              checked={canAccessAdmin}
+              onChange={(e) => setCanAccessAdmin(e.target.checked)}
+              className="h-4 w-4 rounded border-input accent-primary"
+            />
+            <Label htmlFor="can-access-admin" className="cursor-pointer">
+              Can access admin dashboard (users with this role can log in)
+            </Label>
           </div>
 
           <div className="space-y-2">
@@ -393,7 +293,7 @@ function RoleFormDialog({
                   variant="ghost"
                   size="sm"
                   className="h-7 text-xs"
-                  onClick={() => setPermissions(ALL_PERMISSIONS)}
+                  onClick={() => setPermissions([...ALL_PERMISSIONS])}
                 >
                   Select all
                 </Button>
@@ -408,14 +308,18 @@ function RoleFormDialog({
                 </Button>
               </div>
             </div>
-            <PermissionGrid selected={permissions} onChange={setPermissions} />
+            <PermissionGrid
+              selected={permissions as Permission[]}
+              onChange={(p) => setPermissions(p)}
+            />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!name.trim()}>
+          <Button onClick={handleSave} disabled={!name.trim() || isSaving}>
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? "Save Changes" : "Create Role"}
           </Button>
         </DialogFooter>
@@ -424,50 +328,80 @@ function RoleFormDialog({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+function RolesPageContent() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
-export default function RolesPage() {
-  const [customRoles, setCustomRoles] = useState<RoleDefinition[]>(loadCustomRoles);
+  const { data: roles = [], isLoading } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => rolesService.list(),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data: CreateRoleRequest) => rolesService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      toast.success("Role created successfully");
+    },
+    onError: (err: Error) => toast.error(err.message || "Failed to create role"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateRoleRequest> }) =>
+      rolesService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      toast.success("Role updated successfully");
+    },
+    onError: (err: Error) => toast.error(err.message || "Failed to update role"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => rolesService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      toast.success("Role deleted successfully");
+    },
+    onError: (err: Error) => toast.error(err.message || "Failed to delete role"),
+  });
+
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRole, setEditingRole] = useState<RoleDefinition | null>(null);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
 
-  const allRoles = [...DEFAULT_ROLES, ...customRoles];
-
-  const handleSave = (data: Omit<RoleDefinition, "id" | "system" | "color">) => {
+  const handleSave = (data: CreateRoleRequest) => {
     if (editingRole) {
-      const updated = customRoles.map((r) =>
-        r.id === editingRole.id ? { ...r, ...data } : r
-      );
-      setCustomRoles(updated);
-      saveCustomRoles(updated);
+      updateMutation.mutate({ id: editingRole.id, data });
     } else {
-      const newRole: RoleDefinition = {
-        id: `custom_${Date.now()}`,
-        system: false,
-        color: "bg-teal-100 text-teal-800 border-teal-200",
-        ...data,
-      };
-      const updated = [...customRoles, newRole];
-      setCustomRoles(updated);
-      saveCustomRoles(updated);
+      createMutation.mutate(data);
     }
     setEditingRole(null);
   };
 
-  const handleEdit = (role: RoleDefinition) => {
+  const handleEdit = (role: Role) => {
     setEditingRole(role);
     setDialogOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    const updated = customRoles.filter((r) => r.id !== id);
-    setCustomRoles(updated);
-    saveCustomRoles(updated);
+    const role = roles.find((r) => r.id === id);
+    if (role) setDeleteTarget(role);
   };
+
+  const isSaving =
+    createMutation.isPending || updateMutation.isPending;
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
@@ -475,45 +409,81 @@ export default function RolesPage() {
             Roles &amp; Permissions
           </h1>
           <p className="text-muted-foreground text-sm">
-            Manage role definitions and section access. Assign roles to users from the Users page.
+            Manage role definitions and assign them to users from the Users page.
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setEditingRole(null);
-            setDialogOpen(true);
-          }}
-          className="shrink-0"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Role
-        </Button>
+        {isSuperAdmin && (
+          <Button
+            onClick={() => {
+              setEditingRole(null);
+              setDialogOpen(true);
+            }}
+            className="shrink-0"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            New Role
+          </Button>
+        )}
       </div>
 
-      {/* Info banner */}
-      <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+      <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800/50 dark:bg-blue-950/30 p-4 text-sm text-blue-800 dark:text-blue-300">
         <Info className="h-4 w-4 mt-0.5 shrink-0" />
         <p>
-          <strong>System roles</strong> (MEMBER, WORKER, PASTOR, ADMIN, SUPER_ADMIN) are built-in
-          and cannot be deleted. Custom roles are stored locally and serve as a reference for backend
-          role configuration. Permissions are enforced server-side.
+          <strong>System roles</strong> (MEMBER, WORKER, PASTOR, ADMIN,
+          SUPER_ADMIN) are built-in and cannot be edited or deleted.{" "}
+          {isSuperAdmin
+            ? "You can create custom roles and assign any role to users."
+            : "Only Super Admins can create or edit custom roles."}
         </p>
       </div>
 
-      {/* Role grid */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {allRoles.map((role) => (
-          <RoleCard key={role.id} role={role} onEdit={handleEdit} onDelete={handleDelete} />
+        {roles.map((role) => (
+          <RoleCard
+            key={role.id}
+            role={role}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            canEdit={isSuperAdmin}
+          />
         ))}
       </div>
 
-      {/* Form dialog */}
       <RoleFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         existing={editingRole}
         onSave={handleSave}
+        isSaving={isSaving}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete role"
+        description={
+          deleteTarget
+            ? `Are you sure you want to delete "${deleteTarget.name}"? Users with this role must be reassigned first.`
+            : ""
+        }
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteMutation.mutate(deleteTarget.id);
+            setDeleteTarget(null);
+          }
+        }}
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function RolesPage() {
+  return (
+    <PermissionGuard permission="settings">
+      <RolesPageContent />
+    </PermissionGuard>
   );
 }

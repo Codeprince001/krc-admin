@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +13,9 @@ import { formatDate } from "@/lib/utils/format";
 import { toast } from "sonner";
 import { FileDown, Loader2 } from "lucide-react";
 import type { Payment } from "@/types/api/payments.types";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function PaymentsPage() {
+function PaymentsPageContent() {
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
@@ -94,5 +95,13 @@ export default function PaymentsPage() {
         onOpenChange={setIsDetailsOpen}
       />
     </div>
+  );
+}
+
+export default function PaymentsPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <PaymentsPageContent />
+    </PermissionGuard>
   );
 }

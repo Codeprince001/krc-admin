@@ -20,11 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/shared/Pagination";
 import { FileDown, Loader2, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { downloadExcel } from "@/lib/utils/exportExcel";
 import { formatDate } from "@/lib/utils/format";
 import { givingManagementService } from "@/lib/api/services/giving-management.service";
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 import type {
   GivingTransaction,
   GivingTransactionStats,
@@ -39,7 +41,7 @@ function formatCurrency(amount: number, currency = "NGN") {
   }).format(amount);
 }
 
-export default function GivingTransactionsPage() {
+function GivingTransactionsPageContent() {
   const [page, setPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [filters, setFilters] = useState<QueryGivingTransactionsParams>({
@@ -327,38 +329,26 @@ export default function GivingTransactionsPage() {
                 </TableBody>
               </Table>
               {meta && meta.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                  <p className="text-sm text-muted-foreground">
-                    Page {meta.page} of {meta.totalPages} ({meta.total} total)
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        setPage((p) =>
-                          Math.min(meta.totalPages, p + 1)
-                        )
-                      }
-                      disabled={page === meta.totalPages}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
+                <Pagination
+                  currentPage={page}
+                  totalPages={meta.totalPages}
+                  total={meta.total}
+                  onPageChange={setPage}
+                  pageSize={filters.limit ?? 20}
+                />
               )}
             </>
           )}
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function GivingTransactionsPage() {
+  return (
+    <PermissionGuard permission="giving">
+      <GivingTransactionsPageContent />
+    </PermissionGuard>
   );
 }

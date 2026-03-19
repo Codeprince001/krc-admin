@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,8 +14,9 @@ import { gamesService } from '@/lib/api/services/games.service';
 import { BadgeCategory, type Badge } from '@/types/api/games';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BadgeDialog } from './components/BadgeDialog';
+import { PermissionGuard } from "@/components/guards/PermissionGuard";
 
-export default function BadgesPage() {
+function BadgesPageContent() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
@@ -126,3 +127,11 @@ export default function BadgesPage() {
   );
 }
 
+
+export default function BadgesPage() {
+  return (
+    <PermissionGuard permission="games">
+      <BadgesPageContent />
+    </PermissionGuard>
+  );
+}
