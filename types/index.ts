@@ -9,3 +9,4 @@ export * from "./api/financial.types";
 // export * from "./api/giving.types"; // Duplicate exports with financial.types
 export * from "./api/media.types";
 export * from "./api/advertisements.types";
+export * from "./api/in-app-popups.types";
