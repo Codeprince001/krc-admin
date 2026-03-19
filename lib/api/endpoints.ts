@@ -53,6 +53,7 @@ export const endpoints = {
   wordsOfWisdom: `${API_BASE_URL}/words-of-wisdom`,
   wordsOfKnowledge: `${API_BASE_URL}/words-of-knowledge`,
   advertisements: `${API_BASE_URL}/advertisements`,
+  inAppPopups: `${API_BASE_URL}/in-app-popups`,
   // Roles (Enterprise RBAC)
   roles: `${API_BASE_URL}/roles`,
 };
