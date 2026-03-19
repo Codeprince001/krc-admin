@@ -26,6 +26,7 @@ const PERMISSION_LABELS: Record<Permission, string> = {
   notifications: "Notifications",
   media: "Media Library",
   advertisements: "Advertisements",
+  inAppPopups: "In-App Popups",
 };
 
 interface AccessDeniedProps {
