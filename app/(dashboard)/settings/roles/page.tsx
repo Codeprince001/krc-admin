@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ShieldCheck, Plus, Edit2, Trash2, Info, Loader2 } from "lucide-react";
+import {
+  ShieldCheck,
+  Plus,
+  Edit2,
+  Trash2,
+  Info,
+  Loader2,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,10 +113,15 @@ function RoleCard({
   const validPerms = perms.filter((p) =>
     ALL_PERMISSIONS.includes(p as Permission)
   ) as Permission[];
+  const previewPerms = validPerms.slice(0, 6);
+  const remainingPerms = Math.max(validPerms.length - previewPerms.length, 0);
+  const permissionCoverage = Math.round(
+    (validPerms.length / ALL_PERMISSIONS.length) * 100
+  );
 
   return (
-    <Card className="relative overflow-hidden">
-      <CardHeader className="pb-3">
+    <Card className="group relative overflow-hidden border-border/60 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
+      <CardHeader className="pb-3 bg-gradient-to-b from-muted/30 to-transparent">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 flex-wrap">
             <span
@@ -127,7 +141,7 @@ function RoleCard({
               </Badge>
             )}
           </div>
-          {!role.isSystem && canEdit && (
+          {canEdit && (
             <div className="flex gap-1 shrink-0">
               <Button
                 size="icon"
@@ -137,38 +151,84 @@ function RoleCard({
               >
                 <Edit2 className="h-3.5 w-3.5" />
               </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-destructive hover:text-destructive"
-                onClick={() => onDelete(role.id)}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              {!role.isSystem && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-destructive hover:text-destructive"
+                  onClick={() => onDelete(role.id)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
           )}
         </div>
-        <CardDescription className="text-xs">
+        <CardDescription className="text-xs mt-1">
           {role.description || "No description"}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-xs text-muted-foreground">
-            {validPerms.length} / {ALL_PERMISSIONS.length} permissions
-            {typeof role.userCount === "number" && (
-              <> · {role.userCount} user(s)</>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="rounded-md border bg-muted/40 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Permissions
+            </p>
+            <p className="text-sm font-semibold">
+              {validPerms.length} / {ALL_PERMISSIONS.length}
+            </p>
+          </div>
+          <div className="rounded-md border bg-muted/40 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Assigned Users
+            </p>
+            <p className="text-sm font-semibold">{role.userCount ?? 0}</p>
+          </div>
+        </div>
+
+        <div className="mb-3">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
+            <span>Coverage</span>
+            <span>{permissionCoverage}%</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${permissionCoverage}%` }}
+            />
+          </div>
+        </div>
+
+        {!expanded && (
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {previewPerms.map((perm) => (
+              <Badge key={perm} variant="secondary" className="text-[11px]">
+                {perm}
+              </Badge>
+            ))}
+            {remainingPerms > 0 && (
+              <Badge variant="outline" className="text-[11px]">
+                +{remainingPerms} more
+              </Badge>
             )}
-          </p>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
           <button
             type="button"
             className="text-xs text-primary hover:underline"
             onClick={() => setExpanded((v) => !v)}
           >
-            {expanded ? "Hide" : "View"} permissions
+            {expanded ? "Hide full permission matrix" : "View full permission matrix"}
           </button>
         </div>
-        {expanded && <PermissionGrid selected={validPerms} disabled />}
+
+        {expanded && (
+          <div className="mt-3 rounded-lg border p-3 bg-muted/20">
+            <PermissionGrid selected={validPerms} disabled />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -369,6 +429,8 @@ function RolesPageContent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSystemOnly, setShowSystemOnly] = useState(false);
 
   const handleSave = (data: CreateRoleRequest) => {
     if (editingRole) {
@@ -392,6 +454,18 @@ function RolesPageContent() {
   const isSaving =
     createMutation.isPending || updateMutation.isPending;
 
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredRoles = roles.filter((role) => {
+    if (showSystemOnly && !role.isSystem) return false;
+    if (!normalizedSearch) return true;
+    const haystack = `${role.name} ${role.slug} ${role.description ?? ""}`.toLowerCase();
+    return haystack.includes(normalizedSearch);
+  });
+
+  const totalUsers = roles.reduce((sum, role) => sum + (role.userCount ?? 0), 0);
+  const systemRolesCount = roles.filter((r) => r.isSystem).length;
+  const customRolesCount = Math.max(roles.length - systemRolesCount, 0);
+
   if (isLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
@@ -402,43 +476,112 @@ function RolesPageContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6 text-primary" />
-            Roles &amp; Permissions
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Manage role definitions and assign them to users from the Users page.
-          </p>
+      <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-background via-background to-primary/5 p-5 sm:p-6">
+        <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+              <ShieldCheck className="h-6 w-6 text-primary" />
+              Roles &amp; Permissions
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              Fine-grained access control for church administration.
+            </p>
+          </div>
+          {isSuperAdmin && (
+            <Button
+              onClick={() => {
+                setEditingRole(null);
+                setDialogOpen(true);
+              }}
+              className="shrink-0"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              New Role
+            </Button>
+          )}
         </div>
-        {isSuperAdmin && (
-          <Button
-            onClick={() => {
-              setEditingRole(null);
-              setDialogOpen(true);
-            }}
-            className="shrink-0"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            New Role
-          </Button>
-        )}
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800/50 dark:bg-blue-950/30 p-4 text-sm text-blue-800 dark:text-blue-300">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Total Roles</p>
+            <p className="text-2xl font-semibold">{roles.length}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">System Roles</p>
+            <p className="text-2xl font-semibold">{systemRolesCount}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Custom Roles</p>
+            <p className="text-2xl font-semibold">{customRolesCount}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Assigned Users</p>
+            <p className="text-2xl font-semibold">{totalUsers}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-lg border border-sky-300 bg-sky-100 dark:border-sky-700 dark:bg-sky-950/60 p-4 text-sm text-sky-900 dark:text-sky-200">
         <Info className="h-4 w-4 mt-0.5 shrink-0" />
         <p>
           <strong>System roles</strong> (MEMBER, WORKER, PASTOR, ADMIN,
-          SUPER_ADMIN) are built-in and cannot be edited or deleted.{" "}
+          SUPER_ADMIN) are built-in. They can be edited, but cannot be deleted.{" "}
           {isSuperAdmin
-            ? "You can create custom roles and assign any role to users."
-            : "Only Super Admins can create or edit custom roles."}
+            ? "You can create custom roles and edit role permissions."
+            : "Only Super Admins can create or edit roles."}
         </p>
       </div>
 
+      <Card className="border-border/60">
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative w-full lg:max-w-md">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by role name, slug, or description..."
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={showSystemOnly}
+                  onChange={(e) => setShowSystemOnly(e.target.checked)}
+                  className="h-4 w-4 rounded border-input accent-primary"
+                />
+                Show only system roles
+              </label>
+              {(searchTerm || showSystemOnly) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setShowSystemOnly(false);
+                  }}
+                >
+                  Clear filters
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {roles.map((role) => (
+        {filteredRoles.map((role) => (
           <RoleCard
             key={role.id}
             role={role}
@@ -448,6 +591,17 @@ function RolesPageContent() {
           />
         ))}
       </div>
+      {filteredRoles.length === 0 && (
+        <Card className="border-dashed">
+          <CardContent className="py-12 text-center">
+            <Sparkles className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm font-medium">No roles match your filters</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Try a different search term or clear active filters.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <RoleFormDialog
         open={dialogOpen}
