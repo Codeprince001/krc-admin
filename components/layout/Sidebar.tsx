@@ -167,7 +167,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen border-r border-border/50 bg-white/80 backdrop-blur-lg transition-all duration-300 shadow-2xl",
+        "fixed inset-y-0 left-0 z-40 h-dvh border-r border-border/50 bg-white/80 backdrop-blur-lg transition-all duration-300 shadow-2xl",
         "hidden lg:block", // Hide on mobile, show on desktop
         sidebarOpen ? "w-64" : "w-20"
       )}
