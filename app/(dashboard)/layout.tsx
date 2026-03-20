@@ -46,7 +46,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-dvh overflow-x-hidden">
+    <div className="flex min-h-screen min-h-dvh overflow-x-hidden">
       {/* Desktop Sidebar */}
       <Sidebar />
       

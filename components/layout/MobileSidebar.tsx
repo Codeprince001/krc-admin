@@ -188,7 +188,7 @@ export function MobileSidebar() {
       {/* Mobile Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 h-dvh w-[min(20rem,85vw)] border-r border-border/50 bg-white shadow-2xl transition-transform duration-300 lg:hidden",
+          "fixed inset-y-0 left-0 z-50 h-screen h-dvh w-[min(20rem,85vw)] border-r border-border/50 bg-white shadow-2xl transition-transform duration-300 lg:hidden",
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

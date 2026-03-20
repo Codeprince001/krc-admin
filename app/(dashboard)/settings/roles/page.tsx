@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ShieldCheck,
@@ -148,6 +148,7 @@ function RoleCard({
                 variant="ghost"
                 className="h-7 w-7"
                 onClick={() => onEdit(role)}
+                aria-label={`Edit role ${role.name}`}
               >
                 <Edit2 className="h-3.5 w-3.5" />
               </Button>
@@ -157,6 +158,7 @@ function RoleCard({
                   variant="ghost"
                   className="h-7 w-7 text-destructive hover:text-destructive"
                   onClick={() => onDelete(role.id)}
+                  aria-label={`Delete role ${role.name}`}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -454,17 +456,33 @@ function RolesPageContent() {
   const isSaving =
     createMutation.isPending || updateMutation.isPending;
 
-  const normalizedSearch = searchTerm.trim().toLowerCase();
-  const filteredRoles = roles.filter((role) => {
-    if (showSystemOnly && !role.isSystem) return false;
-    if (!normalizedSearch) return true;
-    const haystack = `${role.name} ${role.slug} ${role.description ?? ""}`.toLowerCase();
-    return haystack.includes(normalizedSearch);
-  });
+  const normalizedSearch = useMemo(
+    () => searchTerm.trim().toLowerCase(),
+    [searchTerm]
+  );
+  const filteredRoles = useMemo(
+    () =>
+      roles.filter((role) => {
+        if (showSystemOnly && !role.isSystem) return false;
+        if (!normalizedSearch) return true;
+        const haystack = `${role.name} ${role.slug ?? ""} ${role.description ?? ""}`.toLowerCase();
+        return haystack.includes(normalizedSearch);
+      }),
+    [roles, showSystemOnly, normalizedSearch]
+  );
 
-  const totalUsers = roles.reduce((sum, role) => sum + (role.userCount ?? 0), 0);
-  const systemRolesCount = roles.filter((r) => r.isSystem).length;
-  const customRolesCount = Math.max(roles.length - systemRolesCount, 0);
+  const { totalUsers, systemRolesCount, customRolesCount } = useMemo(() => {
+    const totalUsersCount = roles.reduce(
+      (sum, role) => sum + (role.userCount ?? 0),
+      0
+    );
+    const systemCount = roles.filter((r) => r.isSystem).length;
+    return {
+      totalUsers: totalUsersCount,
+      systemRolesCount: systemCount,
+      customRolesCount: Math.max(roles.length - systemCount, 0),
+    };
+  }, [roles]);
 
   if (isLoading) {
     return (
