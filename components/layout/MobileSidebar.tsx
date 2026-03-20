@@ -34,6 +34,10 @@ import {
   Target,
   Activity,
   Mail,
+  HandHelping,
+  Tv2,
+  Bell,
+  LayoutGrid,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -86,8 +90,18 @@ const navGroups: NavGroup[] = [
     title: "Financial",
     items: [
       { title: "Giving", href: "/financial/giving", icon: DollarSign },
+      { title: "Giving Categories", href: "/financial/giving-categories", icon: LayoutGrid },
+      { title: "Giving Campaigns", href: "/financial/giving-campaigns", icon: Target },
+      { title: "Giving Transactions", href: "/financial/giving-transactions", icon: HandHelping },
       { title: "Payments", href: "/financial/payments", icon: CreditCard },
       { title: "Orders", href: "/financial/orders", icon: ShoppingCart },
+    ],
+  },
+  {
+    title: "Advertisements",
+    items: [
+      { title: "Manage Ads", href: "/advertisements", icon: Tv2 },
+      { title: "In-App Popups", href: "/in-app-popups", icon: Bell },
     ],
   },
   {
@@ -115,6 +129,9 @@ const navGroups: NavGroup[] = [
       { title: "Analytics", href: "/analytics", icon: BarChart3 },
       { title: "Settings", href: "/settings", icon: Settings },
       { title: "Email Templates", href: "/settings/email-templates", icon: Mail },
+      { title: "Activity Log", href: "/settings/activity-log", icon: Activity },
+      { title: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck },
+      { title: "Reports & Export", href: "/financial/reports", icon: FileText },
     ],
   },
 ];
@@ -171,7 +188,7 @@ export function MobileSidebar() {
       {/* Mobile Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-80 border-r border-border/50 bg-white shadow-2xl transition-transform duration-300 lg:hidden",
+          "fixed inset-y-0 left-0 z-50 h-dvh w-[min(20rem,85vw)] border-r border-border/50 bg-white shadow-2xl transition-transform duration-300 lg:hidden",
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -204,7 +221,7 @@ export function MobileSidebar() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+          <nav className="flex-1 space-y-1 overflow-y-auto p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             {navGroups.map((group, groupIndex) => (
               <div key={group.title} className="mb-4">
                 <h3 className="mb-3 px-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
