@@ -46,7 +46,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-dvh overflow-x-hidden">
       {/* Desktop Sidebar */}
       <Sidebar />
       
@@ -54,12 +54,12 @@ export default function DashboardLayout({
       <MobileSidebar />
       
       <div
-        className={`flex-1 transition-all duration-300 
+        className={`min-w-0 flex-1 transition-all duration-300 
           ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"} 
           ml-0`}
       >
         <Header />
-        <main className="p-4 sm:p-6">{children}</main>
+        <main className="min-w-0 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );
