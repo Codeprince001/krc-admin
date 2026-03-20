@@ -23,12 +23,12 @@ export function ResponsiveTableWrapper({
 }: ResponsiveTableWrapperProps) {
   return (
     <div className={cn(
-      "w-full overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-white",
+      "w-full max-w-full overflow-x-auto rounded-lg border border-border bg-white",
       "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100",
       className
     )}>
-      <div className="inline-block min-w-full align-middle">
-        <div className="overflow-hidden">
+      <div className="min-w-max sm:min-w-full align-middle">
+        <div className="overflow-hidden rounded-lg">
           {children}
         </div>
       </div>
@@ -53,11 +53,11 @@ export function ScrollableTableWrapper({
       <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10 lg:hidden" />
       
       <div className={cn(
-        "w-full overflow-x-auto -mx-4 sm:mx-0",
+        "w-full max-w-full overflow-x-auto",
         "smooth-scroll",
         "rounded-lg border border-border bg-white"
       )}>
-        <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+        <div className="min-w-max sm:min-w-full align-middle">
           {children}
         </div>
       </div>
