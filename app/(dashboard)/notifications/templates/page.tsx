@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,11 +37,11 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { apiClient } from "@/lib/api/client";
 import { formatDistanceToNow } from "date-fns";
 import { PermissionGuard } from "@/components/guards/PermissionGuard";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface Template {
   id: string;
   name: string;
-  description: string | null;
   type: string;
   title: string;
   body: string;
@@ -71,7 +71,6 @@ function TemplatesPageContent() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    description: "",
     type: "GENERAL",
     title: "",
     body: "",
@@ -140,7 +139,6 @@ function TemplatesPageContent() {
   const resetForm = () => {
     setFormData({
       name: "",
-      description: "",
       type: "GENERAL",
       title: "",
       body: "",
@@ -150,14 +148,17 @@ function TemplatesPageContent() {
   };
 
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createMutation.mutate({
+      ...formData,
+      imageUrl: formData.imageUrl || undefined,
+      variables: extractVariables(formData.title + " " + formData.body + " " + formData.actionUrl),
+    });
   };
 
   const handleEdit = (template: Template) => {
     setSelectedTemplate(template);
     setFormData({
       name: template.name,
-      description: template.description || "",
       type: template.type,
       title: template.title,
       body: template.body,
@@ -169,7 +170,14 @@ function TemplatesPageContent() {
 
   const handleUpdate = () => {
     if (selectedTemplate) {
-      updateMutation.mutate({ id: selectedTemplate.id, data: formData });
+      updateMutation.mutate({
+        id: selectedTemplate.id,
+        data: {
+          ...formData,
+          imageUrl: formData.imageUrl || undefined,
+          variables: extractVariables(formData.title + " " + formData.body + " " + formData.actionUrl),
+        },
+      });
     }
   };
 
@@ -188,12 +196,13 @@ function TemplatesPageContent() {
   };
 
   const extractVariables = (text: string): string[] => {
-    const regex = /\{\{(\w+)\}\}/g;
+    const regex = /\{\{([^}]+)\}\}/g;
     const matches: string[] = [];
     let match;
     while ((match = regex.exec(text)) !== null) {
-      if (!matches.includes(match[1])) {
-        matches.push(match[1]);
+      const trimmed = match[1].trim();
+      if (trimmed && !matches.includes(trimmed)) {
+        matches.push(trimmed);
       }
     }
     return matches;
@@ -243,14 +252,7 @@ function TemplatesPageContent() {
                 {templates.map((template) => (
                   <TableRow key={template.id}>
                     <TableCell>
-                      <div>
-                        <div className="font-medium">{template.name}</div>
-                        {template.description && (
-                          <div className="text-sm text-muted-foreground">
-                            {template.description}
-                          </div>
-                        )}
-                      </div>
+                      <div className="font-medium">{template.name}</div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
@@ -349,15 +351,6 @@ function TemplatesPageContent() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Template for event reminders"
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="type">Notification Type *</Label>
               <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
                 <SelectTrigger>
@@ -401,17 +394,14 @@ function TemplatesPageContent() {
                 </p>
               )}
             </div>
+            <ImageUpload
+              value={formData.imageUrl || undefined}
+              onChange={(url) => setFormData({ ...formData, imageUrl: url || "" })}
+              label="Image (optional)"
+              context="announcements"
+            />
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">Image URL</Label>
-              <Input
-                id="imageUrl"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="actionUrl">Action URL</Label>
+              <Label htmlFor="actionUrl">Action URL (optional)</Label>
               <Input
                 id="actionUrl"
                 value={formData.actionUrl}
